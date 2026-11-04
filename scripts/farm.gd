@@ -16,9 +16,12 @@ var notice := "Espaco: plantar. N: proximo dia."
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event is InputEventKey or not event.pressed or event.echo:
+	if not (event is InputEventKey):
 		return
-	var code := event.physical_keycode
+	var key_event := event as InputEventKey
+	if not key_event.pressed or key_event.echo:
+		return
+	var code := key_event.physical_keycode
 	match code:
 		KEY_W, KEY_UP:
 			cursor.y = maxi(0, cursor.y - 1)
