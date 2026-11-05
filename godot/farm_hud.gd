@@ -2,6 +2,7 @@ extends CanvasLayer
 ## Prototype HUD for the 3D farm. Values are placeholders except the game clock.
 var clock_label: Label
 var status_label: Label
+var message_label: Label
 
 func _ready() -> void:
     var root := Control.new()
@@ -25,6 +26,9 @@ func _ready() -> void:
     var objective := Label.new()
     objective.text = "Objetivo: explorar a fazenda"
     stats.add_child(objective)
+    message_label = Label.new()
+    message_label.text = ""
+    stats.add_child(message_label)
 
     var right := PanelContainer.new()
     right.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -51,3 +55,7 @@ func _process(_delta: float) -> void:
     var controller := get_node_or_null("../DayNightController")
     if controller != null and controller.has_method("get_clock"):
         clock_label.text = "🍂 Outono  |  " + controller.get_clock()
+    var needs := get_node_or_null("../FarmerNeeds")
+    if needs != null:
+        status_label.text = "Energia %d  |  Fome %d" % [int(needs.energy), int(needs.hunger)]
+        message_label.text = needs.message
