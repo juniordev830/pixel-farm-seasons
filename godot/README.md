@@ -1,63 +1,60 @@
-# Pixel Farm Seasons — primeira fazenda 3D (Godot 4.3+)
+# Pixel Farm Seasons — simulador de vida rural 3D (Godot 4.3+)
 
-## Novidade: simulador de vida rural — primeira versao (branch de desenvolvimento)
-
-A cena 3D agora carrega automaticamente `scripts/life_sim.gd`, um prototipo dos sistemas de vida rural:
-- Casa de dois andares com abertura para entrar, escada/rampa, sala, cozinha e suite.
-- Geladeira + mesa: preparar e realizar cafe da manha, almoco e jantar.
-- HUD com relogio, dinheiro, fome e energia; iluminacao de dia e de noite.
-- Vaca e galinhas: alimentar, colocar agua, ordenhar e recolher ovos.
-- TV e radio ligam/desligam visualmente; notebook mostra informacoes da rede ficticia do jogo.
-- Garagem, bancada de oficina, carro que pode ser dirigido e consertado.
-- Estrada para uma pequena vila rural com mercado de mantimentos.
-- Gravacao local automatica em `user://pixel_farm_life_save.json`.
-
-**Controles adicionais:** aproxime-se do objeto e pressione **E** para interagir. Dentro do carro, **WASD** dirige e **E** sai.
-
-**Importante:** a interatividade e simplificada e os modelos sao low-poly temporarios. TV e radio ainda nao reproduzem midia; notebook nao acessa a Internet real. Os arquivos ainda exigem teste no motor Godot.
-
-Documentos de referencia: `docs/OPEN_WORLD_LIFE_SIM_VISION.md` e `docs/LIFE_SIM_TEST_PLAN.md` (na raiz do repositório).
-
----
-
-
-A pasta `godot/` é um projeto Godot independente, separado da prévia web 2D.
-
-## O que foi criado
-
-- Terreno 3D explorável com caminho, grama, vegetação e nuvens.
-- Casa de dois andares, telhado, janelas, varanda, banco e rede ilustrativa.
-- Celeiro vermelho, silo, horta com 30 canteiros, cercas e plantações decorativas.
-- Curral com vaca e galinhas estáticas, lago, árvores e carro azul provisório.
-- Personagem com câmera em terceira/primeira pessoa, pulo e corrida.
-- Luz do sol, sombras e colisão no chão e nos edifícios.
-
-Todos os modelos são formas geométricas procedurais do Godot (arte low-poly provisória).
+> **Protótipo em desenvolvimento:** modelos low-poly provisórios; não é ainda o jogo realista da colagem de referência. A versão web 2D na raiz do repositório continua separada.
 
 ## Como executar
 
-1. Baixe ou clone a branch `feature/farm-3d-environment-v1`.
-2. Instale Godot **4.3 ou superior**.
-3. Abra Godot > **Importar** > selecione `godot/project.godot`.
-4. Execute o projeto (F5). A cena principal é `godot/scenes/farm_world.tscn`.
-5. O script `godot/scripts/farm_world.gd` monta os modelos ao iniciar.
+1. Clone ou baixe a branch `feature/event-driven-game-clock`.
+2. Abra o **Godot 4.3+** e importe `godot/project.godot`.
+3. Execute com F5: cena `res://scenes/farm_world.tscn`.
+
+## Funcionalidades implementadas no protótipo
+
+- Casa rural explorável, dois andares, cozinha, sala, suíte, varanda e rede (interiores provisórios).
+- Fome, energia, dinheiro, refeições, relógio e iluminação entre dia e noite.
+- Vaca e galinhas em modelos estáticos; tarefas de ração, água, ordenha e coleta de ovos.
+- Garagem, mini oficina, carro dirigível com física simplificada e venda rural.
+- Horta com 30 canteiros de cenoura, milho e tomate: plantar, regar e colher após três dias regados.
+- Mercado da vila para comprar mantimentos/ração/sementes e vender a colheita.
+- TV, rádio e notebook com interações **demonstrativas**; sem conteúdo real de mídia nem navegação na internet.
+- Progresso gravado em `user://pixel_farm_life_save.json`.
+
+## Nova regra de tempo: o jogo acompanha o que acontece
+
+**Não existe a equivalência fixa "1 dia no jogo = X minutos reais".** O relógio passa quando o fazendeiro faz alguma coisa. Preparar o café consome 10 minutos fictícios, tomar café 20, alimentar os animais 25, ordenhar 30, trabalhar na mini oficina 70. Plantar, regar e colher também têm duração definida. Caminhar e dirigir avançam a hora proporcionalmente à distância percorrida.
+
+Se o jogador ficar parado e não realizar atividades, o relógio **não acelera sozinho**. Dormir faz o personagem acordar às 06h30 do próximo dia. Quando o relógio passa da meia-noite, o dia muda, as tarefas diárias se renovam e as plantas regadas crescem.
+
+O horário é uma consequência das atividades, mas as durações atuais são valores de balanceamento e podem ser ajustadas. Veja `docs/EVENT_CLOCK_DESIGN.md`.
 
 ## Controles
 
-| Tecla | Ação |
+| Controle | Ação |
 | --- | --- |
-| WASD | Caminhar |
+| WASD | Andar; ao dirigir, controlar o carro |
 | Mouse | Girar câmera |
+| E | Interagir com objetos, horta, animais, mercado ou sair do carro |
+| F | Trocar ferramenta da horta: plantar, regar ou colher |
+| G | Trocar semente: cenoura, milho ou tomate |
 | Shift | Correr |
-| Ctrl | Deslocar lentamente |
+| Ctrl | Caminhar lentamente |
 | Espaço | Pular |
-| V | Primeira / terceira pessoa |
-| Esc | Soltar o mouse; clique na janela para recapturar |
+| V | Alternar câmera de primeira e terceira pessoa |
+| Esc | Liberar o cursor |
 
-## O que ainda não está pronto
+## Desenvolvimento e testes
 
-A casa é sólida e não tem interior. Os animais, plantas, carro e rede ainda são modelos estáticos. Não existem no cenário 3D sistemas de plantio, colheita, direção, clima ou missões. Eles permanecem planejados; o protótipo web 2D continua disponível na raiz.
+- `scripts/farm_world.gd`: cenário 3D procedural.
+- `scripts/life_sim.gd`: rotina, casa, animais, garagem, carro, dinheiro, HUD e salvamento.
+- `scripts/farming_system.gd`: horta, culturas, rega e colheita.
+- `scripts/rural_time.gd`: durações de tarefas e deslocamento (relógio por eventos).
+- `tests/farming_smoke.gd`: integração das culturas e salvamento.
+- `tests/event_clock_smoke.gd`: tempo parado, tarefas, caminhada, virada do dia e sono.
 
-**Validação:** a cena foi construída em código, mas ainda não foi aberta/testada em uma instalação real do Godot nesta sessão. A próxima etapa é executar no editor e corrigir qualquer problema de renderização ou física.
+O workflow `.github/workflows/godot-life-sim.yml` importa o projeto, executa a cena e os testes headless. Passar nesses testes **não substitui** a inspeção de gráficos, câmera, colisões, ergonomia e jogabilidade em um editor 3D real.
 
-Consulte `docs/FARM_3D_ART_DIRECTION.md` para o planejamento visual. Nenhum arquivo de jogo da branch `main` foi substituído.
+## Próximas melhorias
+
+Substituir placeholders por modelos de qualidade, melhorar o interior da casa e personagem, animar animais, construir um inventário completo, preparar refeições de forma interativa e ampliar a vila sem perder performance.
+
+Para o escopo completo do mundo aberto, consulte `docs/OPEN_WORLD_LIFE_SIM_VISION.md`.
