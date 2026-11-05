@@ -20,3 +20,6 @@ jobs:
         run: godot --headless --path godot --editor --import --quit
       - name: Parse and launch main scene
         run: godot --headless --path godot --quit-after 30
+
+      - name: Validate daily needs and midnight rollover
+        run: godot --headless --path godot --script res://tests/needs_smoke.gd
