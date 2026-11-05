@@ -17,6 +17,9 @@ var previous_minute: float = -1.0
 var last_clock_day: int = 0
 var fatigue_warning_sent: bool = false
 @export var overnight_energy_loss_per_game_minute: float = 0.06
+@export var hungry_energy_loss_per_game_minute: float = 0.05
+@export var hungry_movement_multiplier: float = 0.88
+@export var very_hungry_movement_multiplier: float = 0.76
 
 @onready var player: CharacterBody3D = $"../Player"
 @onready var clock: Node = $"../DayNightController"
@@ -39,6 +42,9 @@ func _process(delta: float) -> void:
     var hour: float = clock.minute / 60.0
     if hour >= 22.0 or hour < 5.0:
         cost += overnight_energy_loss_per_game_minute
+    # Hunger compounds fatigue but does not force the player to sleep.
+    if hunger >= 65.0:
+        cost += hungry_energy_loss_per_game_minute
     energy = maxf(0.0, energy - cost * game_minutes)
     if energy <= 20.0 and not fatigue_warning_sent:
         message = "Estou cansado demais... vou andar mais devagar."
@@ -75,13 +81,19 @@ func _check_meal_schedule() -> void:
 
 func movement_multiplier() -> float:
     # No forced sleep: tired players remain free to explore.
+    var energy_factor: float = 1.0
     if energy <= 5.0:
-        return 0.48
-    if energy <= 20.0:
-        return 0.62
-    if energy <= 40.0:
-        return 0.82
-    return 1.0
+        energy_factor = 0.48
+    elif energy <= 20.0:
+        energy_factor = 0.62
+    elif energy <= 40.0:
+        energy_factor = 0.82
+    var hunger_factor: float = 1.0
+    if hunger >= 90.0:
+        hunger_factor = very_hungry_movement_multiplier
+    elif hunger >= 65.0:
+        hunger_factor = hungry_movement_multiplier
+    return energy_factor * hunger_factor
 
 func eat() -> void:
     hunger = maxf(0.0, hunger - 55.0)
