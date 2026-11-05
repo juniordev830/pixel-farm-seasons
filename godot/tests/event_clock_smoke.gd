@@ -1,6 +1,6 @@
 extends SceneTree
-## Integracao do relogio orientado a acontecimentos.
-## Testa tempo parado, custos de tarefas, deslocamento e virada de dia.
+## Relogio hibrido: passa tempo parado + atividades + deslocamento.
+## Testa rotina das refeicoes, tarefas, meia-noite e sono.
 
 var problems: Array[String] = []
 
@@ -40,13 +40,25 @@ func _run() -> void:
     life.day = 1
     life.minutes = 390.0
 
-    # Nao deve passar a hora enquanto a pessoa deixa o jogo aberto.
+    # Mesmo sem andar e sem agir, o relogio segue seu curso.
     life.farmer.set_physics_process(false)
     life._reset_travel_position()
-    for i in range(6):
+    for i in range(10):
         await process_frame
-    _check(is_equal_approx(float(life.minutes), 390.0), "Tempo parado sem acao")
+    _check(float(life.minutes) > 390.0, "Relogio avanca quando o jogador fica parado")
+    _check(float(life.minutes) < 392.0, "Tempo em repouso usa ritmo moderado")
 
+    # O pensamento deve lembrar do almoco pelo horario.
+    life.minutes = 660.0
+    life.meals["almoco"] = false
+    life._refresh_reminder()
+    _check(life.hud_thought.text.contains("11h"), "Fazendeiro lembra do almoco as 11h")
+    life.meals["almoco"] = true
+    life._refresh_reminder()
+    _check(not life.hud_thought.text.contains("11h"), "Lembrete desaparece apos almocar")
+    life.meals["almoco"] = false
+
+    life.minutes = 390.0
     life.advance_activity("preparar_refeicao")
     _check(is_equal_approx(float(life.minutes), 400.0), "Preparar cafe consome 10 minutos")
     life.advance_activity("cafe")
@@ -88,7 +100,7 @@ func _run() -> void:
     world.queue_free()
     await process_frame
     if problems.is_empty():
-        print("PASSOU: relogio por atividades, tempo parado, caminhada, meia-noite, lavoura e sono.")
+        print("PASSOU: relogio hibrido, tempo parado, horario do almoco, tarefas, caminhada, meia-noite e sono.")
         quit(0)
     else:
         print("FALHAS: %s" % str(problems))
