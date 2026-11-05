@@ -19,7 +19,6 @@ func _box(parent: Node3D, name: String, pos: Vector3, size: Vector3, color: Colo
 func _ready() -> void:
     _box(self, "GrassGround", Vector3(0, -0.25, 0), Vector3(110, 0.5, 110), Color("#6eaa50"))
     _box(self, "FarmhouseWalls", Vector3(0, 2.2, -13), Vector3(12, 4.4, 9), Color("#f3dfb7"))
-    _box(self, "FarmhouseRoof", Vector3(0, 4.65, -13), Vector3(13.6, 0.65, 10.4), Color("#a84e35"))
     _box(self, "FrontDoor", Vector3(0, 1.3, -8.42), Vector3(1.65, 2.6, 0.18), Color("#765039"))
     for x in [-3.6, 3.6]:
         _box(self, "Window", Vector3(x, 2.7, -8.37), Vector3(1.8, 1.55, 0.16), Color("#92c9d9"))
@@ -32,6 +31,7 @@ func _ready() -> void:
     _box(self, "BarnRoof", Vector3(22, 6.7, -20), Vector3(11, 0.7, 10), Color("#54363c"))
     _box(self, "BarnDoor", Vector3(22, 2.1, -15.4), Vector3(3.6, 4.2, 0.2), Color("#e9d7bd"))
     _box(self, "Path", Vector3(0, 0.015, 12), Vector3(4, 0.05, 32), Color("#c5a070"))
+    # Pitched roof is built separately by farmhouse_details.gd.
     for row in range(5):
         for col in range(8):
             var x := -28.0 + col * 2.3
