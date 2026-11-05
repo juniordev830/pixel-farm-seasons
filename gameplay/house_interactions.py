@@ -44,13 +44,16 @@ class HomeState:
             self.outfit = "casual" if self.outfit == "farmer" else "farmer"
             return f"Roupa selecionada: {self.outfit}"
         if object_name == "stove":
+            # Cooking without a character would otherwise consume ingredients
+            # without feeding anyone or advancing the world clock.
+            if farmer is None:
+                return "É necessário um fazendeiro para cozinhar."
             if self.inventory.get("vegetables", 0) < 1 or self.inventory.get("eggs", 0) < 1:
                 return "Faltam ingredientes para cozinhar."
+            farmer.advance(20, "idle")
+            farmer.eat(40)
             self.inventory["vegetables"] -= 1
             self.inventory["eggs"] -= 1
-            if farmer:
-                farmer.advance(20, "idle")
-                farmer.eat(40)
             return "Refeição preparada e consumida."
         if object_name == "bed":
             if farmer is None:
