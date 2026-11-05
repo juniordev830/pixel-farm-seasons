@@ -6,6 +6,7 @@ extends Node
 @export var paused: bool = false
 
 var minute: float
+var day_index: int = 0
 @onready var sun: DirectionalLight3D = $"../Environment/Sun"
 @onready var world: WorldEnvironment = $"../Environment/WorldEnvironment"
 
@@ -15,12 +16,19 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     if not paused:
-        minute = fposmod(minute + delta * game_minutes_per_real_second, 1440.0)
+        var total_minutes: float = minute + delta * game_minutes_per_real_second
+        if total_minutes >= 1440.0:
+            day_index += int(floor(total_minutes / 1440.0))
+        minute = fposmod(total_minutes, 1440.0)
         _update_lighting()
 
 func set_clock(hour: int, minute_part: int) -> void:
     minute = float(posmod(hour, 24) * 60 + posmod(minute_part, 60))
     _update_lighting()
+
+func advance_to_next_morning() -> void:
+    day_index += 1
+    set_clock(6, 0)
 
 func get_clock() -> String:
     return "%02d:%02d" % [int(minute / 60.0), int(minute) % 60]
