@@ -26,6 +26,7 @@ class Farmer:
             hour = (self.minute // 60) % 24
             self.hunger = min(100.0, self.hunger + 0.045)
             self.fatigue = min(100.0, self.fatigue + (0.075 if activity == "farming" else 0.055))
+            # Preserve freedom to stay awake: hunger costs energy, not control.
             drain = drains[activity] + (0.035 if self.hunger >= 65 else 0)
             if self.minute - self.last_wake >= 17 * 60:
                 drain += 0.055
@@ -41,6 +42,26 @@ class Farmer:
             if hour == 0 and self.minute % 60 == 0:
                 events.append("Já passou da meia-noite! Amanhã vou sentir esse cansaço.")
         return events
+
+    def movement_multiplier(self) -> float:
+        """Movement slowdown from fatigue and hunger; never forces rest."""
+        if self.energy <= 5:
+            energy_factor = 0.48
+        elif self.energy <= 20:
+            energy_factor = 0.62
+        elif self.energy <= 40:
+            energy_factor = 0.82
+        else:
+            energy_factor = 1.0
+
+        if self.hunger >= 90:
+            hunger_factor = 0.76
+        elif self.hunger >= 65:
+            hunger_factor = 0.88
+        else:
+            hunger_factor = 1.0
+
+        return energy_factor * hunger_factor
 
     def eat(self, nutrition: float = 55.0) -> None:
         self.hunger = max(0.0, self.hunger - max(0.0, nutrition))
