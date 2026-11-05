@@ -42,6 +42,9 @@ func _physics_process(delta: float) -> void:
     direction.y = 0.0
     direction = direction.normalized()
     var speed: float = sprint_speed if Input.is_key_pressed(KEY_SHIFT) else walk_speed
+    var needs := get_node_or_null("../FarmerNeeds")
+    if needs != null and needs.has_method("movement_multiplier"):
+        speed *= needs.movement_multiplier()
     velocity.x = move_toward(velocity.x, direction.x * speed, acceleration * delta)
     velocity.z = move_toward(velocity.z, direction.z * speed, acceleration * delta)
     if direction.length_squared() > 0.001:
