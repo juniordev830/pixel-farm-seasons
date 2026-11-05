@@ -551,11 +551,11 @@ func _refresh_devices() -> void:
 
 func _time_string() -> String:
     var total := int(minutes) % 1440
-    return "%02d:%02d" % [total / 60, total % 60]
+    return "%02d:%02d" % [int(total / 60), total % 60]
 
 
 func _update_light() -> void:
-    var phase := sinf((minutes / DAY_MINUTES - 0.25) * TAU)
+    var phase := sin((minutes / DAY_MINUTES - 0.25) * TAU)
     var daylight := clampf(phase, 0.0, 1.0)
     var sun := get_parent().get_node_or_null("Sun") as DirectionalLight3D
     if sun != null:
