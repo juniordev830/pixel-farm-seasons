@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://player.tscn" id="1"]
 [ext_resource type="Script" path="res://farm_environment.gd" id="2"]
@@ -16,6 +16,8 @@
 
 [ext_resource type="Script" path="res://farmer_needs.gd" id="11"]
 
+[ext_resource type="Script" path="res://interactive_fridge.gd" id="12"]
+
 [node name="Main" type="Node3D"]
 
 [node name="Environment" type="Node3D" parent="."]
@@ -29,6 +31,9 @@ script = ExtResource("7")
 
 [node name="FrontDoor" type="StaticBody3D" parent="."]
 script = ExtResource("10")
+
+[node name="InteractiveFridge" type="StaticBody3D" parent="."]
+script = ExtResource("12")
 
 [node name="FarmhouseInterior" type="Node3D" parent="."]
 script = ExtResource("9")
