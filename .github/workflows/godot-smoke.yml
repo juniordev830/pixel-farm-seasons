@@ -25,4 +25,10 @@ jobs:
         run: godot --headless --path godot --quit-after 30
 
       - name: Validate daily needs and midnight rollover
-        run: godot --headless --path godot --script res://tests/needs_smoke.gd
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout --signal=INT --kill-after=5s 90s \
+            godot --headless --path godot --script res://tests/needs_smoke.gd \
+            | tee "${RUNNER_TEMP}/needs-smoke.log"
+          grep -q 'PASS: hunger slowdown' "${RUNNER_TEMP}/needs-smoke.log"
