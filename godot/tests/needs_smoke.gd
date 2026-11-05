@@ -58,10 +58,11 @@ func _run_tests() -> void:
     clock.set_clock(23, 59)
     clock.paused = false
     clock._process(2.0)
+    # Propagate the clock rollover BEFORE pausing daily needs.
+    needs._process(0.0)
     clock.paused = true
     assert(clock.day_index == day_before + 2)
     assert(clock.get_clock() == "00:01")
-    needs._process(0.0)
     assert(needs.day_index == clock.day_index)
     print("PASS: hunger slowdown, energy drain, eating, fatigue, sleep and midnight rollover")
     quit(0)
