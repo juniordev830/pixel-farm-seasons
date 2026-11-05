@@ -11,6 +11,7 @@ var hunger: float = 0.0
 var hunger_comment_cooldown: float = 0.0
 var message: String = ""
 var message_remaining: float = 0.0
+var last_meal_reminder: int = -1
 
 @onready var player: CharacterBody3D = $"../Player"
 @onready var clock: Node = $"../DayNightController"
@@ -31,10 +32,28 @@ func _process(delta: float) -> void:
     message_remaining = maxf(0.0, message_remaining - delta)
     if message_remaining <= 0.0:
         message = ""
+    _check_meal_schedule()
     if hunger >= 65.0 and hunger_comment_cooldown <= 0.0:
         message = "Eita, preciso comer alguma coisa!"
         message_remaining = 5.0
         hunger_comment_cooldown = 120.0
+
+func _check_meal_schedule() -> void:
+    var hour: int = int(clock.minute / 60.0)
+    var meal: String = ""
+    if hour >= 7 and hour < 9:
+        meal = "café da manhã"
+    elif hour >= 11 and hour < 14:
+        meal = "almoço"
+    elif hour >= 18 and hour < 21:
+        meal = "jantar"
+    if meal == "" or hunger < 20.0:
+        return
+    var meal_slot: int = 0 if hour < 9 else (1 if hour < 14 else 2)
+    if last_meal_reminder != meal_slot:
+        last_meal_reminder = meal_slot
+        message = "Eita, já está na hora do " + meal + "!"
+        message_remaining = 5.0
 
 func eat() -> void:
     hunger = maxf(0.0, hunger - 55.0)
