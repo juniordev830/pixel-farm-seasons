@@ -1,7 +1,8 @@
 extends RefCounted
-## Relogio por acontecimentos: nao usa conversao fixa segundos-reais -> minutos.
-## Toda acao bem-sucedida consome uma duracao plausivel dentro do jogo.
-## Distancias percorridas tambem consomem tempo (caminhada ou direcao).
+## Relogio hibrido: o tempo passa sozinho e atividades acrescentam minutos.
+## Distancias percorridas tambem contam como tempo de viagem.
+## Escala de fundo: 1 segundo real = 0.5 minuto no jogo (ajustavel).
+## Assim 1 hora no jogo dura 2 minutos reais sem tarefas.
 ## As duracoes sao valores iniciais de balanceamento, editaveis neste arquivo.
 
 const ACTIVITY_MINUTES := {
@@ -23,6 +24,7 @@ const ACTIVITY_MINUTES := {
     "descansar_rede": 45.0
 }
 
+const REALTIME_MINUTES_PER_SECOND := 0.5
 const WALK_METERS_PER_GAME_MINUTE := 80.0
 const DRIVE_METERS_PER_GAME_MINUTE := 500.0
 
