@@ -36,9 +36,9 @@ func _run() -> void:
                 roof_count += 1
             if node is OmniLight3D:
                 lamps_count += 1
-            if node.name == "Copa do pomar":
+            if String(node.name).begins_with("Copa do pomar"):
                 tree_count += 1
-            if node.name == "Flor de vaso":
+            if String(node.name).begins_with("Flor de vaso"):
                 flower_count += 1
         _check(roof_count >= 3, "Telhas instanciadas no telhado principal e varanda")
         _check(lamps_count >= 5, "Iluminacao quente em lampioes")
