@@ -1,0 +1,46 @@
+name: Godot 4.3 - importar e testar cena 3D
+
+on:
+  push:
+    branches:
+      - feature/rural-life-simulator-v1
+    paths:
+      - "godot/**"
+      - ".github/workflows/godot-life-sim.yml"
+  pull_request:
+    paths:
+      - "godot/**"
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Smoke test headless do projeto Godot
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Godot 4.3 oficial para Linux
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" \
+            -o /tmp/godot.zip
+          unzip -oq /tmp/godot.zip -d /tmp
+          sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+
+      - name: Importar cena e compilar scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --editor --quit 2>&1 | tee /tmp/godot_import.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:' /tmp/godot_import.log; then exit 1; fi
+
+      - name: Iniciar mundo por 120 frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --quit-after 120 2>&1 | tee /tmp/godot_run.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:' /tmp/godot_run.log; then exit 1; fi
