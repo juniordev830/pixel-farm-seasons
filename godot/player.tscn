@@ -29,4 +29,4 @@ current = true
 fov = 68.0
 
 [node name="InteractionRay" type="RayCast3D" parent="CameraPivot/SpringArm3D/Camera3D"]
-target_position = Vector3(0, 0, -5)
+target_position = Vector3(0, 0, -8)
