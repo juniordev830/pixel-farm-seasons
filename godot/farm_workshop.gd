@@ -76,6 +76,15 @@ func _ready() -> void:
         block("DrawerHandle", Vector3(2.45, y, -2.07), Vector3(0.65, 0.06, 0.06), METAL)
     block("StorageShelf", Vector3(3.35, 1.65, 0.8), Vector3(0.65, 0.13, 2.4), WOOD)
     block("OilCan", Vector3(3.3, 1.95, 0.2), Vector3(0.4, 0.5, 0.4), Color("#d2a73d"))
+    # Family parking plan: exactly one VW Beetle (Fusca) bay and one bicycle spot.
+    # Parking markings are placeholders; actual drivable vehicle assets come later.
+    var stripe := Color("#e8dfc5")
+    block("FuscaBayLeftMark", Vector3(-0.1, 0.215, 1.05), Vector3(0.07, 0.02, 3.8), stripe)
+    block("FuscaBayRightMark", Vector3(2.75, 0.215, 1.05), Vector3(0.07, 0.02, 3.8), stripe)
+    block("FuscaBayBackMark", Vector3(1.32, 0.215, -0.85), Vector3(2.92, 0.02, 0.07), stripe)
+    # Compact bicycle stand against the left side, clear of the car bay and gate.
+    block("FamilyBikeRackBase", Vector3(-3.42, 0.27, 1.25), Vector3(0.75, 0.14, 1.25), METAL)
+    block("FamilyBikeRackPost", Vector3(-3.42, 0.75, 1.25), Vector3(0.10, 0.90, 0.10), METAL)
     # Repair station receives interaction ray and handles its own distance check.
     var station := StaticBody3D.new()
     station.name = "RepairWorkbench"
