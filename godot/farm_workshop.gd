@@ -1,6 +1,6 @@
 extends Node3D
 ## Workshop fitted inside the farm garage. Prototype meshes are replaceable.
-## Origin is at (13, 0, 12), away from the house entrance and crop field.
+## Positioned beside the east farmhouse wall (configured in main.tscn).
 const WOOD := Color("#91623f")
 const DARK_WOOD := Color("#533a2c")
 const METAL := Color("#66727a")
@@ -31,7 +31,7 @@ func block(label: String, pos: Vector3, size: Vector3, tint: Color, solid: bool 
 
 func _ready() -> void:
     # Garage and repair shop are the same building. Open front faces +Z.
-    # The right-hand side remains open for a future vehicle parking bay.
+    # The right-hand side is reserved for vehicle parking.
     block("ConcreteFloor", Vector3(0, 0.10, 0), Vector3(8.5, 0.20, 7.5), Color("#9a968d"), true)
     for x in [-4.0, 4.0]:
         for z in [-3.35, 3.35]:
@@ -41,6 +41,28 @@ func _ready() -> void:
     block("RightWall", Vector3(4.15, 1.4, 0), Vector3(0.22, 2.8, 7.0), WOOD, true)
     block("MetalRoof", Vector3(0, 3.8, 0), Vector3(9.0, 0.28, 8.0), ROOF, true)
     block("RoofFrontTrim", Vector3(0, 3.55, 3.8), Vector3(9.0, 0.35, 0.3), DARK_WOOD)
+    block("GarageFrontLeft", Vector3(-3.4, 1.7, 3.5), Vector3(1.5, 3.4, 0.22), WOOD, true)
+    block("GarageFrontRight", Vector3(3.95, 1.7, 3.5), Vector3(0.4, 3.4, 0.22), WOOD, true)
+    var door := StaticBody3D.new()
+    door.name = "GarageDoor"
+    door.set_script(load("res://garage_door.gd"))
+    door.position = Vector3(0.35, 1.65, 3.5)
+    var door_panel := MeshInstance3D.new()
+    door_panel.name = "Panel"
+    var door_mesh := BoxMesh.new()
+    door_mesh.size = Vector3(5.9, 3.3, 0.18)
+    door_panel.mesh = door_mesh
+    var door_material := StandardMaterial3D.new()
+    door_material.albedo_color = Color("#b5a08a")
+    door_panel.material_override = door_material
+    door.add_child(door_panel)
+    var door_collision := CollisionShape3D.new()
+    door_collision.name = "CollisionShape3D"
+    var door_shape := BoxShape3D.new()
+    door_shape.size = Vector3(5.9, 3.3, 0.18)
+    door_collision.shape = door_shape
+    door.add_child(door_collision)
+    add_child(door)
     # Workbench near the rear wall, leaving the entrance unobstructed.
     block("BenchTop", Vector3(-1.9, 1.02, -2.5), Vector3(3.1, 0.18, 0.85), DARK_WOOD)
     for x in [-3.15, -0.65]:
