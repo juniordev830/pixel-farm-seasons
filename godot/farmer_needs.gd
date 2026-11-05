@@ -12,6 +12,8 @@ var hunger_comment_cooldown: float = 0.0
 var message: String = ""
 var message_remaining: float = 0.0
 var last_meal_reminder: int = -1
+var day_index: int = 0
+var previous_minute: float = -1.0
 
 @onready var player: CharacterBody3D = $"../Player"
 @onready var clock: Node = $"../DayNightController"
@@ -19,6 +21,9 @@ var last_meal_reminder: int = -1
 func _process(delta: float) -> void:
     if clock.paused:
         return
+    if previous_minute >= 0.0 and clock.minute < previous_minute:
+        day_index += 1
+    previous_minute = clock.minute
     var game_minutes: float = delta * clock.game_minutes_per_real_second
     var horizontal_speed: float = Vector2(player.velocity.x, player.velocity.z).length()
     hunger = minf(max_hunger, hunger + hunger_per_game_minute * game_minutes)
@@ -49,7 +54,7 @@ func _check_meal_schedule() -> void:
         meal = "jantar"
     if meal == "" or hunger < 20.0:
         return
-    var meal_slot: int = 0 if hour < 9 else (1 if hour < 14 else 2)
+    var meal_slot: int = day_index * 3 + (0 if hour < 9 else (1 if hour < 14 else 2))
     if last_meal_reminder != meal_slot:
         last_meal_reminder = meal_slot
         message = "Eita, já está na hora do " + meal + "!"
@@ -62,7 +67,11 @@ func eat() -> void:
     message_remaining = 4.0
 
 func sleep_until_morning() -> void:
+    var old_minute: float = clock.minute
+    if old_minute >= 360.0:
+        day_index += 1
     clock.set_clock(6, 0)
+    previous_minute = clock.minute
     energy = max_energy
     hunger = minf(max_hunger, hunger + 20.0)
     message = "Bom dia! Hora de cuidar da fazenda."
