@@ -30,7 +30,7 @@ O jogador vive como fazendeiro em um sítio brasileiro explorável. Sua vida nã
 
 ## Regras do simulador
 
-1. **Tempo e estações:** o relógio avança por acontecimentos (refeições, plantio, ordenha, atividades, viagens e sono), não por um fator fixo de minutos reais. O horário resultante define luz, fome, sono e o dia do jogo; a virada de dia faz crescer as culturas regadas e renova a rotina dos animais. Estações e clima também evoluem por dias. Tempos das tarefas são referências de equilíbrio, ajustáveis conforme o desenvolvimento.
+1. **Tempo e estações:** relógio híbrido: o tempo passa mesmo que o fazendeiro fique parado, e avança mais enquanto ele realiza tarefas, caminha ou dirige. As refeições e cuidados com os animais são organizados por horário; às 11h o personagem lembra que precisa almoçar. Dia/noite, sono, energia e cultivos acompanham a hora. A velocidade contínua e a duração das tarefas são ajustáveis.
 2. **Alimentação:** alimentos saem do estoque da geladeira/despensa; refeições têm horário recomendado e podem ser preparadas fora dele, com bônus de rotina ao seguir os horários.
 3. **Animais:** comer, beber, descansar, adoecer e produzir; cuidados afetam produção, sem sofrimento gráfico; vaca dá leite e galinhas dão ovos quando cuidadas.
 4. **Casa:** portas, escadas, andar superior e objetos interativos são sistemas reais; TV e rádio inicialmente ligam/desligam, evoluindo para conteúdo original/licenciado; notebook inicialmente permite menus internos do jogo e só no futuro serviços externos mediante APIs e segurança.
