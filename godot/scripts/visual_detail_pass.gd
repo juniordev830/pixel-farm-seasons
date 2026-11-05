@@ -109,7 +109,9 @@ func _roof_tiles() -> void:
             i += 1
     var node := MultiMeshInstance3D.new()
     node.name = "Telhas de ceramica da varanda"
-    tile.material = _mat(ROOF_TILE)
+    var porch_mat := _mat(ROOF_TILE)
+    porch_mat.vertex_color_use_as_albedo = true
+    tile.material = porch_mat
     node.multimesh = multi
     add_child(node)
 
@@ -117,7 +119,9 @@ func _roof_tiles() -> void:
 func _roof_side(n: String, center: Vector3, angle: float) -> void:
     var mesh := BoxMesh.new()
     mesh.size = Vector3(0.43, 0.085, 0.52)
-    mesh.material = _mat(ROOF_TILE)
+    var roof_mat := _mat(ROOF_TILE)
+    roof_mat.vertex_color_use_as_albedo = true
+    mesh.material = roof_mat
     var multi := MultiMesh.new()
     multi.transform_format = MultiMesh.TRANSFORM_3D
     multi.use_colors = true
@@ -147,7 +151,7 @@ func _exterior_architecture() -> void:
             _box("Veneziana direita", Vector3(xx + 1.13, yy, -10.21),
                 Vector3(0.39, 1.69, 0.09), Color("#386889"))
             for j in range(8):
-                var y := yy - 0.69 + float(j) * 0.19
+                var y: float = float(yy) - 0.69 + float(j) * 0.19
                 _box("Ripas das venezianas", Vector3(xx - 1.13, y, -10.16),
                     Vector3(0.33, 0.04, 0.06), Color("#224e68"))
                 _box("Ripas das venezianas", Vector3(xx + 1.13, y, -10.16),
