@@ -1,17 +1,20 @@
 extends CharacterBody3D
-## Third-person camera with collision-aware spring arm and camera-relative movement.
+## GTA-style third-person follow camera: stays behind farmer in interiors and outdoors.
 @export var walk_speed: float = 4.5
 @export var sprint_speed: float = 7.0
 @export var jump_velocity: float = 4.5
 @export var mouse_sensitivity: float = 0.0025
 @export var acceleration: float = 18.0
+@export var turn_speed: float = 9.0
+@export var camera_follow_speed: float = 4.0
 @onready var camera_pivot: Node3D = $CameraPivot
-@onready var camera: Camera3D = $CameraPivot/SpringArm3D/Camera3D
+@onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
 @onready var interaction_ray: RayCast3D = $CameraPivot/SpringArm3D/Camera3D/InteractionRay
+@onready var body_visual: MeshInstance3D = $Body
 
 func _ready() -> void:
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-    $CameraPivot/SpringArm3D.add_excluded_object(get_rid())
+    spring_arm.add_excluded_object(get_rid())
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventMouseButton and event.pressed and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
@@ -41,4 +44,7 @@ func _physics_process(delta: float) -> void:
     var speed: float = sprint_speed if Input.is_key_pressed(KEY_SHIFT) else walk_speed
     velocity.x = move_toward(velocity.x, direction.x * speed, acceleration * delta)
     velocity.z = move_toward(velocity.z, direction.z * speed, acceleration * delta)
+    if direction.length_squared() > 0.001:
+        var target_yaw := atan2(-direction.x, -direction.z) - rotation.y
+        body_visual.rotation.y = lerp_angle(body_visual.rotation.y, target_yaw, minf(delta * turn_speed, 1.0))
     move_and_slide()
