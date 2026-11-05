@@ -34,7 +34,7 @@ func _mat(tint: Color, glow: bool = false) -> StandardMaterial3D:
 
 func _box(n: String, position_3d: Vector3, size: Vector3, tint: Color) -> MeshInstance3D:
     var node := MeshInstance3D.new()
-    node.name = n
+    node.name = "%s_%04d" % [n, get_child_count()]
     var mesh := BoxMesh.new()
     mesh.size = size
     node.mesh = mesh
@@ -46,7 +46,7 @@ func _box(n: String, position_3d: Vector3, size: Vector3, tint: Color) -> MeshIn
 
 func _ball(n: String, position_3d: Vector3, size: Vector3, tint: Color) -> MeshInstance3D:
     var node := MeshInstance3D.new()
-    node.name = n
+    node.name = "%s_%04d" % [n, get_child_count()]
     var mesh := SphereMesh.new()
     mesh.radius = 0.5
     mesh.height = 1.0
@@ -62,7 +62,7 @@ func _ball(n: String, position_3d: Vector3, size: Vector3, tint: Color) -> MeshI
 
 func _cylinder(n: String, position_3d: Vector3, radius: float, height: float, tint: Color) -> MeshInstance3D:
     var node := MeshInstance3D.new()
-    node.name = n
+    node.name = "%s_%04d" % [n, get_child_count()]
     var mesh := CylinderMesh.new()
     mesh.top_radius = radius
     mesh.bottom_radius = radius
@@ -137,7 +137,7 @@ func _roof_side(n: String, center: Vector3, angle: float) -> void:
             multi.set_instance_color(index, ROOF_TILE if (col + row) % 7 else ROOF_ALT)
             index += 1
     var node := MultiMeshInstance3D.new()
-    node.name = n
+    node.name = "%s_%04d" % [n, get_child_count()]
     node.multimesh = multi
     add_child(node)
 
