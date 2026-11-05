@@ -6,12 +6,14 @@ extends Node3D
 const SAVE_PATH := "user://pixel_farm_life_save.json"
 const DAY_MINUTES := 1440.0
 const TimeRules = preload("res://scripts/rural_time.gd")
+const Schedule = preload("res://scripts/rural_schedule.gd")
 
 var farmer: CharacterBody3D
 var car: CharacterBody3D
 var hud_stats: Label
 var hud_hint: Label
 var hud_notice: Label
+var hud_thought: Label
 var farm_system: Node3D
 var tv_screen: MeshInstance3D
 var notebook_screen: MeshInstance3D
@@ -44,6 +46,8 @@ var initialized := false
 var save_tick := 0.0
 var lighting_tick := 0.0
 var last_travel_position := Vector3.ZERO
+var last_reminder_id := ""
+var reminder_day := 0
 
 
 func _ready() -> void:
@@ -69,6 +73,7 @@ func _setup() -> void:
     last_travel_position = farmer.global_position
     _refresh_devices()
     _update_light()
+    _refresh_reminder()
     _announce("Bem-vindo ao sitio! Entre na casa, cuide dos animais ou dirija ate o mercado.")
     initialized = true
 
@@ -310,6 +315,16 @@ func _build_hud() -> void:
     hud_notice.add_theme_constant_override("shadow_offset_y", 2)
     layer.add_child(hud_notice)
 
+    hud_thought = Label.new()
+    hud_thought.name = "FarmerThought"
+    hud_thought.position = Vector2(23, 580)
+    hud_thought.add_theme_font_size_override("font_size", 21)
+    hud_thought.add_theme_color_override("font_color", Color("#fff0b0"))
+    hud_thought.add_theme_color_override("font_shadow_color", Color("#12241f"))
+    hud_thought.add_theme_constant_override("shadow_offset_x", 2)
+    hud_thought.add_theme_constant_override("shadow_offset_y", 2)
+    layer.add_child(hud_thought)
+
 
 func _add_interaction(title: String, at: Vector3, kind: String, distance: float = 2.7) -> void:
     interactions.append({"title": title, "at": at, "kind": kind, "distance": distance})
@@ -335,8 +350,9 @@ func _register_activities() -> void:
 func _process(delta: float) -> void:
     if not initialized:
         return
-    # A hora nao anda so porque o usuario deixou o jogo aberto.
-    # Apenas deslocamento e atividades do fazendeiro avancam o relogio.
+    # Sistema hibrido: o relogio avanca inclusive se o jogador estiver parado.
+    # Atividades e deslocamentos tambem acrescentam tempo ao passar dos minutos.
+    advance_minutes(delta * TimeRules.REALTIME_MINUTES_PER_SECOND)
     _measure_travel()
     save_tick += delta
     if save_tick > 30.0:
@@ -359,7 +375,27 @@ func advance_minutes(amount: float) -> void:
         minutes -= DAY_MINUTES
         day += 1
         _daily_reset()
+    _refresh_reminder()
     _update_light()
+
+
+func _refresh_reminder() -> void:
+    if hud_thought == null:
+        return
+    if reminder_day != day:
+        reminder_day = day
+        last_reminder_id = ""
+    var current: Dictionary = Schedule.current_prompt(minutes, meals, cow_fed, animals_watered, energy)
+    if current.is_empty():
+        hud_thought.text = ""
+        last_reminder_id = ""
+        return
+    var key := String(current["id"])
+    var phrase := String(current["text"])
+    hud_thought.text = "Pensamento: " + phrase
+    if key != last_reminder_id:
+        last_reminder_id = key
+        _announce(phrase)
 
 
 func _measure_travel() -> void:
@@ -566,6 +602,7 @@ func _sleep() -> void:
     minutes = 390.0
     _daily_reset()
     _reset_travel_position()
+    _refresh_reminder()
     hunger = maxf(35.0, hunger - 10.0)
     energy = 100.0
     _announce("Bom dia! O fazendeiro dormiu e acordou as 06:30.")
@@ -581,6 +618,7 @@ func _daily_reset() -> void:
     eggs_collected = false
     meals = {"cafe": false, "almoco": false, "jantar": false}
     ready_meal = false
+    last_reminder_id = ""
 
 
 func _enter_car() -> void:
