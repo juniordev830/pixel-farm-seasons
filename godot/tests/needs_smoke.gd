@@ -33,5 +33,13 @@ func _initialize() -> void:
     assert(needs.day_index == day_before + 1)
     assert(needs.energy == 100.0)
     assert(clock.get_clock() == "06:00")
-    print("PASS: needs, eating, fatigue and sleep smoke test")
+    clock.set_clock(23, 59)
+    clock.paused = false
+    clock._process(2.0)
+    clock.paused = true
+    assert(clock.day_index == day_before + 2)
+    assert(clock.get_clock() == "00:01")
+    needs._process(0.0)
+    assert(needs.day_index == clock.day_index)
+    print("PASS: needs, eating, fatigue, sleep and midnight rollover")
     quit(0)
