@@ -1,29 +1,42 @@
-# Pixel Farm Seasons — protótipo 3D em Godot 4
+# Pixel Farm Seasons — primeira fazenda 3D (Godot 4.3+)
 
-Este diretório inicia a migração do jogo web 2D para um projeto 3D, **sem substituir** a prévia HTML existente.
+A pasta `godot/` é um projeto Godot independente, separado da prévia web 2D.
 
-## Primeira etapa: movimentação livre
-- Andar em quatro direções, correr, pular e agachar.
-- Girar a câmera com mouse (visão vertical e horizontal).
-- Alternar primeira/terceira pessoa.
-- Colisões com o cenário via `CharacterBody3D`.
+## O que foi criado
 
-## Como montar a cena no editor Godot 4
-1. Crie um projeto Godot 4 e uma cena `Farmer.tscn` com nó raiz `CharacterBody3D`.
-2. Adicione `CollisionShape3D`, `Visuals` (Node3D) e `CameraPivot` (Node3D).
-3. Em `CameraPivot`, adicione `SpringArm3D`; dentro dele, `Camera3D` marcada como Current.
-4. Anexe `scripts/farmer_controller.gd` ao nó raiz.
-5. No Input Map, configure `move_forward` (W), `move_back` (S), `move_left` (A), `move_right` (D), `jump` (Espaço), `sprint` (Shift), `crouch` (Ctrl) e `toggle_camera` (V).
-6. Crie uma cena de teste com chão `StaticBody3D` e colisão. Posicione o fazendeiro acima do chão.
+- Terreno 3D explorável com caminho, grama, vegetação e nuvens.
+- Casa de dois andares, telhado, janelas, varanda, banco e rede ilustrativa.
+- Celeiro vermelho, silo, horta com 30 canteiros, cercas e plantações decorativas.
+- Curral com vaca e galinhas estáticas, lago, árvores e carro azul provisório.
+- Personagem com câmera em terceira/primeira pessoa, pulo e corrida.
+- Luz do sol, sombras e colisão no chão e nos edifícios.
 
-**Estado:** código-base inicial; ainda não é uma cena completa nem foi validado no editor Godot.
+Todos os modelos são formas geométricas procedurais do Godot (arte low-poly provisória).
 
-## Próximas etapas
-1. Cena jogável com casa de dois andares e varanda.
-2. Interações: portas, escadas, móveis e rede para recuperar energia.
-3. Sistema de sono, relógio e animações.
-4. Veículos: Fusca antigo, bicicleta Monark vermelha e trator.
-5. Animais, tarefas diárias, XP e 30 níveis.
-6. Lobos, combate e defesa com cercas e cães.
+## Como executar
 
-Manter a branch separada e abrir revisão antes de integrar à `main`.
+1. Baixe ou clone a branch `feature/farm-3d-environment-v1`.
+2. Instale Godot **4.3 ou superior**.
+3. Abra Godot > **Importar** > selecione `godot/project.godot`.
+4. Execute o projeto (F5). A cena principal é `godot/scenes/farm_world.tscn`.
+5. O script `godot/scripts/farm_world.gd` monta os modelos ao iniciar.
+
+## Controles
+
+| Tecla | Ação |
+| --- | --- |
+| WASD | Caminhar |
+| Mouse | Girar câmera |
+| Shift | Correr |
+| Ctrl | Deslocar lentamente |
+| Espaço | Pular |
+| V | Primeira / terceira pessoa |
+| Esc | Soltar o mouse; clique na janela para recapturar |
+
+## O que ainda não está pronto
+
+A casa é sólida e não tem interior. Os animais, plantas, carro e rede ainda são modelos estáticos. Não existem no cenário 3D sistemas de plantio, colheita, direção, clima ou missões. Eles permanecem planejados; o protótipo web 2D continua disponível na raiz.
+
+**Validação:** a cena foi construída em código, mas ainda não foi aberta/testada em uma instalação real do Godot nesta sessão. A próxima etapa é executar no editor e corrigir qualquer problema de renderização ou física.
+
+Consulte `docs/FARM_3D_ART_DIRECTION.md` para o planejamento visual. Nenhum arquivo de jogo da branch `main` foi substituído.
