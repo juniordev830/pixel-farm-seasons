@@ -14,6 +14,7 @@ var message_remaining: float = 0.0
 var last_meal_reminder: int = -1
 var day_index: int = 0
 var previous_minute: float = -1.0
+var last_clock_day: int = 0
 var fatigue_warning_sent: bool = false
 @export var overnight_energy_loss_per_game_minute: float = 0.06
 
@@ -23,8 +24,9 @@ var fatigue_warning_sent: bool = false
 func _process(delta: float) -> void:
     if clock.paused:
         return
-    if previous_minute >= 0.0 and clock.minute < previous_minute:
-        day_index += 1
+    if clock.day_index > last_clock_day:
+        day_index += clock.day_index - last_clock_day
+    last_clock_day = clock.day_index
     previous_minute = clock.minute
     var game_minutes: float = delta * clock.game_minutes_per_real_second
     var horizontal_speed: float = Vector2(player.velocity.x, player.velocity.z).length()
@@ -90,8 +92,11 @@ func eat() -> void:
 func sleep_until_morning() -> void:
     var old_minute: float = clock.minute
     if old_minute >= 360.0:
-        day_index += 1
-    clock.set_clock(6, 0)
+        clock.advance_to_next_morning()
+    else:
+        clock.set_clock(6, 0)
+    day_index = clock.day_index
+    last_clock_day = clock.day_index
     previous_minute = clock.minute
     energy = max_energy
     hunger = minf(max_hunger, hunger + 20.0)
