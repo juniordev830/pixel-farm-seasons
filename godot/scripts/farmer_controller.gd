@@ -7,6 +7,7 @@ extends CharacterBody3D
 @export var crouch_speed: float = 2.0
 @export var jump_velocity: float = 4.5
 @export var mouse_sensitivity: float = 0.0025
+@export var camera_follow_smoothing: float = 7.5
 @export var gamepad_look_speed: float = 2.5
 @export var min_pitch: float = -1.2
 @export var max_pitch: float = 1.0
@@ -15,9 +16,11 @@ extends CharacterBody3D
 @onready var visuals: Node3D = $Visuals
 var third_person: bool = true
 var _original_arm_length: float
+var _desired_arm_length: float
 
 func _ready() -> void:
     _original_arm_length = camera_arm.spring_length
+    _desired_arm_length = _original_arm_length
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -30,10 +33,13 @@ func _unhandled_input(event: InputEvent) -> void:
         camera_pivot.rotation.x = clamp(camera_pivot.rotation.x - event.relative.y * mouse_sensitivity, min_pitch, max_pitch)
     if event.is_action_pressed("toggle_camera"):
         third_person = not third_person
-        camera_arm.spring_length = _original_arm_length if third_person else 0.05
+        _desired_arm_length = _original_arm_length if third_person else 0.05
         visuals.visible = third_person
 
 func _physics_process(delta: float) -> void:
+    # Transicao suave ao alternar entre primeira e terceira pessoa.
+    camera_arm.spring_length = lerpf(camera_arm.spring_length, _desired_arm_length,
+        1.0 - exp(-camera_follow_smoothing * delta))
     if not is_on_floor():
         velocity += get_gravity() * delta
     if Input.is_action_just_pressed("jump") and is_on_floor():
