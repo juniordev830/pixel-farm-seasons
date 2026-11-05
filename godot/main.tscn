@@ -47,7 +47,7 @@ script = ExtResource("9")
 
 [node name="FarmWorkshop" type="Node3D" parent="."]
 script = ExtResource("14")
-position = Vector3(13, 0, 12)
+position = Vector3(10.25, 0, -13)
 
 [node name="GroundCollision" type="StaticBody3D" parent="."]
 script = ExtResource("4")
