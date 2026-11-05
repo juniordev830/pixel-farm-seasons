@@ -1,6 +1,7 @@
 extends Node3D
 ## Workshop fitted inside the farm garage. Prototype meshes are replaceable.
-## Positioned beside the east farmhouse wall (configured in main.tscn).
+## Attached to the east farmhouse wall; access is EXTERNAL ONLY via garage door.
+## No connecting doorway between farmhouse interior and garage.
 const WOOD := Color("#91623f")
 const DARK_WOOD := Color("#533a2c")
 const METAL := Color("#66727a")
