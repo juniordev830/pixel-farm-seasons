@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://player.tscn" id="1"]
+[ext_resource type="Script" path="res://farm_environment.gd" id="2"]
+[ext_resource type="Script" path="res://farm_props.gd" id="3"]
+
+[node name="Main" type="Node3D"]
+
+[node name="Environment" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="Decorations" type="Node3D" parent="."]
+script = ExtResource("3")
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector3(0, 1.3, 12)
