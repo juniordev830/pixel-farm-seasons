@@ -5,7 +5,7 @@ extends Node3D
 
 const SAVE_PATH := "user://pixel_farm_life_save.json"
 const DAY_MINUTES := 1440.0
-const MINUTES_PER_SECOND := 1.0
+const TimeRules = preload("res://scripts/rural_time.gd")
 
 var farmer: CharacterBody3D
 var car: CharacterBody3D
@@ -43,6 +43,7 @@ var driving := false
 var initialized := false
 var save_tick := 0.0
 var lighting_tick := 0.0
+var last_travel_position := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -65,6 +66,7 @@ func _setup() -> void:
     if farm_system != null:
         farm_system.call("ensure_initialized")
     _load_progress()
+    last_travel_position = farmer.global_position
     _refresh_devices()
     _update_light()
     _announce("Bem-vindo ao sitio! Entre na casa, cuide dos animais ou dirija ate o mercado.")
@@ -333,23 +335,45 @@ func _register_activities() -> void:
 func _process(delta: float) -> void:
     if not initialized:
         return
-    minutes += delta * MINUTES_PER_SECOND
-    if minutes >= DAY_MINUTES:
-        minutes -= DAY_MINUTES
-        day += 1
-        _daily_reset()
-        _announce("Amanheceu um novo dia na fazenda.")
-    hunger = maxf(0.0, hunger - delta * 0.035)
-    energy = maxf(0.0, energy - delta * (0.028 if minutes < 1260.0 else 0.045))
-    lighting_tick += delta
+    # A hora nao anda so porque o usuario deixou o jogo aberto.
+    # Apenas deslocamento e atividades do fazendeiro avancam o relogio.
+    _measure_travel()
     save_tick += delta
-    if lighting_tick > 0.8:
-        _update_light()
-        lighting_tick = 0.0
     if save_tick > 30.0:
         _save_progress()
         save_tick = 0.0
     _update_hud()
+
+
+func advance_activity(activity: String) -> void:
+    advance_minutes(TimeRules.activity_minutes(activity))
+
+
+func advance_minutes(amount: float) -> void:
+    if not is_finite(amount) or amount <= 0.0:
+        return
+    minutes += amount
+    hunger = maxf(0.0, hunger - amount * 0.06)
+    energy = maxf(0.0, energy - amount * 0.04)
+    while minutes >= DAY_MINUTES:
+        minutes -= DAY_MINUTES
+        day += 1
+        _daily_reset()
+    _update_light()
+
+
+func _measure_travel() -> void:
+    var current := car.global_position if driving and car != null else farmer.global_position
+    var distance := current.distance_to(last_travel_position)
+    last_travel_position = current
+    # Pulos de posicao (teleportes, carregamento) nao consomem tempo.
+    if distance <= 0.0 or distance > 25.0:
+        return
+    advance_minutes(TimeRules.travel_minutes(distance, driving))
+
+
+func _reset_travel_position() -> void:
+    last_travel_position = car.global_position if driving and car != null else farmer.global_position
 
 
 func _physics_process(delta: float) -> void:
@@ -400,29 +424,41 @@ func _interact() -> void:
     match String(target["kind"]):
         "farm":
             if farm_system != null:
-                _announce(String(farm_system.call("interact", int(target["plot_index"]))))
+                var message: String = String(farm_system.call("interact", int(target["plot_index"])))
+                _announce(message)
+                if message.contains("plantado!"):
+                    advance_activity("plantar")
+                elif message.begins_with("Canteiro regado!"):
+                    advance_activity("regar")
+                elif message.begins_with("Colheu "):
+                    advance_activity("colher")
         "fridge":
             if food < 1:
                 _announce("Geladeira vazia! Compre mantimentos na venda da vila.")
             else:
                 ready_meal = true
+                advance_activity("preparar_refeicao")
                 _announce("Geladeira aberta: ingredientes separados. Va ate a mesa para comer.")
         "eat":
             _have_meal()
         "tv":
             tv_on = not tv_on
+            if tv_on:
+                advance_activity("assistir_tv")
             _announce("TV ligada: canal rural do jogo (tela demonstrativa)." if tv_on else "TV desligada.")
         "radio":
             radio_on = not radio_on
             _announce("Radio ligado: interface demonstrativa, audio ainda nao implementado." if radio_on else "Radio desligado.")
         "notebook":
             notebook_on = not notebook_on
+            if notebook_on:
+                advance_activity("usar_notebook")
             _announce("Notebook: rede ficticia da fazenda. Dia %d, hora %s, estoque %d alimentos." % [day, _time_string(), food] if notebook_on else "Notebook desligado.")
         "sleep":
             _sleep()
         "hammock":
+            advance_activity("descansar_rede")
             energy = minf(100.0, energy + 18.0)
-            minutes += 45.0
             _announce("Descansou na rede por 45 minutos. Energia recuperada.")
         "feed":
             if cow_fed:
@@ -432,12 +468,14 @@ func _interact() -> void:
             else:
                 feed -= 1
                 cow_fed = true
+                advance_activity("alimentar_animais")
                 _announce("Voce alimentou a vaca e as galinhas. +bem-estar.")
         "water":
             if animals_watered:
                 _announce("Bebedouros ja foram abastecidos hoje.")
             else:
                 animals_watered = true
+                advance_activity("colocar_agua")
                 _announce("Agua limpa distribuida no curral e galinheiro.")
         "milk":
             if cow_milked:
@@ -448,6 +486,7 @@ func _interact() -> void:
                 milk += 2
                 cow_milked = true
                 coins += 12
+                advance_activity("ordenhar")
                 _announce("Ordenha concluida: +2 leite, +R$ 12 pela venda automatica.")
         "eggs":
             if eggs_collected:
@@ -458,6 +497,7 @@ func _interact() -> void:
                 eggs += 3
                 eggs_collected = true
                 coins += 9
+                advance_activity("recolher_ovos")
                 _announce("Coletou 3 ovos e recebeu R$ 9 pela venda automatica.")
         "repair":
             if coins < 20:
@@ -467,6 +507,7 @@ func _interact() -> void:
             else:
                 coins -= 20
                 car_condition = 100.0
+                advance_activity("reparar_carro")
                 _announce("Carro revisado na oficina. Condicao 100%.")
         "car":
             _enter_car()
@@ -477,6 +518,7 @@ func _interact() -> void:
                 var sold := harvested
                 coins += sold * 5
                 harvested = 0
+                advance_activity("mercado")
                 _announce("Vendeu %d produtos da horta por R$ %d! E novamente para comprar." % [sold, sold * 5])
             elif coins < 30:
                 _announce("O kit com comida, racao e sementes custa R$ 30.")
@@ -485,6 +527,7 @@ func _interact() -> void:
                 food += 4
                 feed += 3
                 seeds += 8
+                advance_activity("mercado")
                 _announce("Comprou +4 mantimentos, +3 racoes e +8 sementes por R$ 30.")
     _refresh_devices()
     _save_progress()
@@ -512,6 +555,7 @@ func _have_meal() -> void:
         meals[meal] = true
         hunger = minf(100.0, hunger + 45.0)
         energy = minf(100.0, energy + 7.0)
+        advance_activity(TimeRules.meal_activity(meal))
         _announce("Refeicao realizada: %s. Fome +45, energia +7." % meal.capitalize())
 
 
@@ -521,6 +565,7 @@ func _sleep() -> void:
     day += 1
     minutes = 390.0
     _daily_reset()
+    _reset_travel_position()
     hunger = maxf(35.0, hunger - 10.0)
     energy = 100.0
     _announce("Bom dia! O fazendeiro dormiu e acordou as 06:30.")
@@ -543,6 +588,7 @@ func _enter_car() -> void:
         _announce("Carro precisa de reparo na oficina.")
         return
     driving = true
+    _reset_travel_position()
     farmer.set_physics_process(false)
     var visuals := farmer.get_node_or_null("Visuals") as Node3D
     if visuals != null:
@@ -554,6 +600,7 @@ func _exit_car() -> void:
     driving = false
     var offset := car.global_transform.basis.x * 2.2
     farmer.global_position = car.global_position + offset + Vector3(0, 0.8, 0)
+    _reset_travel_position()
     farmer.set_physics_process(true)
     var visuals := farmer.get_node_or_null("Visuals") as Node3D
     if visuals != null:
@@ -614,7 +661,7 @@ func _update_hud() -> void:
         ready = int(farm_system.call("crops_ready"))
         tool = String(farm_system.call("tool_name"))
         crop = String(farm_system.call("seed_name"))
-    hud_stats.text = "DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nFome: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%" % [
+    hud_stats.text = "TEMPO POR ATIVIDADES | DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nFome: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%" % [
         day, _time_string(), _season(), _weather_label(), coins,
         int(hunger), int(energy),
         food, feed, seeds, harvested, ready, eggs, milk,
