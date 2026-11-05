@@ -1,5 +1,5 @@
 extends Node3D
-## Open-front workshop beside the farmhouse. Prototype meshes are replaceable.
+## Workshop fitted inside the farm garage. Prototype meshes are replaceable.
 ## Origin is at (13, 0, 12), away from the house entrance and crop field.
 const WOOD := Color("#91623f")
 const DARK_WOOD := Color("#533a2c")
@@ -30,7 +30,8 @@ func block(label: String, pos: Vector3, size: Vector3, tint: Color, solid: bool 
         add_child(collider)
 
 func _ready() -> void:
-    # Open front faces +Z, so the player can walk directly inside.
+    # Garage and repair shop are the same building. Open front faces +Z.
+    # The right-hand side remains open for a future vehicle parking bay.
     block("ConcreteFloor", Vector3(0, 0.10, 0), Vector3(8.5, 0.20, 7.5), Color("#9a968d"), true)
     for x in [-4.0, 4.0]:
         for z in [-3.35, 3.35]:
