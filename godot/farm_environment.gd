@@ -18,8 +18,14 @@ func _box(parent: Node3D, name: String, pos: Vector3, size: Vector3, color: Colo
 
 func _ready() -> void:
     _box(self, "GrassGround", Vector3(0, -0.25, 0), Vector3(110, 0.5, 110), Color("#6eaa50"))
-    _box(self, "FarmhouseWalls", Vector3(0, 2.2, -13), Vector3(12, 4.4, 9), Color("#f3dfb7"))
-    _box(self, "FrontDoor", Vector3(0, 1.3, -8.42), Vector3(1.65, 2.6, 0.18), Color("#765039"))
+    # Hollow shell, with a doorway for future open/close door interactions.
+    _box(self, "HouseBackWall", Vector3(0, 2.2, -17.5), Vector3(12, 4.4, 0.3), Color("#f3dfb7"))
+    _box(self, "HouseLeftWall", Vector3(-6, 2.2, -13), Vector3(0.3, 4.4, 9), Color("#f3dfb7"))
+    _box(self, "HouseRightWall", Vector3(6, 2.2, -13), Vector3(0.3, 4.4, 9), Color("#f3dfb7"))
+    _box(self, "HouseFrontLeft", Vector3(-3.425, 2.2, -8.5), Vector3(5.15, 4.4, 0.3), Color("#f3dfb7"))
+    _box(self, "HouseFrontRight", Vector3(3.425, 2.2, -8.5), Vector3(5.15, 4.4, 0.3), Color("#f3dfb7"))
+    _box(self, "HouseFrontLintel", Vector3(0, 3.55, -8.5), Vector3(1.7, 1.7, 0.3), Color("#f3dfb7"))
+    # The entrance stays open until an interactive door is implemented.
     for x in [-3.6, 3.6]:
         _box(self, "Window", Vector3(x, 2.7, -8.37), Vector3(1.8, 1.55, 0.16), Color("#92c9d9"))
         _box(self, "ShutterLeft", Vector3(x - 1.12, 2.7, -8.3), Vector3(0.35, 1.7, 0.18), Color("#326c89"))
