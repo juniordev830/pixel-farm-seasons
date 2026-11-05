@@ -19,13 +19,13 @@
 - TV, rádio e notebook com interações **demonstrativas**; sem conteúdo real de mídia nem navegação na internet.
 - Progresso gravado em `user://pixel_farm_life_save.json`.
 
-## Nova regra de tempo: o jogo acompanha o que acontece
+## Relógio híbrido e compromissos
 
-**Não existe a equivalência fixa "1 dia no jogo = X minutos reais".** O relógio passa quando o fazendeiro faz alguma coisa. Preparar o café consome 10 minutos fictícios, tomar café 20, alimentar os animais 25, ordenhar 30, trabalhar na mini oficina 70. Plantar, regar e colher também têm duração definida. Caminhar e dirigir avançam a hora proporcionalmente à distância percorrida.
+A hora **avança naturalmente, mesmo parado**, à velocidade inicial de 0,5 minuto do jogo por segundo real. Plantar, trabalhar, comer e dirigir acrescentam tempo, de acordo com as tarefas e distâncias. A velocidade é configurável.
 
-Se o jogador ficar parado e não realizar atividades, o relógio **não acelera sozinho**. Dormir faz o personagem acordar às 06h30 do próximo dia. Quando o relógio passa da meia-noite, o dia muda, as tarefas diárias se renovam e as plantas regadas crescem.
+O fazendeiro acorda às 06h30, pode tomar café e cuidar dos animais. Quando chegam as **11h** e ainda não almoçou, ele pensa: **“Eita, já são 11h! Tenho que almoçar!”**. Às 18h lembra do jantar; à noite, do sono. Dormir leva até 06h30 do próximo dia. Os lembretes não forçam ações.
 
-O horário é uma consequência das atividades, mas as durações atuais são valores de balanceamento e podem ser ajustadas. Veja `docs/EVENT_CLOCK_DESIGN.md`.
+Veja `docs/EVENT_CLOCK_DESIGN.md`, `scripts/rural_time.gd` e `scripts/rural_schedule.gd`.
 
 ## Controles
 
