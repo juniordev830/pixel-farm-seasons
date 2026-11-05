@@ -12,6 +12,7 @@ var car: CharacterBody3D
 var hud_stats: Label
 var hud_hint: Label
 var hud_notice: Label
+var farm_system: Node3D
 var tv_screen: MeshInstance3D
 var notebook_screen: MeshInstance3D
 var radio_indicator: MeshInstance3D
@@ -24,6 +25,8 @@ var energy := 96.0
 var coins := 180
 var food := 6
 var feed := 5
+var seeds := 12
+var harvested := 0
 var eggs := 0
 var milk := 0
 var car_condition := 90.0
@@ -58,6 +61,9 @@ func _setup() -> void:
     _build_outskirts()
     _build_hud()
     _register_activities()
+    farm_system = get_parent().get_node_or_null("FarmingSystem")
+    if farm_system != null:
+        farm_system.call("ensure_initialized")
     _load_progress()
     _refresh_devices()
     _update_light()
@@ -321,7 +327,7 @@ func _register_activities() -> void:
     _add_interaction("Coletar ovos", Vector3(20.3, 0.7, 15.5), "eggs")
     _add_interaction("Mini oficina / reparar carro", Vector3(-28.7, 1.0, -7.2), "repair")
     _add_interaction("Entrar e dirigir o carro", Vector3(-25, 1.0, -5), "car")
-    _add_interaction("Comprar comida e racao na venda", Vector3(13, 1.1, 98.0), "market", 4.8)
+    _add_interaction("Vender colheita ou comprar suprimentos", Vector3(13, 1.1, 98.0), "market", 4.8)
 
 
 func _process(delta: float) -> void:
@@ -379,6 +385,10 @@ func _closest() -> Dictionary:
         if distance <= float(item["distance"]) and distance < best:
             found = item
             best = distance
+    if farm_system != null:
+        var farm_prompt: Dictionary = farm_system.call("get_nearby_prompt", farmer.global_position)
+        if not farm_prompt.is_empty() and float(farm_prompt["distance"]) < best:
+            found = farm_prompt
     return found
 
 
@@ -388,6 +398,9 @@ func _interact() -> void:
         _announce("Aproxime-se de um objeto para interagir.")
         return
     match String(target["kind"]):
+        "farm":
+            if farm_system != null:
+                _announce(String(farm_system.call("interact", int(target["plot_index"]))))
         "fridge":
             if food < 1:
                 _announce("Geladeira vazia! Compre mantimentos na venda da vila.")
@@ -460,13 +473,19 @@ func _interact() -> void:
         "exit_car":
             _exit_car()
         "market":
-            if coins < 30:
-                _announce("Compra de mantimentos + racao custa R$ 30.")
+            if harvested > 0:
+                var sold := harvested
+                coins += sold * 5
+                harvested = 0
+                _announce("Vendeu %d produtos da horta por R$ %d! E novamente para comprar." % [sold, sold * 5])
+            elif coins < 30:
+                _announce("O kit com comida, racao e sementes custa R$ 30.")
             else:
                 coins -= 30
                 food += 4
                 feed += 3
-                _announce("Comprou +4 mantimentos e +3 racoes por R$ 30.")
+                seeds += 8
+                _announce("Comprou +4 mantimentos, +3 racoes e +8 sementes por R$ 30.")
     _refresh_devices()
     _save_progress()
 
@@ -498,8 +517,8 @@ func _have_meal() -> void:
 
 func _sleep() -> void:
     driving = false
-    if minutes >= 1200.0:
-        day += 1
+    # Dormir ate 06:30 sempre avanca ao dia seguinte.
+    day += 1
     minutes = 390.0
     _daily_reset()
     hunger = maxf(35.0, hunger - 10.0)
@@ -509,6 +528,8 @@ func _sleep() -> void:
 
 
 func _daily_reset() -> void:
+    if farm_system != null:
+        farm_system.call("advance_day", _rain_on_day(day - 1))
     cow_fed = false
     animals_watered = false
     cow_milked = false
@@ -568,17 +589,42 @@ func _update_light() -> void:
         environment.environment.ambient_light_energy = 0.22 + daylight * 0.62
 
 
+func _rain_on_day(day_number: int) -> bool:
+    return day_number > 0 and day_number % 5 == 0
+
+
+func _season() -> String:
+    var names := ["Primavera", "Verao", "Outono", "Inverno"]
+    return names[int((day - 1) / 7) % 4]
+
+
+func _weather_label() -> String:
+    if _rain_on_day(day):
+        return "Chuva"
+    if day % 4 == 0:
+        return "Nublado"
+    return "Sol"
+
+
 func _update_hud() -> void:
-    var meal := _meal_name()
-    hud_stats.text = "DIA %d  |  %s  |  R$ %d\nFome: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Ovos: %d  Leite: %d\nCafe: %s   Almoco: %s   Janta: %s\nVaca alimentada: %s  Agua: %s\nCarro: %d%%" % [
-        day, _time_string(), coins, int(hunger), int(energy),
-        food, feed, eggs, milk,
+    var ready := 0
+    var tool := "Plantar"
+    var crop := "Cenoura"
+    if farm_system != null:
+        ready = int(farm_system.call("crops_ready"))
+        tool = String(farm_system.call("tool_name"))
+        crop = String(farm_system.call("seed_name"))
+    hud_stats.text = "DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nFome: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%" % [
+        day, _time_string(), _season(), _weather_label(), coins,
+        int(hunger), int(energy),
+        food, feed, seeds, harvested, ready, eggs, milk,
+        tool, crop,
         "ok" if meals["cafe"] else "-", "ok" if meals["almoco"] else "-", "ok" if meals["jantar"] else "-",
         "sim" if cow_fed else "nao", "sim" if animals_watered else "nao",
         int(car_condition)
     ]
     var next := _closest()
-    hud_hint.text = ("E — " + String(next["title"])) if not next.is_empty() else "Explore: casa, curral, garagem e venda da vila. E: interagir."
+    hud_hint.text = ("E — " + String(next["title"])) if not next.is_empty() else "Explore e trabalhe na fazenda: E interagir | F ferramenta | G semente."
 
 
 func _announce(message: String) -> void:
@@ -590,6 +636,8 @@ func _save_progress() -> void:
     var payload := {
         "version": 1, "day": day, "minutes": minutes, "hunger": hunger,
         "energy": energy, "coins": coins, "food": food, "feed": feed,
+        "seeds": seeds, "harvested": harvested,
+        "farming": farm_system.call("serialize") if farm_system != null else [],
         "eggs": eggs, "milk": milk, "car_condition": car_condition,
         "cow_fed": cow_fed, "animals_watered": animals_watered,
         "cow_milked": cow_milked, "eggs_collected": eggs_collected,
@@ -621,6 +669,8 @@ func _load_progress() -> void:
     coins = maxi(0, int(data.get("coins", coins)))
     food = maxi(0, int(data.get("food", food)))
     feed = maxi(0, int(data.get("feed", feed)))
+    seeds = maxi(0, int(data.get("seeds", seeds)))
+    harvested = maxi(0, int(data.get("harvested", harvested)))
     eggs = maxi(0, int(data.get("eggs", eggs)))
     milk = maxi(0, int(data.get("milk", milk)))
     car_condition = clampf(float(data.get("car_condition", car_condition)), 0.0, 100.0)
@@ -637,3 +687,5 @@ func _load_progress() -> void:
     if typeof(car_pos) == TYPE_ARRAY and car_pos.size() == 3:
         car.global_position = Vector3(float(car_pos[0]), float(car_pos[1]), float(car_pos[2]))
     car.rotation.y = float(data.get("car_rot", car.rotation.y))
+    if farm_system != null:
+        farm_system.call("restore", data.get("farming", []))
