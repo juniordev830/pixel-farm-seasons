@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="PackedScene" path="res://player.tscn" id="1"]
 [ext_resource type="Script" path="res://farm_environment.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://ground_collision.gd" id="4"]
 [ext_resource type="Script" path="res://day_night_controller.gd" id="5"]
 [ext_resource type="Script" path="res://farm_hud.gd" id="6"]
+[ext_resource type="Script" path="res://farmhouse_details.gd" id="7"]
 
 [node name="Main" type="Node3D"]
 
@@ -14,6 +15,9 @@ script = ExtResource("2")
 
 [node name="Decorations" type="Node3D" parent="."]
 script = ExtResource("3")
+
+[node name="FarmhouseDetails" type="Node3D" parent="."]
+script = ExtResource("7")
 
 [node name="GroundCollision" type="StaticBody3D" parent="."]
 script = ExtResource("4")
