@@ -23,6 +23,23 @@ func _initialize() -> void:
     assert(is_equal_approx(needs.movement_multiplier(), 0.48))
     needs.energy = 100.0
     assert(is_equal_approx(needs.movement_multiplier(), 1.0))
+    needs.hunger = 80.0
+    assert(is_equal_approx(needs.movement_multiplier(), 0.88))
+    needs.hunger = 95.0
+    assert(is_equal_approx(needs.movement_multiplier(), 0.76))
+    needs.energy = 10.0
+    assert(is_equal_approx(needs.movement_multiplier(), 0.62 * 0.76))
+    needs.energy = 100.0
+    needs.hunger = 10.0
+    clock.set_clock(12, 0)
+    clock.paused = false
+    needs._process(1.0)
+    var energy_after_fed_minute: float = needs.energy
+    needs.energy = 100.0
+    needs.hunger = 80.0
+    needs._process(1.0)
+    assert(needs.energy < energy_after_fed_minute)
+    clock.paused = true
     needs.hunger = 90.0
     needs.eat()
     assert(needs.hunger == 35.0)
@@ -41,5 +58,5 @@ func _initialize() -> void:
     assert(clock.get_clock() == "00:01")
     needs._process(0.0)
     assert(needs.day_index == clock.day_index)
-    print("PASS: needs, eating, fatigue, sleep and midnight rollover")
+    print("PASS: hunger slowdown, energy drain, eating, fatigue, sleep and midnight rollover")
     quit(0)
