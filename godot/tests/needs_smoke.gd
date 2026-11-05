@@ -1,6 +1,11 @@
 extends SceneTree
 ## Run: godot --headless --path godot --script res://tests/needs_smoke.gd
 func _initialize() -> void:
+    # Do not await process_frame inside MainLoop initialization: it may never
+    # complete and leave GitHub Actions running indefinitely.
+    call_deferred("_run_tests")
+
+func _run_tests() -> void:
     var scene := load("res://main.tscn") as PackedScene
     if scene == null:
         push_error("Could not load main scene")
@@ -8,7 +13,7 @@ func _initialize() -> void:
         return
     var main := scene.instantiate()
     root.add_child(main)
-    await process_frame
+    # Node._ready and @onready bindings are initialized when added to the tree.
     var needs := main.get_node_or_null("FarmerNeeds")
     var clock := main.get_node_or_null("DayNightController")
     var player := main.get_node_or_null("Player")
