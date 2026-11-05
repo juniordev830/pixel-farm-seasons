@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="PackedScene" path="res://player.tscn" id="1"]
 [ext_resource type="Script" path="res://farm_environment.gd" id="2"]
@@ -12,6 +12,8 @@
 
 [ext_resource type="Script" path="res://farmhouse_interior.gd" id="9"]
 
+[ext_resource type="Script" path="res://interactive_front_door.gd" id="10"]
+
 [node name="Main" type="Node3D"]
 
 [node name="Environment" type="Node3D" parent="."]
@@ -22,6 +24,9 @@ script = ExtResource("3")
 
 [node name="FarmhouseDetails" type="Node3D" parent="."]
 script = ExtResource("7")
+
+[node name="FrontDoor" type="StaticBody3D" parent="."]
+script = ExtResource("10")
 
 [node name="FarmhouseInterior" type="Node3D" parent="."]
 script = ExtResource("9")
