@@ -1,23 +1,37 @@
 # Consolidação das branches — 2026-11-05
 
-## Direção aprovada
+## Estado confirmado
 
-- `main`: versão oficial, **não modificada** nesta consolidação.
-- `desenvolvimento-3d`: base de desenvolvimento visual e interação Godot, derivada de `feature/cozy-hud-camera-v1`.
-- `sistemas-da-fazenda`: sistemas de necessidades, casa, oficina e rotina, derivada de `feature/hunger-movement-slowdown-20261105`.
+- `main` permaneceu inalterada.
+- `desenvolvimento-3d` reúne a cadeia de commits dos antigos PRs #2–#9 e os sistemas do PR #13, mesclado **somente nesta branch**.
+- `sistemas-da-fazenda` foi avançada por fast-forward até o mesmo commit integrado e pode receber novos trabalhos em sistemas.
+- O PR #12, de `desenvolvimento-3d` para `main`, permanece em **draft**; nenhuma publicação oficial foi feita.
+- Os PRs históricos #1–#11 foram encerrados **sem mesclar na main** e continuam disponíveis para consulta.
 
-## Histórico preservado
+## Preservação do histórico
 
-A branch `desenvolvimento-3d` contém o histórico de commits dos PRs #2, #3, #4, #5, #6, #7, #8 e #9. O protótipo Godot 2D do PR #1 foi preservado em `legacy/godot-2d/`, isolado do projeto 3D.
+- Os PRs #2–#9 estão no histórico da branch `desenvolvimento-3d` por ancestralidade.
+- Os PRs #10 e #11 estão no histórico integrado pelo PR #13.
+- Os cinco arquivos do protótipo Godot 2D do PR #1 foram copiados integralmente para `legacy/godot-2d/` e verificados por conteúdo e SHA idênticos. Abrir esse diretório como projeto Godot independente.
+- As antigas branches `feature/hybrid-clock-daily-agenda` e `feature/late-lunch-hunger-energy` eram idênticas na auditoria.
 
-A branch `sistemas-da-fazenda` contém o histórico das branches que originaram os PRs #10 e #11, inclusive a penalidade de velocidade por fome e a liberdade de atravessar a noite acordado.
+## Duas cenas 3D preservadas, uma entrada principal
 
-Os PRs antigos e suas branches são referências históricas; antes de excluir qualquer branch, confirme as integrações de código, testes e revisão. `feature/hybrid-clock-daily-agenda` e `feature/late-lunch-hunger-energy` apontavam para o mesmo commit na auditoria.
+O `godot/project.godot` de `desenvolvimento-3d` é o projeto oficial de trabalho do protótipo 3D, com `res://scenes/farm_world.tscn` como cena principal.
 
-## Incompatibilidade a resolver antes de juntar os dois fluxos
+A configuração alternativa da linha de sistemas está preservada em `godot/project.needs-prototype.godot` e sua cena antiga permanece em `godot/main.tscn`, com os scripts de necessidades, casa e oficina. **Esses componentes ainda precisam ser conectados à cena principal e testados visualmente.** Não confundir preservação de código com funcionalidade já integrada em jogo.
 
-As duas linhas de desenvolvimento criaram protótipos Godot distintos e ambas usam `godot/project.godot` como configuração. **Não mesclar as duas branches automaticamente em `main`**. Escolher uma cena principal, integrar as partes necessárias de fome/energia, garagem, oficina e controles ao projeto 3D e resolver caminhos e cenas duplicadas.
+## Critérios antes de publicar na main
 
-Critérios para integrar: abertura do projeto Godot; câmera atrás do fazendeiro; funcionamento de oficina dentro da garagem e passagem externa; relógio com dia/noite; noite sem sono forçado e perda gradual de energia; testes de plantio e necessidades; nenhuma alteração regressiva na prévia web.
+- [ ] Conferir execução e erros no editor Godot 4.3.
+- [ ] Verificar câmera atrás do fazendeiro, comandos e colisões.
+- [ ] Integrar e testar oficina na garagem e passagem externa.
+- [ ] Integrar fome, energia e liberdade de permanecer acordado de noite; sem forçar sono.
+- [ ] Validar plantio, economia, relógio, casa, salvamento e retrocompatibilidade da prévia web.
+- [ ] Verificar todos os workflows do commit final e executar testes manuais.
 
-As duas PRs de consolidação devem começar em **draft**. Não excluir branches históricas enquanto houver recursos não absorvidos ou testes pendentes.
+## Limpeza das branches antigas
+
+As branches `feature/*` continuam existentes no remoto. Uma vez concluída a revisão, podem ser excluídas pela página de branches do GitHub, pois o histórico relevante foi preservado. **O fechamento de PRs não apaga branches automaticamente.** Manter somente `main`, `desenvolvimento-3d` e `sistemas-da-fazenda` como branches de trabalho.
+
+A exclusão de branches é uma operação diferente da consolidação e ainda não foi executada.
