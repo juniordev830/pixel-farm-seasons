@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/farm_world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/farmer_controller.gd" id="2_farmer"]
 [ext_resource type="Script" path="res://scripts/life_sim.gd" id="3_life"]
 [ext_resource type="Script" path="res://scripts/farming_system.gd" id="4_farming"]
 [ext_resource type="Script" path="res://scripts/visual_detail_pass.gd" id="5_visual"]
+[ext_resource type="Script" path="res://scripts/cozy_game_hud.gd" id="6_cozy_hud"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.37
@@ -82,3 +83,7 @@ script = ExtResource("4_farming")
 
 [node name="VisualDetailPass" type="Node3D" parent="."]
 script = ExtResource("5_visual")
+
+[node name="CozyGameHUD" type="CanvasLayer" parent="."]
+layer = 10
+script = ExtResource("6_cozy_hud")
