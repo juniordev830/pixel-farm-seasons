@@ -43,7 +43,7 @@ func ensure_initialized() -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-    if not initialized or life == null or not event is InputEventKey:
+    if not initialized or life == null or not (event is InputEventKey):
         return
     var key := event as InputEventKey
     if not key.pressed or key.echo or bool(life.get("driving")):
