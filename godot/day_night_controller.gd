@@ -7,8 +7,8 @@ extends Node
 
 var minute: float
 var day_index: int = 0
-@onready var sun: DirectionalLight3D = $"../Environment/Sun"
-@onready var world: WorldEnvironment = $"../Environment/WorldEnvironment"
+@onready var sun: DirectionalLight3D = get_node_or_null("../Environment/Sun") as DirectionalLight3D
+@onready var world: WorldEnvironment = get_node_or_null("../Environment/WorldEnvironment") as WorldEnvironment
 
 func _ready() -> void:
     minute = initial_minute
@@ -34,6 +34,14 @@ func get_clock() -> String:
     return "%02d:%02d" % [int(minute / 60.0), int(minute) % 60]
 
 func _update_lighting() -> void:
+    # The procedural environment creates lighting nodes in its own _ready.
+    # Depending on sibling initialization order they may not exist yet.
+    if sun == null or not is_instance_valid(sun):
+        sun = get_node_or_null("../Environment/Sun") as DirectionalLight3D
+    if world == null or not is_instance_valid(world):
+        world = get_node_or_null("../Environment/WorldEnvironment") as WorldEnvironment
+    if sun == null or world == null or world.environment == null:
+        return
     var hour := minute / 60.0
     var daylight: float
     var sky: Color
