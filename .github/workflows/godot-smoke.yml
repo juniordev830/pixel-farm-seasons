@@ -6,8 +6,16 @@ on:
     paths:
       - 'godot/**'
       - '.github/workflows/godot-smoke.yml'
+permissions:
+  contents: read
+
+concurrency:
+  group: godot-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          timeout --signal=INT --kill-after=5s 90s \
+          timeout --signal=INT --kill-after=5s 60s \
             godot --headless --path godot --script res://tests/needs_smoke.gd \
             | tee "${RUNNER_TEMP}/needs-smoke.log"
           grep -q 'PASS: hunger slowdown' "${RUNNER_TEMP}/needs-smoke.log"
