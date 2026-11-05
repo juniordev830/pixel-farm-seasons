@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/farm_world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/farmer_controller.gd" id="2_farmer"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/farming_system.gd" id="4_farming"]
 [ext_resource type="Script" path="res://scripts/visual_detail_pass.gd" id="5_visual"]
 [ext_resource type="Script" path="res://scripts/cozy_game_hud.gd" id="6_cozy_hud"]
+[ext_resource type="Script" path="res://scripts/farmer_art_v1.gd" id="7_farmer_art"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.37
@@ -48,6 +49,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_1")
 position = Vector3(0, 0.65, 0)
 mesh = SubResource("SphereMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="FarmerArt" type="Node3D" parent="Farmer/Visuals"]
+script = ExtResource("7_farmer_art")
 
 [node name="CameraPivot" type="Node3D" parent="Farmer"]
 position = Vector3(0, 0.75, 0)
