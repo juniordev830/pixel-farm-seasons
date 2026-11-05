@@ -10,7 +10,7 @@ extends CharacterBody3D
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var spring_arm: SpringArm3D = $CameraPivot/SpringArm3D
 @onready var interaction_ray: RayCast3D = $CameraPivot/SpringArm3D/Camera3D/InteractionRay
-@onready var body_visual: MeshInstance3D = $Body
+@onready var body_visual: Node3D = $Body
 
 func _ready() -> void:
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -48,3 +48,5 @@ func _physics_process(delta: float) -> void:
         var target_yaw := atan2(-direction.x, -direction.z) - rotation.y
         body_visual.rotation.y = lerp_angle(body_visual.rotation.y, target_yaw, minf(delta * turn_speed, 1.0))
     move_and_slide()
+    if body_visual.has_method("set_movement"):
+        body_visual.set_movement(Vector2(velocity.x, velocity.z).length(), delta)
