@@ -54,7 +54,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
     var controller := get_node_or_null("../DayNightController")
     if controller != null and controller.has_method("get_clock"):
-        clock_label.text = "🍂 Outono  |  " + controller.get_clock()
+        clock_label.text = "🍂 Outono  |  Dia %d  |  %s" % [1 + int(get_node("../FarmerNeeds").day_index), controller.get_clock()]
     var needs := get_node_or_null("../FarmerNeeds")
     if needs != null:
         status_label.text = "Energia %d  |  Fome %d" % [int(needs.energy), int(needs.hunger)]
