@@ -41,8 +41,8 @@ func _ready() -> void:
 
 func interact(_actor: Node) -> void:
     is_open = not is_open
-    # Door collision follows the hinge through a separately rotated collider.
-    # Collision is disabled while open until an articulated physics door is implemented.
+    # Prototype uses an open passage while the panel is rotated.
+    # A hinged collision body is a later physics improvement.
     $CollisionShape3D.set_deferred("disabled", is_open)
 
 func _process(delta: float) -> void:
