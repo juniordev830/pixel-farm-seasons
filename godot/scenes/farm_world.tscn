@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/farm_world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/farmer_controller.gd" id="2_farmer"]
+[ext_resource type="Script" path="res://scripts/life_sim.gd" id="3_life"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.37
@@ -70,3 +71,6 @@ theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 19
 text = "🌾 PIXEL FARM SEASONS — Fazenda 3D\nWASD: andar   Mouse: câmera   Shift: correr   Espaço: pular   V: câmera   Esc: liberar mouse"
+
+[node name="LifeSim" type="Node3D" parent="."]
+script = ExtResource("3_life")
