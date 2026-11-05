@@ -1,5 +1,26 @@
 # Pixel Farm Seasons — primeira fazenda 3D (Godot 4.3+)
 
+## Novidade: simulador de vida rural — primeira versao (branch de desenvolvimento)
+
+A cena 3D agora carrega automaticamente `scripts/life_sim.gd`, um prototipo dos sistemas de vida rural:
+- Casa de dois andares com abertura para entrar, escada/rampa, sala, cozinha e suite.
+- Geladeira + mesa: preparar e realizar cafe da manha, almoco e jantar.
+- HUD com relogio, dinheiro, fome e energia; iluminacao de dia e de noite.
+- Vaca e galinhas: alimentar, colocar agua, ordenhar e recolher ovos.
+- TV e radio ligam/desligam visualmente; notebook mostra informacoes da rede ficticia do jogo.
+- Garagem, bancada de oficina, carro que pode ser dirigido e consertado.
+- Estrada para uma pequena vila rural com mercado de mantimentos.
+- Gravacao local automatica em `user://pixel_farm_life_save.json`.
+
+**Controles adicionais:** aproxime-se do objeto e pressione **E** para interagir. Dentro do carro, **WASD** dirige e **E** sai.
+
+**Importante:** a interatividade e simplificada e os modelos sao low-poly temporarios. TV e radio ainda nao reproduzem midia; notebook nao acessa a Internet real. Os arquivos ainda exigem teste no motor Godot.
+
+Documentos de referencia: `docs/OPEN_WORLD_LIFE_SIM_VISION.md` e `docs/LIFE_SIM_TEST_PLAN.md` (na raiz do repositório).
+
+---
+
+
 A pasta `godot/` é um projeto Godot independente, separado da prévia web 2D.
 
 ## O que foi criado
