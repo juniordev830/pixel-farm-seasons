@@ -66,6 +66,13 @@ jobs:
           godot --headless --path godot --script res://tests/cozy_hud_smoke.gd 2>&1 | tee /tmp/godot_hud_test.log
           if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|COZY HUD TEST FAILED:' /tmp/godot_hud_test.log; then exit 1; fi
 
+      - name: Verificar modelo estilizado do fazendeiro
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/farmer_art_smoke.gd 2>&1 | tee /tmp/godot_farmer_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARMER ART TEST FAILED:' /tmp/godot_farmer_test.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |
