@@ -1,7 +1,7 @@
 extends StaticBody3D
-## Sliding garage door. Interact with E while standing close.
+## Sliding garage door, accessible only from outside the farmhouse.
 @export var interaction_distance: float = 4.0
-@export var travel_height: float = 3.2
+@export var travel_height: float = 3.5
 @export var opening_speed: float = 2.4
 var is_open: bool = false
 var closed_height: float = 1.65
@@ -11,11 +11,12 @@ var closed_height: float = 1.65
 func _ready() -> void:
     closed_height = position.y
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
     var goal: float = closed_height + (travel_height if is_open else 0.0)
     position.y = move_toward(position.y, goal, opening_speed * delta)
-    # Keep the doorway clear while the panel is raised.
-    collision.disabled = position.y > closed_height + 2.6
+    # Keep the panel's physical collision attached as it rises and lowers.
+    # At full height the bottom edge clears a 3.5 m opening.
+    # Never disable the collider: that would make a closing panel intangible.
 
 func interact(actor: Node3D) -> void:
     if actor.global_position.distance_to(global_position) > interaction_distance:
