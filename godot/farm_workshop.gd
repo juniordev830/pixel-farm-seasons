@@ -85,6 +85,17 @@ func _ready() -> void:
     # Compact bicycle stand against the left side, clear of the car bay and gate.
     block("FamilyBikeRackBase", Vector3(-3.42, 0.27, 1.25), Vector3(0.75, 0.14, 1.25), METAL)
     block("FamilyBikeRackPost", Vector3(-3.42, 0.75, 1.25), Vector3(0.10, 0.90, 0.10), METAL)
+    # Simple decorative placeholders; driving and cycling are future features.
+    block("BlueFuscaBody", Vector3(1.3, 0.78, 1.0), Vector3(1.8, 0.65, 3.1), Color("#2467b3"))
+    block("BlueFuscaCabin", Vector3(1.3, 1.32, 0.85), Vector3(1.55, 0.65, 1.55), Color("#2467b3"))
+    for x in [0.45, 2.15]:
+        for z in [-0.05, 2.05]:
+            block("FuscaTire", Vector3(x, 0.42, z), Vector3(0.28, 0.72, 0.72), Color("#202327"))
+    block("RedMonarkFrame", Vector3(-3.3, 0.85, 1.0), Vector3(0.12, 0.35, 1.0), Color("#b92530"))
+    for z in [0.4, 1.6]:
+        block("MonarkWheel", Vector3(-3.3, 0.48, z), Vector3(0.12, 0.85, 0.85), Color("#222222"))
+    block("MonarkHandlebar", Vector3(-3.3, 1.25, 0.4), Vector3(0.65, 0.08, 0.08), Color("#bfc4c8"))
+    block("MonarkSaddle", Vector3(-3.3, 1.15, 1.1), Vector3(0.28, 0.1, 0.38), Color("#242424"))
     # Repair station receives interaction ray and handles its own distance check.
     var station := StaticBody3D.new()
     station.name = "RepairWorkbench"
