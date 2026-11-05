@@ -45,6 +45,13 @@ jobs:
           godot --headless --path godot --script res://tests/farming_smoke.gd 2>&1 | tee /tmp/godot_farm_test.log
           if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARMING TEST FAILED:' /tmp/godot_farm_test.log; then exit 1; fi
 
+      - name: Testar relogio por atividades, viagem e sono
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/event_clock_smoke.gd 2>&1 | tee /tmp/godot_event_clock.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|EVENT CLOCK TEST FAILED:' /tmp/godot_event_clock.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |
