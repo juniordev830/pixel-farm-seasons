@@ -199,8 +199,7 @@ func _fields() -> void:
             var x := 7.5 + float(col) * 1.58
             var z := 1.45 + float(row) * 1.85
             _box("Canteiro de terra", Vector3(x, 0.085, z), Vector3(1.3, 0.18, 1.52), SOIL)
-            if (row + col) % 5 != 0:
-                _crop_plant(Vector3(x, 0.19, z), (row + col) % 3)
+            # Culturas sao criadas e atualizadas pelo FarmingSystem.
 
     _fence_x(5.8, 16.4, -1.6)
     _fence_z(5.8, -1.6, 10.6)
