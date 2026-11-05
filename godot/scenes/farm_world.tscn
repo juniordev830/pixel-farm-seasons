@@ -1,0 +1,72 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/farm_world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/farmer_controller.gd" id="2_farmer"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.37
+height = 1.86
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+radius = 0.36
+height = 1.3
+
+[sub_resource type="SphereMesh" id="SphereMesh_1"]
+radius = 0.31
+height = 0.62
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.19, 0.35, 0.69, 1)
+roughness = 0.82
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.76, 0.51, 0.34, 1)
+roughness = 0.87
+
+[node name="FarmWorld" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="Farmer" type="CharacterBody3D" parent="."]
+position = Vector3(0, 1.08, 16)
+script = ExtResource("2_farmer")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Farmer"]
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Visuals" type="Node3D" parent="Farmer"]
+
+[node name="Body" type="MeshInstance3D" parent="Farmer/Visuals"]
+position = Vector3(0, -0.15, 0)
+mesh = SubResource("CapsuleMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_1")
+
+[node name="Head" type="MeshInstance3D" parent="Farmer/Visuals"]
+position = Vector3(0, 0.65, 0)
+mesh = SubResource("SphereMesh_1")
+surface_material_override/0 = SubResource("StandardMaterial3D_2")
+
+[node name="CameraPivot" type="Node3D" parent="Farmer"]
+position = Vector3(0, 0.75, 0)
+rotation = Vector3(-0.2, 0, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Farmer/CameraPivot"]
+spring_length = 6.0
+margin = 0.2
+
+[node name="Camera3D" type="Camera3D" parent="Farmer/CameraPivot/SpringArm3D"]
+current = true
+fov = 72.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Help" type="Label" parent="HUD"]
+offset_left = 22.0
+offset_top = 20.0
+offset_right = 790.0
+offset_bottom = 84.0
+theme_override_colors/font_color = Color(1, 0.97, 0.86, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.14, 0.14, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 19
+text = "🌾 PIXEL FARM SEASONS — Fazenda 3D\nWASD: andar   Mouse: câmera   Shift: correr   Espaço: pular   V: câmera   Esc: liberar mouse"
