@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Farm Seasons — Prévia</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#171d28;color:#fff;font-family:system-ui,sans-serif}
+main{max-width:960px;margin:auto;padding:20px}h1{font-size:1.35rem}canvas{width:100%;image-rendering:pixelated;border:4px solid #495a60;border-radius:12px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+button{background:#9ed07b;color:#17281b;border:0;border-radius:8px;padding:10px 15px;font-weight:bold;cursor:pointer}
+input{flex:1;min-width:160px}small{color:#bdcbd0}
+</style></head><body><main><h1>🌾 Pixel Farm Seasons — ciclo de dia e noite</h1>
+<canvas id="scene" width="640" height="360" aria-label="Fazenda com céu dinâmico"></canvas>
+<div class="controls"><button id="toggle">⏸ Pausar</button><label for="time">Horário: <strong id="clock">07:00</strong></label><input id="time" type="range" min="0" max="1439" value="420"><button id="sleep">🌙 Dormir 8h</button></div>
+<p><small>Protótipo gráfico independente. Um segundo real avança dez minutos do jogo.</small></p></main>
+<script>
+const canvas=document.querySelector('#scene'),ctx=canvas.getContext('2d');
+const slider=document.querySelector('#time'),clock=document.querySelector('#clock');
+let minute=420,playing=true,last=performance.now();
+const lerp=(a,b,t)=>a+(b-a)*t;
+function color(a,b,t){return a.map((x,i)=>Math.round(lerp(x,b[i],t)))}
+function rgb(a){return 'rgb('+a.join(',')+')'}
+function lighting(h){
+if(h>=5&&h<7)return {sky:color([19,28,66],[255,175,115],(h-5)/2),day:(h-5)/2};
+if(h>=7&&h<17)return {sky:[111,191,244],day:1};
+if(h>=17&&h<19)return {sky:color([22,26,61],[255,147,94],(19-h)/2),day:(19-h)/2};
+return {sky:[19,26,58],day:0};
+}
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}
+function draw(){
+const h=minute/60,l=lighting(h),night=1-l.day;
+rect(0,0,640,360,rgb(l.sky));
+if(night>.2){for(let i=0;i<45;i++){let x=(i*127+37)%640,y=(i*61+13)%160;rect(x,y,2,2,'rgba(255,255,220,'+Math.min(1,night)+')')}}
+let sunX=90+(h-5)/14*470;
+if(l.day>0){ctx.fillStyle='#ffe7a0';ctx.beginPath();ctx.arc(sunX,95-45*Math.sin(Math.PI*Math.max(0,Math.min(1,(h-5)/14))),22,0,Math.PI*2);ctx.fill()}
+else {ctx.fillStyle='#e4e7f3';ctx.beginPath();ctx.arc(520,65,16,0,Math.PI*2);ctx.fill()}
+rect(0,195,640,165,'#4b873e');rect(0,245,640,115,'#387136');
+for(let i=0;i<9;i++){let x=18+i*68;rect(x,264,47,65,'#6b492a');for(let j=0;j<3;j++){rect(x+8+j*12,272,5,34,'#74c653');rect(x+6+j*12,268,9,7,'#b4dd67')}}
+rect(375,165,190,105,'#c88e58');rect(365,151,210,20,'#5c373b');
+ctx.fillStyle='#703f43';ctx.beginPath();ctx.moveTo(355,155);ctx.lineTo(470,95);ctx.lineTo(585,155);ctx.fill();
+rect(402,190,35,35,night>.45?'#ffdc83':'#9bd6d7');rect(510,190,35,35,night>.45?'#ffdc83':'#9bd6d7');
+rect(456,211,44,59,'#784b36');rect(475,242,4,4,'#f9db83');
+rect(0,325,640,35,'rgba(0,0,0,.10)');
+rect(0,0,640,360,'rgba(7,15,38,'+(night*.32)+')');
+clock.textContent=String(Math.floor(h)).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
+slider.value=minute;
+}
+function frame(now){let delta=Math.min(100,now-last);last=now;if(playing)minute=(minute+Math.floor(delta/100))%1440;draw();requestAnimationFrame(frame)}
+slider.addEventListener('input',()=>{minute=Number(slider.value);draw()});
+document.querySelector('#toggle').onclick=()=>{playing=!playing;document.querySelector('#toggle').textContent=playing?'⏸ Pausar':'▶ Continuar'};
+document.querySelector('#sleep').onclick=()=>{minute=(minute+480)%1440;draw()};
+requestAnimationFrame(frame);
+</script></body></html>
