@@ -59,6 +59,13 @@ jobs:
           godot --headless --path godot --script res://tests/visual_detail_smoke.gd 2>&1 | tee /tmp/godot_visual_test.log
           if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|VISUAL PASS TEST FAILED:' /tmp/godot_visual_test.log; then exit 1; fi
 
+      - name: Validar interface visual e alertas de rotina
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/cozy_hud_smoke.gd 2>&1 | tee /tmp/godot_hud_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|COZY HUD TEST FAILED:' /tmp/godot_hud_test.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |
