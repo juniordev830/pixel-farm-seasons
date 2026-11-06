@@ -32,7 +32,7 @@ func _check_world() -> void:
         _check(bool(assets.car_upgraded), "Fusca rendered with curved shapes")
         var loaded_models := 0
         for node in assets.get_children():
-            if String(node.name).begins_with("3D asset"):
+            if String(node.get_meta("asset_id", "")).ends_with(".glb"):
                 loaded_models += 1
         _check(loaded_models >= 30, "Detailed GLB props are active in world")
     var sim := world.get_node_or_null("LifeSim")
