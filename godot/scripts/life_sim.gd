@@ -8,6 +8,7 @@ const DAY_MINUTES := 1440.0
 const TimeRules = preload("res://scripts/rural_time.gd")
 const Schedule = preload("res://scripts/rural_schedule.gd")
 const VitalRules = preload("res://scripts/rural_vitals.gd")
+const Missions = preload("res://scripts/farm_missions.gd")
 
 var farmer: CharacterBody3D
 var car: CharacterBody3D
@@ -28,6 +29,9 @@ var energy := 96.0
 var coins := 180
 var level := 1
 var experience := 0
+var mission_stats: Dictionary = {"harvested": 0, "animal_days": 0, "milk": 0, "eggs": 0, "sold": 0, "days": 0}
+var mission_completed: Array[String] = []
+var campaign_finished := false
 var food := 6
 var feed := 5
 var seeds := 12
@@ -66,6 +70,7 @@ func _setup() -> void:
     _make_house_walkable()
     _build_furniture()
     _build_garage()
+    _build_mission_board()
     _build_outskirts()
     _build_hud()
     _register_activities()
@@ -79,6 +84,7 @@ func _setup() -> void:
     _refresh_reminder()
     _announce("Bem-vindo ao sitio! Entre na casa, cuide dos animais ou dirija ate o mercado.")
     initialized = true
+    _review_missions()
 
 
 func _make_mat(tint: Color) -> StandardMaterial3D:
@@ -239,6 +245,13 @@ func _build_garage() -> void:
     _make_bicycle()
 
 
+func _build_mission_board() -> void:
+    # Painel de tarefas visivel perto do ponto de inicio do fazendeiro.
+    _box("Quadro de missoes - poste", Vector3(-2.4, 0.87, 13.5), Vector3(0.14, 1.7, 0.14), Color("#765638"))
+    _box("Quadro de missoes - placa", Vector3(-2.4, 1.62, 13.5), Vector3(2.6, 1.25, 0.15), Color("#b98d59"))
+    _box("Quadro de missoes - papel", Vector3(-2.4, 1.64, 13.60), Vector3(2.28, 0.94, 0.04), Color("#eee0ad"))
+
+
 func _bike_tube(label: String, a: Vector3, b: Vector3, tint: Color) -> void:
     var direction := b - a
     if direction.length_squared() < 0.0001:
@@ -374,6 +387,7 @@ func _add_interaction(title: String, at: Vector3, kind: String, distance: float 
 
 
 func _register_activities() -> void:
+    _add_interaction("Ver objetivos da fazenda", Vector3(-2.4, 1.1, 13.5), "missions", 3.2)
     _add_interaction("Geladeira / preparar refeicao", Vector3(-12.95, 1.25, -16.3), "fridge")
     _add_interaction("Mesa / tomar cafe, almocar ou jantar", Vector3(-14.72, 1.0, -12.62), "eat")
     _add_interaction("Televisao", Vector3(-17.65, 1.4, -15.32), "tv")
@@ -508,6 +522,8 @@ func _interact() -> void:
         _announce("Aproxime-se de um objeto para interagir.")
         return
     match String(target["kind"]):
+        "missions":
+            _announce("OBJETIVO: " + current_mission_text())
         "farm":
             if farm_system != null:
                 var message: String = String(farm_system.call("interact", int(target["plot_index"])))
@@ -521,6 +537,7 @@ func _interact() -> void:
                 elif message.begins_with("Colheu "):
                     advance_activity("colher")
                     _award_experience(10)
+                    mission_stats["harvested"] = int(mission_stats.get("harvested", 0)) + 3
         "fridge":
             if food < 1:
                 _announce("Geladeira vazia! Compre mantimentos na venda da vila.")
@@ -579,6 +596,7 @@ func _interact() -> void:
                 coins += 12
                 advance_activity("ordenhar")
                 _award_experience(10)
+                mission_stats["milk"] = int(mission_stats.get("milk", 0)) + 2
                 _announce("Ordenha concluida: +2 leite, +R$ 12 pela venda automatica.")
         "eggs":
             if eggs_collected:
@@ -591,6 +609,7 @@ func _interact() -> void:
                 coins += 9
                 advance_activity("recolher_ovos")
                 _award_experience(8)
+                mission_stats["eggs"] = int(mission_stats.get("eggs", 0)) + 3
                 _announce("Coletou 3 ovos e recebeu R$ 9 pela venda automatica.")
         "repair":
             if coins < 20:
@@ -614,6 +633,7 @@ func _interact() -> void:
                 harvested = 0
                 advance_activity("mercado")
                 _award_experience(3)
+                mission_stats["sold"] = int(mission_stats.get("sold", 0)) + sold
                 _announce("Vendeu %d produtos da horta por R$ %d! E novamente para comprar." % [sold, sold * 5])
             elif coins < 30:
                 _announce("O kit com comida, racao e sementes custa R$ 30.")
@@ -624,6 +644,7 @@ func _interact() -> void:
                 seeds += 8
                 advance_activity("mercado")
                 _announce("Comprou +4 mantimentos, +3 racoes e +8 sementes por R$ 30.")
+    _review_missions()
     _refresh_devices()
     _save_progress()
 
@@ -639,6 +660,30 @@ func _award_experience(points: int) -> void:
         coins += level * 5
     if level >= 30:
         experience = mini(experience, level * 50)
+
+
+func current_mission_text() -> String:
+    return Missions.describe(mission_stats, mission_completed)
+
+
+func _review_missions() -> void:
+    var newly_completed := false
+    for goal in Missions.GOALS:
+        var key := String(goal["key"])
+        if key in mission_completed:
+            continue
+        if int(mission_stats.get(goal["stat"], 0)) < int(goal["target"]):
+            continue
+        mission_completed.append(key)
+        newly_completed = true
+        coins += int(goal["coins"])
+        _award_experience(int(goal["xp"]))
+        _announce("Objetivo completo: %s! +R$ %d e +%d XP." % [goal["title"], int(goal["coins"]), int(goal["xp"])])
+    if not campaign_finished and Missions.completed(mission_stats, mission_completed):
+        campaign_finished = true
+        _announce("PARABENS! VOCE CONCLUIU A CAMPANHA DA FAZENDA! O modo livre continua.")
+    elif newly_completed:
+        _save_progress()
 
 
 func _meal_name() -> String:
@@ -683,6 +728,11 @@ func _sleep() -> void:
 
 
 func _daily_reset() -> void:
+    # Um dia conta no objetivo de cuidados apenas se ração e agua foram dadas.
+    if cow_fed and animals_watered:
+        mission_stats["animal_days"] = int(mission_stats.get("animal_days", 0)) + 1
+    mission_stats["days"] = maxi(int(mission_stats.get("days", 0)), day - 1)
+    _review_missions()
     if farm_system != null:
         farm_system.call("advance_day", _rain_on_day(day - 1))
     cow_fed = false
@@ -772,14 +822,14 @@ func _update_hud() -> void:
         ready = int(farm_system.call("crops_ready"))
         tool = String(farm_system.call("tool_name"))
         crop = String(farm_system.call("seed_name"))
-    hud_stats.text = "TEMPO POR ATIVIDADES | DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nSaciedade: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%  |  Nivel %d  XP %d/%d" % [
+    hud_stats.text = "TEMPO POR ATIVIDADES | DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nSaciedade: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%  |  Nivel %d  XP %d/%d\nObjetivo: %s" % [
         day, _time_string(), _season(), _weather_label(), coins,
         int(hunger), int(energy),
         food, feed, seeds, harvested, ready, eggs, milk,
         tool, crop,
         "ok" if meals["cafe"] else "-", "ok" if meals["almoco"] else "-", "ok" if meals["jantar"] else "-",
         "sim" if cow_fed else "nao", "sim" if animals_watered else "nao",
-        int(car_condition), level, experience, level * 50
+        int(car_condition), level, experience, level * 50, current_mission_text()
     ]
     var next := _closest()
     hud_hint.text = ("E — " + String(next["title"])) if not next.is_empty() else "Explore e trabalhe na fazenda: E interagir | F ferramenta | G semente."
@@ -795,6 +845,7 @@ func _save_progress() -> void:
         "version": 1, "day": day, "minutes": minutes, "hunger": hunger,
         "energy": energy, "coins": coins, "food": food, "feed": feed,
         "level": level, "experience": experience,
+        "mission_stats": mission_stats, "mission_completed": mission_completed, "campaign_finished": campaign_finished,
         "seeds": seeds, "harvested": harvested,
         "farming": farm_system.call("serialize") if farm_system != null else [],
         "eggs": eggs, "milk": milk, "car_condition": car_condition,
@@ -828,6 +879,16 @@ func _load_progress() -> void:
     coins = maxi(0, int(data.get("coins", coins)))
     level = clampi(int(data.get("level", level)), 1, 30)
     experience = clampi(int(data.get("experience", experience)), 0, level * 50)
+    var stored_stats: Variant = data.get("mission_stats", {})
+    if typeof(stored_stats) == TYPE_DICTIONARY:
+        for key in mission_stats.keys():
+            mission_stats[key] = maxi(0, int(stored_stats.get(key, 0)))
+    var stored_completed: Variant = data.get("mission_completed", [])
+    if typeof(stored_completed) == TYPE_ARRAY:
+        for key in stored_completed:
+            if typeof(key) == TYPE_STRING and String(key) not in mission_completed:
+                mission_completed.append(String(key))
+    campaign_finished = bool(data.get("campaign_finished", false))
     food = maxi(0, int(data.get("food", food)))
     feed = maxi(0, int(data.get("feed", feed)))
     seeds = maxi(0, int(data.get("seeds", seeds)))
