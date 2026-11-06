@@ -39,3 +39,20 @@ test('expansão sem moedas suficientes não altera saldo',()=>{
  assert.match(s.nodes.message.textContent,/Expansão custa 100/);
  assert.match(s.nodes.clock.textContent,/🪙 40/);
 });
+
+test('save corrompido não interrompe inicialização',()=>{
+ const s=start();s.storage.set('pixel-farm-seasons-v1','{invalido');
+ s.key('l');s.frame(1000);
+ assert.match(s.nodes.message.textContent,/Save inválido/);
+ assert.match(s.nodes.clock.textContent,/Dia 1/);
+});
+test('valores fora do limite são corrigidos ao carregar',()=>{
+ const s=start();s.storage.set('pixel-farm-seasons-v1',JSON.stringify({
+  player:{x:0,z:0,energy:999,hunger:-10,coins:-100,seeds:8,harvest:0,land:0,vehicle:'invalid'},
+  world:{minute:420,day:1},plots:[],lastMealDay:0
+ }));
+ s.key('l');s.frame(1000);
+ assert.match(s.nodes.energy.textContent,/Energia: 100/);
+ assert.match(s.nodes.hunger.textContent,/Fome: 0/);
+ assert.match(s.nodes.clock.textContent,/🪙 0/);
+});
