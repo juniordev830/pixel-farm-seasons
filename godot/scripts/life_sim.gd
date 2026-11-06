@@ -250,9 +250,9 @@ func _build_garage() -> void:
 
 func _build_mission_board() -> void:
     # Painel de tarefas visivel perto do ponto de inicio do fazendeiro.
-    _box("Quadro de missoes - poste", Vector3(-2.4, 0.87, 13.5), Vector3(0.14, 1.7, 0.14), Color("#765638"))
-    _box("Quadro de missoes - placa", Vector3(-2.4, 1.62, 13.5), Vector3(2.6, 1.25, 0.15), Color("#b98d59"))
-    _box("Quadro de missoes - papel", Vector3(-2.4, 1.64, 13.60), Vector3(2.28, 0.94, 0.04), Color("#eee0ad"))
+    _box("Quadro de missoes - poste", Vector3(-7.0, 0.87, 8.5), Vector3(0.14, 1.7, 0.14), Color("#765638"))
+    _box("Quadro de missoes - placa", Vector3(-7.0, 1.62, 8.5), Vector3(2.6, 1.25, 0.15), Color("#b98d59"))
+    _box("Quadro de missoes - papel", Vector3(-7.0, 1.64, 8.60), Vector3(2.28, 0.94, 0.04), Color("#eee0ad"))
 
 
 func _bike_tube(label: String, a: Vector3, b: Vector3, tint: Color) -> void:
@@ -390,7 +390,7 @@ func _add_interaction(title: String, at: Vector3, kind: String, distance: float 
 
 
 func _register_activities() -> void:
-    _add_interaction("Ver objetivos da fazenda", Vector3(-2.4, 1.1, 13.5), "missions", 3.2)
+    _add_interaction("Ver objetivos da fazenda", Vector3(-7.0, 1.1, 8.5), "missions", 3.2)
     _add_interaction("Geladeira / preparar refeicao", Vector3(-12.95, 1.25, -16.3), "fridge")
     _add_interaction("Mesa / tomar cafe, almocar ou jantar", Vector3(-14.72, 1.0, -12.62), "eat")
     _add_interaction("Televisao", Vector3(-17.65, 1.4, -15.32), "tv")
