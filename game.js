@@ -126,7 +126,9 @@ function render(){
  ctx.fillStyle='#6c5139';ctx.fillRect(px-19,py-60,38,9);ctx.fillRect(px-13,py-70,26,14);
  if(rainy){ctx.strokeStyle='rgba(193,219,234,.65)';ctx.lineWidth=2;for(let i=0;i<75;i++){const x=(i*139+world.minute*17)%w,y=(i*89+world.minute*27)%h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();}}
  if(night){ctx.fillStyle='rgba(7,15,29,.28)';ctx.fillRect(0,0,w,h);}
- ctx.fillStyle='rgba(20,39,30,.68)';ctx.fillRect(12,10,w-24,42);
+ ctx.fillStyle='rgba(20,39,30,.78)';ctx.fillRect(12,10,w-24,42);
+ ctx.fillStyle='rgba(20,39,30,.72)';ctx.fillRect(12,h-64,Math.min(w-24,485),52);
+ ctx.fillStyle='#f6dfaa';ctx.font='15px system-ui';ctx.fillText('🪙 '+player.coins+'   🌱 '+player.seeds+'   🥕 '+player.harvest+'   ⚡ '+Math.round(player.energy)+'   🍲 '+Math.round(player.hunger),25,h-32);
  ctx.fillStyle='#f7f4e7';ctx.font='17px system-ui';
  ctx.fillText('PIXEL FARM SEASONS  •  '+season+(rainy?'  •  Chuva':'')+'  •  F plantar  •  T veículo  •  X expandir',26,37);
 }
