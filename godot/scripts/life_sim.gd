@@ -123,6 +123,7 @@ func _box(n: String, at: Vector3, size: Vector3, tint: Color, solid: bool = fals
 func _sphere(n: String, at: Vector3, size: Vector3, tint: Color, parent_node: Node3D = null) -> MeshInstance3D:
     var node := MeshInstance3D.new()
     node.name = n
+    node.set_meta("native_prop", n)
     var mesh := SphereMesh.new()
     mesh.radius = 0.5
     mesh.height = 1.0
