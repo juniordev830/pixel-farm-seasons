@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - feature/complete-3d-gameplay-20261106
+      - "feature/real-3d-nature-assets-*"
     paths:
       - "godot/tests/capture_gameplay.gd"
       - "godot/scripts/environment_art_pass.gd"
       - "godot/scripts/farm_world.gd"
       - "godot/scripts/visual_detail_pass.gd"
       - "godot/scripts/cozy_reference_art.gd"
+      - "godot/scripts/asset_quality_pass.gd"
+      - "godot/assets/**"
       - "godot/scripts/cozy_game_hud.gd"
       - "godot/shaders/**"
       - "godot/scripts/life_sim.gd"
