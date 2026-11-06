@@ -784,17 +784,29 @@ func _time_string() -> String:
 
 
 func _update_light() -> void:
+    # Light begins at dawn; at 06:30 the farm is visibly sunlit instead
+    # of looking like midnight. Keep evenings and night clearly distinct.
     var phase := sin((minutes / DAY_MINUTES - 0.25) * TAU)
-    var daylight := clampf(phase, 0.0, 1.0)
+    var daylight := clampf(phase * 2.0 + 0.45, 0.0, 1.0)
+    var dawn := clampf(1.0 - absf(minutes - 390.0) / 190.0, 0.0, 1.0)
+    var dusk := clampf(1.0 - absf(minutes - 1110.0) / 190.0, 0.0, 1.0)
+    var golden := maxf(dawn, dusk)
     var sun := get_parent().get_node_or_null("Sun") as DirectionalLight3D
     if sun != null:
-        sun.light_energy = 0.04 + daylight * 1.24
-        sun.rotation_degrees = Vector3(-8 - daylight * 68.0, -27, 0)
+        sun.light_energy = 0.1 + daylight * 1.40
+        sun.light_color = Color("#fff3df").lerp(Color("#f5bd85"), golden * 0.70)
+        sun.rotation_degrees = Vector3(-12 - daylight * 56.0, -27, 0)
     var environment := get_parent().get_node_or_null("WorldEnvironment") as WorldEnvironment
     if environment != null and environment.environment != null:
-        environment.environment.background_color = Color("#111a36").lerp(Color("#a9d4ed"), daylight)
-        environment.environment.ambient_light_color = Color("#38476a").lerp(Color("#e7ebdb"), daylight)
-        environment.environment.ambient_light_energy = 0.22 + daylight * 0.62
+        var env := environment.environment
+        env.ambient_light_color = Color("#48516e").lerp(Color("#d8dfd0"), daylight)
+        env.ambient_light_energy = 0.28 + daylight * 0.66
+        if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
+            var sky_material := env.sky.sky_material as ProceduralSkyMaterial
+            sky_material.sky_top_color = Color("#192844").lerp(Color("#598fbd"), daylight)
+            sky_material.sky_horizon_color = Color("#514c69").lerp(Color("#c0dce7"), daylight).lerp(Color("#ebc39c"), golden * 0.42)
+            sky_material.ground_horizon_color = Color("#414758").lerp(Color("#c8d4bf"), daylight)
+            sky_material.ground_bottom_color = Color("#28322d").lerp(Color("#536d45"), daylight)
 
 
 func _rain_on_day(day_number: int) -> bool:
