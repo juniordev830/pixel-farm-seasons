@@ -28,6 +28,8 @@ var inventory: Label
 var tools: Label
 var warning_label: Label
 var refresh_elapsed := 0.0
+var quick_slots: Array[PanelContainer] = []
+var quick_labels: Array[Label] = []
 
 
 func _ready() -> void:
@@ -163,6 +165,68 @@ func _build_ui() -> void:
         "Seu personagem tem horarios e pensamentos.", 17, CREAM)
     warning_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     warning_label.custom_minimum_size = Vector2(425, 55)
+    _build_quickbar()
+
+
+func _quick_style(selected: bool) -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color("#293629") if selected else Color("#202d28")
+    style.border_color = ACCENT if selected else Color("#788566")
+    style.set_border_width_all(3 if selected else 1)
+    style.set_corner_radius_all(11)
+    style.content_margin_left = 7
+    style.content_margin_top = 9
+    style.content_margin_right = 7
+    style.content_margin_bottom = 9
+    return style
+
+
+func _build_quickbar() -> void:
+    # Compact toolbar inspired by the approved screenshot; F/G remain the
+    # actual controls until direct numeric shortcuts are implemented.
+    var width := get_viewport().get_visible_rect().size.x
+    var height := get_viewport().get_visible_rect().size.y
+    var row := HBoxContainer.new()
+    row.name = "QuickTools"
+    row.position = Vector2((width - 480.0) * 0.5, height - 92.0)
+    row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    row.add_theme_constant_override("separation", 6)
+    root_control.add_child(row)
+    for label in ["PLANTAR", "REGAR", "COLHER", "SEMENTES", "PRODUCAO", "OVOS"]:
+        var slot := PanelContainer.new()
+        slot.custom_minimum_size = Vector2(74, 67)
+        slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        slot.add_theme_stylebox_override("panel", _quick_style(false))
+        row.add_child(slot)
+        var text_node := Label.new()
+        text_node.text = label
+        text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        text_node.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+        text_node.add_theme_font_size_override("font_size", 12)
+        text_node.add_theme_color_override("font_color", CREAM)
+        text_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        slot.add_child(text_node)
+        quick_slots.append(slot)
+        quick_labels.append(text_node)
+    var help := _text(root_control, "QuickToolsHelp", "F: trocar ferramenta   |   G: trocar semente   |   E: interagir", 13, CREAM)
+    help.position = Vector2((width - 410.0) * 0.5, height - 116.0)
+
+
+func _refresh_quickbar() -> void:
+    if quick_labels.size() != 6 or life == null:
+        return
+    var farm := life.get("farm_system") as Node3D
+    var selected := 0
+    if farm != null:
+        selected = int(farm.get("tool_index"))
+    for i in range(3):
+        quick_slots[i].add_theme_stylebox_override("panel", _quick_style(i == selected))
+    quick_labels[0].text = "ENXADA\nPLANTAR"
+    quick_labels[1].text = "REGADOR\nREGAR"
+    quick_labels[2].text = "CESTO\nCOLHER"
+    quick_labels[3].text = "SEMENTES\n%d" % int(life.get("seeds"))
+    quick_labels[4].text = "COLHIDOS\n%d" % int(life.get("harvested"))
+    quick_labels[5].text = "OVOS\n%d" % int(life.get("eggs"))
 
 
 func _process(delta: float) -> void:
@@ -194,6 +258,7 @@ func _refresh_data() -> void:
     energy_text.text = "Energia  %d%%" % int(energy)
     hunger_bar.value = hunger
     energy_bar.value = energy
+    _refresh_quickbar()
 
     var hunger_style := StyleBoxFlat.new()
     hunger_style.bg_color = DANGER if hunger < 30 else WARNING
