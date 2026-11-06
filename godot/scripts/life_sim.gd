@@ -98,6 +98,7 @@ func _make_mat(tint: Color) -> StandardMaterial3D:
 func _box(n: String, at: Vector3, size: Vector3, tint: Color, solid: bool = false, parent_node: Node3D = null) -> MeshInstance3D:
     var mesh_node := MeshInstance3D.new()
     mesh_node.name = n
+    mesh_node.set_meta("native_prop", n)
     var mesh := BoxMesh.new()
     mesh.size = size
     mesh_node.mesh = mesh
