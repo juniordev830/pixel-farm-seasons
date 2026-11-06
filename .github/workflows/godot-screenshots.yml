@@ -1,0 +1,63 @@
+name: Pixel Farm Seasons - capturas reais do jogo 3D
+
+on:
+  push:
+    branches:
+      - feature/complete-3d-gameplay-20261106
+    paths:
+      - "godot/tests/capture_gameplay.gd"
+      - ".github/workflows/godot-screenshots.yml"
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    name: Renderizar cenas em Godot e salvar PNG
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar suporte a renderizacao OpenGL com display virtual
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri libgl1 libx11-6 libxcursor1 libxrandr2 libxi6 libxinerama1 >/dev/null
+
+      - name: Instalar Godot 4.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" -o /tmp/godot.zip
+          unzip -oq /tmp/godot.zip -d /tmp
+          sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Importar projeto e shaders
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --editor --quit
+
+      - name: Executar o jogo com renderizacao e capturar imagens reais
+        shell: bash
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          set -euo pipefail
+          timeout 120s xvfb-run -a -s "-screen 0 1280x800x24" \
+            godot --path godot --rendering-method gl_compatibility \
+            --script res://tests/capture_gameplay.gd 2>&1 | tee /tmp/capture.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|CAPTURE FAILED" /tmp/capture.log; then exit 1; fi
+          test -s screenshots/01-fazenda-camera-terceira-pessoa.png
+          test -s screenshots/02-casa-varanda.png
+          test -s screenshots/03-horta-canteiros.png
+          test -s screenshots/04-garagem-veiculos.png
+
+      - name: Publicar capturas PNG
+        uses: actions/upload-artifact@v4
+        with:
+          name: PixelFarmSeasons-CapturasReais-3D
+          path: screenshots/*.png
+          retention-days: 15
+          if-no-files-found: error
