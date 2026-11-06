@@ -7,6 +7,7 @@ const SAVE_PATH := "user://pixel_farm_life_save.json"
 const DAY_MINUTES := 1440.0
 const TimeRules = preload("res://scripts/rural_time.gd")
 const Schedule = preload("res://scripts/rural_schedule.gd")
+const VitalRules = preload("res://scripts/rural_vitals.gd")
 
 var farmer: CharacterBody3D
 var car: CharacterBody3D
@@ -25,6 +26,8 @@ var minutes := 390.0
 var hunger := 82.0
 var energy := 96.0
 var coins := 180
+var level := 1
+var experience := 0
 var food := 6
 var feed := 5
 var seeds := 12
@@ -233,6 +236,46 @@ func _build_garage() -> void:
     _box("Caixa de ferramentas", Vector3(-29.0, 1.21, -7.8), Vector3(0.84, 0.43, 0.48), Color("#be4c34"))
     _box("Armario ferramentas", Vector3(-29.15, 1.12, -3.25), Vector3(1.0, 2.24, 0.55), Color("#6b7e80"))
     _make_car()
+    _make_bicycle()
+
+
+func _bike_tube(label: String, a: Vector3, b: Vector3, tint: Color) -> void:
+    var direction := b - a
+    if direction.length_squared() < 0.0001:
+        return
+    var tube := _box(label, (a + b) * 0.5, Vector3(0.06, direction.length(), 0.06), tint)
+    tube.quaternion = Quaternion(Vector3.UP, direction.normalized())
+
+
+func _make_bicycle() -> void:
+    # Monark vermelha ao lado do Fusca azul. Modelo decorativo, ainda nao dirigivel.
+    var red := Color("#c83c36")
+    var steel := Color("#929b9b")
+    var rear := Vector3(-28.30, 0.45, -2.60)
+    var front := Vector3(-26.95, 0.45, -2.60)
+    for center in [rear, front]:
+        var wheel := MeshInstance3D.new()
+        wheel.name = "Monark - roda"
+        var ring := TorusMesh.new()
+        ring.inner_radius = 0.32
+        ring.outer_radius = 0.40
+        wheel.mesh = ring
+        wheel.material_override = _make_mat(Color("#252525"))
+        wheel.position = center
+        wheel.rotation.x = PI / 2.0
+        add_child(wheel)
+        _bike_tube("Monark - raio", center + Vector3(-0.28, 0, 0), center + Vector3(0.28, 0, 0), steel)
+        _bike_tube("Monark - raio", center + Vector3(0, -0.28, 0), center + Vector3(0, 0.28, 0), steel)
+    var pedals := Vector3(-27.69, 0.60, -2.60)
+    var saddle := Vector3(-27.93, 1.16, -2.60)
+    var handle := Vector3(-27.10, 1.18, -2.60)
+    _bike_tube("Monark - quadro baixo", rear, pedals, red)
+    _bike_tube("Monark - quadro central", pedals, saddle, red)
+    _bike_tube("Monark - quadro superior", saddle, handle, red)
+    _bike_tube("Monark - quadro dianteiro", handle, front, red)
+    _bike_tube("Monark - quadro diagonal", handle, pedals, red)
+    _bike_tube("Monark - guidom", handle, handle + Vector3(0.0, 0.18, 0.0), steel)
+    _box("Monark - selim", saddle + Vector3(-0.06, 0.06, 0), Vector3(0.37, 0.08, 0.23), Color("#333333"))
 
 
 func _make_car() -> void:
@@ -369,14 +412,21 @@ func advance_minutes(amount: float) -> void:
     if not is_finite(amount) or amount <= 0.0:
         return
     minutes += amount
-    hunger = maxf(0.0, hunger - amount * 0.06)
-    energy = maxf(0.0, energy - amount * 0.04)
+    var running := farmer != null and not driving and Input.is_action_pressed("sprint") and farmer.velocity.length() > 0.2
+    var nighttime := minutes >= 1320.0 or minutes < 330.0
+    var state: Dictionary = VitalRules.advance(hunger, energy, amount, running, nighttime)
+    hunger = float(state["satiety"])
+    energy = float(state["energy"])
     while minutes >= DAY_MINUTES:
         minutes -= DAY_MINUTES
         day += 1
         _daily_reset()
     _refresh_reminder()
     _update_light()
+
+
+func movement_multiplier() -> float:
+    return VitalRules.movement_multiplier(hunger, energy)
 
 
 func _refresh_reminder() -> void:
@@ -464,10 +514,13 @@ func _interact() -> void:
                 _announce(message)
                 if message.contains("plantado!"):
                     advance_activity("plantar")
+                    _award_experience(2)
                 elif message.begins_with("Canteiro regado!"):
                     advance_activity("regar")
+                    _award_experience(1)
                 elif message.begins_with("Colheu "):
                     advance_activity("colher")
+                    _award_experience(10)
         "fridge":
             if food < 1:
                 _announce("Geladeira vazia! Compre mantimentos na venda da vila.")
@@ -505,6 +558,7 @@ func _interact() -> void:
                 feed -= 1
                 cow_fed = true
                 advance_activity("alimentar_animais")
+                _award_experience(6)
                 _announce("Voce alimentou a vaca e as galinhas. +bem-estar.")
         "water":
             if animals_watered:
@@ -512,6 +566,7 @@ func _interact() -> void:
             else:
                 animals_watered = true
                 advance_activity("colocar_agua")
+                _award_experience(4)
                 _announce("Agua limpa distribuida no curral e galinheiro.")
         "milk":
             if cow_milked:
@@ -523,6 +578,7 @@ func _interact() -> void:
                 cow_milked = true
                 coins += 12
                 advance_activity("ordenhar")
+                _award_experience(10)
                 _announce("Ordenha concluida: +2 leite, +R$ 12 pela venda automatica.")
         "eggs":
             if eggs_collected:
@@ -534,6 +590,7 @@ func _interact() -> void:
                 eggs_collected = true
                 coins += 9
                 advance_activity("recolher_ovos")
+                _award_experience(8)
                 _announce("Coletou 3 ovos e recebeu R$ 9 pela venda automatica.")
         "repair":
             if coins < 20:
@@ -544,6 +601,7 @@ func _interact() -> void:
                 coins -= 20
                 car_condition = 100.0
                 advance_activity("reparar_carro")
+                _award_experience(6)
                 _announce("Carro revisado na oficina. Condicao 100%.")
         "car":
             _enter_car()
@@ -555,6 +613,7 @@ func _interact() -> void:
                 coins += sold * 5
                 harvested = 0
                 advance_activity("mercado")
+                _award_experience(3)
                 _announce("Vendeu %d produtos da horta por R$ %d! E novamente para comprar." % [sold, sold * 5])
             elif coins < 30:
                 _announce("O kit com comida, racao e sementes custa R$ 30.")
@@ -567,6 +626,19 @@ func _interact() -> void:
                 _announce("Comprou +4 mantimentos, +3 racoes e +8 sementes por R$ 30.")
     _refresh_devices()
     _save_progress()
+
+
+func _award_experience(points: int) -> void:
+    # Progressao inicial ate o nivel 30: tarefas da fazenda rendem experiencia.
+    if points <= 0:
+        return
+    experience += points
+    while level < 30 and experience >= level * 50:
+        experience -= level * 50
+        level += 1
+        coins += level * 5
+    if level >= 30:
+        experience = mini(experience, level * 50)
 
 
 func _meal_name() -> String:
@@ -592,7 +664,8 @@ func _have_meal() -> void:
         hunger = minf(100.0, hunger + 45.0)
         energy = minf(100.0, energy + 7.0)
         advance_activity(TimeRules.meal_activity(meal))
-        _announce("Refeicao realizada: %s. Fome +45, energia +7." % meal.capitalize())
+        _award_experience(3)
+        _announce("Refeicao realizada: %s. Saciedade +45, energia +7." % meal.capitalize())
 
 
 func _sleep() -> void:
@@ -699,14 +772,14 @@ func _update_hud() -> void:
         ready = int(farm_system.call("crops_ready"))
         tool = String(farm_system.call("tool_name"))
         crop = String(farm_system.call("seed_name"))
-    hud_stats.text = "TEMPO POR ATIVIDADES | DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nFome: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%" % [
+    hud_stats.text = "TEMPO POR ATIVIDADES | DIA %d  |  %s  |  %s  |  %s  |  R$ %d\nSaciedade: %d%%   Energia: %d%%\nComida: %d  Racao: %d  Sementes: %d\nColhidos: %d  Prontos: %d  Ovos: %d  Leite: %d\nFerramenta: %s  |  Cultura: %s  (F/G)\nCafe: %s  Almoco: %s  Janta: %s\nAnimais alimentados: %s  Agua: %s\nCarro: %d%%  |  Nivel %d  XP %d/%d" % [
         day, _time_string(), _season(), _weather_label(), coins,
         int(hunger), int(energy),
         food, feed, seeds, harvested, ready, eggs, milk,
         tool, crop,
         "ok" if meals["cafe"] else "-", "ok" if meals["almoco"] else "-", "ok" if meals["jantar"] else "-",
         "sim" if cow_fed else "nao", "sim" if animals_watered else "nao",
-        int(car_condition)
+        int(car_condition), level, experience, level * 50
     ]
     var next := _closest()
     hud_hint.text = ("E — " + String(next["title"])) if not next.is_empty() else "Explore e trabalhe na fazenda: E interagir | F ferramenta | G semente."
@@ -721,6 +794,7 @@ func _save_progress() -> void:
     var payload := {
         "version": 1, "day": day, "minutes": minutes, "hunger": hunger,
         "energy": energy, "coins": coins, "food": food, "feed": feed,
+        "level": level, "experience": experience,
         "seeds": seeds, "harvested": harvested,
         "farming": farm_system.call("serialize") if farm_system != null else [],
         "eggs": eggs, "milk": milk, "car_condition": car_condition,
@@ -752,6 +826,8 @@ func _load_progress() -> void:
     hunger = clampf(float(data.get("hunger", hunger)), 0.0, 100.0)
     energy = clampf(float(data.get("energy", energy)), 0.0, 100.0)
     coins = maxi(0, int(data.get("coins", coins)))
+    level = clampi(int(data.get("level", level)), 1, 30)
+    experience = clampi(int(data.get("experience", experience)), 0, level * 50)
     food = maxi(0, int(data.get("food", food)))
     feed = maxi(0, int(data.get("feed", feed)))
     seeds = maxi(0, int(data.get("seeds", seeds)))
