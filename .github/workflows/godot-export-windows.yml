@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "feature/complete-3d-gameplay-*"
+      - "feature/real-3d-nature-assets-*"
     paths:
       - "godot/**"
       - ".github/workflows/godot-export-windows.yml"
