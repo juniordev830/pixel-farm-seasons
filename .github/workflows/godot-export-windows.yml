@@ -1,0 +1,85 @@
+name: Pixel Farm Seasons - gerar jogo Windows
+
+on:
+  push:
+    branches:
+      - "feature/complete-3d-gameplay-*"
+    paths:
+      - "godot/**"
+      - ".github/workflows/godot-export-windows.yml"
+  workflow_dispatch:
+
+jobs:
+  windows-export:
+    name: Exportar jogo para Windows 64 bits
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Godot 4.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 3 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" \
+            -o /tmp/godot.zip
+          unzip -oq /tmp/godot.zip -d /tmp
+          sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+
+      - name: Instalar export templates Windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 4 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz" \
+            -o /tmp/templates.tpz
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.3.stable"
+          unzip -j /tmp/templates.tpz "templates/windows_release_x86_64.exe" \
+            -d "$HOME/.local/share/godot/export_templates/4.3.stable"
+          ls -lh "$HOME/.local/share/godot/export_templates/4.3.stable"
+
+      - name: Importar e validar recursos
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --editor --quit 2>&1 | tee /tmp/import.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:' /tmp/import.log; then exit 1; fi
+
+      - name: Gerar executavel Windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          godot --headless --path godot --export-release "Windows Desktop" "$GITHUB_WORKSPACE/dist/PixelFarmSeasons.exe" 2>&1 | tee /tmp/export.log
+          if grep -E 'ERROR:|Export failed|SCRIPT ERROR|Parse Error:' /tmp/export.log; then exit 1; fi
+          test -s dist/PixelFarmSeasons.exe
+          test -s dist/PixelFarmSeasons.pck
+
+      - name: Preparar ZIP de jogo para PC
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > dist/LEIA-ME-WINDOWS.txt <<'EOF'
+          PIXEL FARM SEASONS — prototipo 3D para Windows 64 bits
+          1. Extraia todos os arquivos deste ZIP para uma mesma pasta.
+          2. Abra PixelFarmSeasons.exe. Mantenha PixelFarmSeasons.pck ao lado do EXE.
+          3. Controles: WASD andar, mouse camera, E interagir, F ferramenta,
+             G semente, Shift correr, Espaco pular, V trocar camera e P pausar.
+          4. Comece pela placa de missoes proxima ao personagem.
+          5. Salvamento automatico a cada 30 segundos ou pelo menu P.
+          OBS.: Modelos e efeitos sao provisórios. Esta e uma versao beta,
+          nao a edicao comercial final.
+          EOF
+          cd dist
+          zip -9 PixelFarmSeasons-Windows64.zip PixelFarmSeasons.exe PixelFarmSeasons.pck LEIA-ME-WINDOWS.txt
+          unzip -l PixelFarmSeasons-Windows64.zip
+
+      - name: Publicar pacote Windows nos artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: PixelFarmSeasons-Windows64
+          path: dist/PixelFarmSeasons-Windows64.zip
+          retention-days: 30
+          if-no-files-found: error
