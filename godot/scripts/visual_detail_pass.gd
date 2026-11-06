@@ -127,7 +127,9 @@ func _roof_side(n: String, center: Vector3, angle: float) -> void:
     multi.use_colors = true
     multi.mesh = mesh
     multi.instance_count = 10 * 15
-    var rotation_basis := Basis(Vector3.FORWARD, angle)
+    # The roof slabs rotate around +Z. FORWARD is -Z in Godot and flipped
+    # the shingle pitch, leaving large spikes over both sides of the house.
+    var rotation_basis := Basis(Vector3.BACK, angle)
     var index := 0
     for col in range(10):
         for row in range(15):
