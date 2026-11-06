@@ -36,7 +36,7 @@ roughness = 0.87
 script = ExtResource("1_world")
 
 [node name="Farmer" type="CharacterBody3D" parent="."]
-position = Vector3(0, 1.08, 16)
+position = Vector3(-0.6, 1.08, 11.0)
 script = ExtResource("2_farmer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Farmer"]
@@ -59,15 +59,15 @@ script = ExtResource("7_farmer_art")
 
 [node name="CameraPivot" type="Node3D" parent="Farmer"]
 position = Vector3(0, 0.75, 0)
-rotation = Vector3(-0.2, 0, 0)
+rotation = Vector3(-0.14, 0, 0)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Farmer/CameraPivot"]
-spring_length = 6.0
+spring_length = 5.1
 margin = 0.2
 
 [node name="Camera3D" type="Camera3D" parent="Farmer/CameraPivot/SpringArm3D"]
 current = true
-fov = 72.0
+fov = 63.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
