@@ -110,7 +110,7 @@ func _farmhouse_details() -> void:
     for x in [-18.5, -16.8, -13.2, -11.5]:
         _box("Floreira", Vector3(x, 0.69, -7.56), Vector3(0.81, 0.31, 0.43), WOOD_DARK)
         for i in range(4):
-            offset := float(i) * 0.19 - 0.29
+            var offset := float(i) * 0.19 - 0.29
             _ball("Folhagem varanda", Vector3(x + offset, 0.92, -7.60), Vector3(0.39, 0.43, 0.32), LEAF)
             _ball("Flor varanda", Vector3(x + offset, 1.08, -7.50), Vector3(0.16, 0.16, 0.15), PINK if i % 2 == 0 else PINK_LIGHT)
     # Roof and balcony cross-beams create silhouettes that read as timber,
