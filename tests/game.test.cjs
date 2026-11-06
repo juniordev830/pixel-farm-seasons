@@ -28,3 +28,14 @@ test('salvar e carregar restauram progresso',()=>{
 test('plantio consome uma semente e rega',()=>{
  const s=start();s.key('f');s.frame(1000);assert.match(s.nodes.clock.textContent,/🌱 7/);s.key('f');assert.match(s.nodes.message.textContent,/regada/);
 });
+
+test('energia e fome permanecem dentro dos limites após descanso e alimentação',()=>{
+ const s=start();for(let i=0;i<20;i++){s.key('r');s.key('e');}s.frame(1000);
+ assert.match(s.nodes.energy.textContent,/Energia: 100/);
+ assert.match(s.nodes.hunger.textContent,/Fome: 0/);
+});
+test('expansão sem moedas suficientes não altera saldo',()=>{
+ const s=start();s.key('x');s.frame(1000);
+ assert.match(s.nodes.message.textContent,/Expansão custa 100/);
+ assert.match(s.nodes.clock.textContent,/🪙 40/);
+});
