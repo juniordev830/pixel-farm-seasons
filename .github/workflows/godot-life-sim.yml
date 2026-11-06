@@ -96,6 +96,13 @@ jobs:
           godot --headless --path godot --script res://tests/farm_missions_smoke.gd 2>&1 | tee /tmp/godot_campaign.log
           if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARM MISSIONS TEST FAILED:' /tmp/godot_campaign.log; then exit 1; fi
 
+      - name: Testar estilo visual integrado a cena 3D
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/cozy_reference_smoke.gd 2>&1 | tee /tmp/godot_cozy_reference_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|COZY REFERENCE TEST FAILED:" /tmp/godot_cozy_reference_test.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |
