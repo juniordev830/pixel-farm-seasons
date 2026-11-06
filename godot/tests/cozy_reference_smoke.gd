@@ -32,7 +32,7 @@ func _run() -> void:
         var garage_flowers := 0
         var barn_details := 0
         for node in art.get_children():
-            var title := String(node.name)
+            var title := String(node.get_meta("cozy_kind", node.name))
             if title.begins_with("Canteiro elevado"):
                 wooden_beds += 1
             if title.begins_with("Cerejeira"):
