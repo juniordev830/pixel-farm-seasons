@@ -7,6 +7,7 @@ on:
       - desenvolvimento-3d
       - "feature/complete-3d-gameplay-*"
       - "feature/real-3d-nature-assets-*"
+      - "feature/character-visual-rebuild-*"
     paths:
       - "godot/**"
       - ".github/workflows/godot-life-sim.yml"
@@ -110,6 +111,13 @@ jobs:
           set -euo pipefail
           godot --headless --path godot --script res://tests/asset_quality_smoke.gd 2>&1 | tee /tmp/quality-assets.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|QUALITY ASSET TEST FAILED:" /tmp/quality-assets.log; then exit 1; fi
+
+      - name: Testar personagem animado, enquadramento e materiais naturais
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/animated_farmer_smoke.gd 2>&1 | tee /tmp/animated_farmer_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|ANIMATED FARMER TEST FAILED:" /tmp/animated_farmer_test.log; then exit 1; fi
 
       - name: Iniciar mundo por 120 frames
         shell: bash
