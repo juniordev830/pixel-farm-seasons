@@ -39,6 +39,8 @@ func _run() -> void:
             _expect(overlay.get_node_or_null("Interaction") != null, "Prompt de interacao visivel")
             _expect(overlay.get_node_or_null("Thought") != null, "Pensamento do personagem visivel")
         _expect(hud.subtitle.text.contains("Dia"), "Relogio e dia atualizados")
+        var old_help := world.get_node_or_null("HUD/Help") as CanvasItem
+        _expect(old_help != null and not old_help.visible, "HUD antigo nao sobrepoe o novo")
         life.hunger = 21.0
         life.energy = 64.0
         life.meals["almoco"] = false
