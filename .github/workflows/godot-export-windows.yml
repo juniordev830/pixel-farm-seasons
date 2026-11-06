@@ -58,6 +58,14 @@ jobs:
           test -s dist/PixelFarmSeasons.exe
           test -s dist/PixelFarmSeasons.pck
 
+      - name: Testar pacote exportado sem depender dos arquivos fonte
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --main-pack "$GITHUB_WORKSPACE/dist/PixelFarmSeasons.pck" --quit-after 120 2>&1 | tee /tmp/exported-game-smoke.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|Failed loading resource|Cannot open file" /tmp/exported-game-smoke.log; then exit 1; fi
+          test "$(stat -c%s dist/PixelFarmSeasons.pck)" -gt 150000
+
       - name: Preparar ZIP de jogo para PC
         shell: bash
         run: |
