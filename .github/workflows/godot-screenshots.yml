@@ -6,6 +6,10 @@ on:
       - feature/complete-3d-gameplay-20261106
     paths:
       - "godot/tests/capture_gameplay.gd"
+      - "godot/scripts/environment_art_pass.gd"
+      - "godot/scripts/farm_world.gd"
+      - "godot/scripts/life_sim.gd"
+      - "godot/scenes/farm_world.tscn"
       - ".github/workflows/godot-screenshots.yml"
   workflow_dispatch:
 
