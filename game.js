@@ -55,7 +55,9 @@ energyUI.textContent='Energia: '+Math.round(player.energy);hungerUI.textContent=
 function render(){
  const w=canvas.width,h=canvas.height,horizon=Math.round(h*.37);
  const hour=world.minute/60,night=hour>=19||hour<6,dusk=hour>=17&&hour<19;
- const sky=night?'#152842':dusk?'#db9977':'#91c9e5';
+ const seasons=['Primavera','Verão','Outono','Inverno'],seasonIndex=Math.floor((world.day-1)/7)%4,season=seasons[seasonIndex];
+ const rainy=world.day%5===0,autumn=seasonIndex===2,winter=seasonIndex===3;
+ const sky=night?'#152842':dusk?'#db9977':rainy?'#849aa7':winter?'#b9d3db':'#91c9e5';
  ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
  // Distant hills use slower parallax than foreground.
  function polygon(points,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.fill();}
@@ -64,7 +66,7 @@ function render(){
  const hillOffset=player.x*.08;
  polygon([[-100-hillOffset,horizon],[130-hillOffset,horizon-85],[340-hillOffset,horizon-18],[570-hillOffset,horizon-110],[w+150,horizon],[w,horizon]],night?'#314c54':'#77a69a');
  polygon([[-100,horizon],[190-player.x*.14,horizon-43],[450-player.x*.14,horizon],[720-player.x*.14,horizon-70],[w+100,horizon]],night?'#344d47':'#619474');
- ctx.fillStyle=night?'#354e38':'#75a758';ctx.fillRect(0,horizon,w,h-horizon);
+ ctx.fillStyle=night?'#354e38':winter?'#8caa9a':autumn?'#9c9b54':'#75a758';ctx.fillRect(0,horizon,w,h-horizon);
  // Dirt lane with perspective, plus subtle ground bands.
  polygon([[w*.42,horizon],[w*.57,horizon],[w*.97,h],[w*.03,h]],night?'#6a604e':'#c0a17a');
  polygon([[w*.46,horizon],[w*.50,horizon],[w*.68,h],[w*.61,h]],night?'#766952':'#dbc49a');
@@ -85,9 +87,9 @@ function render(){
   const tx=((i*151-player.x*.35)%1200+1200)%1200-90;
   const ty=horizon+18+(i%3)*13;
   ctx.fillStyle='#69533e';ctx.fillRect(tx,ty-18,11,60);
-  ctx.fillStyle=night?'#2e5d3b':'#367846';
+  ctx.fillStyle=night?'#2e5d3b':winter?'#69867b':autumn?'#b47737':'#367846';
   ctx.beginPath();ctx.arc(tx+5,ty-28,28,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=night?'#3c6b45':'#4f9752';ctx.beginPath();ctx.arc(tx-8,ty-38,17,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=night?'#3c6b45':winter?'#8ba49a':autumn?'#c18b43':'#4f9752';ctx.beginPath();ctx.arc(tx-8,ty-38,17,0,Math.PI*2);ctx.fill();
  }
  // Draw distant plots before near plots for depth.
  const sorted=plots.slice().sort((p,q)=>q.z-p.z);
@@ -121,10 +123,11 @@ function render(){
  ctx.fillStyle='#d9aa83';ctx.fillRect(px-27,py-17,8,33);ctx.fillRect(px+19,py-17,8,33);
  ctx.beginPath();ctx.arc(px,py-43,18,0,Math.PI*2);ctx.fill();
  ctx.fillStyle='#6c5139';ctx.fillRect(px-19,py-60,38,9);ctx.fillRect(px-13,py-70,26,14);
+ if(rainy){ctx.strokeStyle='rgba(193,219,234,.65)';ctx.lineWidth=2;for(let i=0;i<75;i++){const x=(i*139+world.minute*17)%w,y=(i*89+world.minute*27)%h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-5,y+15);ctx.stroke();}}
  if(night){ctx.fillStyle='rgba(7,15,29,.28)';ctx.fillRect(0,0,w,h);}
  ctx.fillStyle='rgba(20,39,30,.68)';ctx.fillRect(12,10,w-24,42);
  ctx.fillStyle='#f7f4e7';ctx.font='17px system-ui';
- ctx.fillText('PIXEL FARM SEASONS  •  F plantar  •  T veículo  •  X expandir',26,37);
+ ctx.fillText('PIXEL FARM SEASONS  •  '+season+(rainy?'  •  Chuva':'')+'  •  F plantar  •  T veículo  •  X expandir',26,37);
 }
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;update(dt);render();requestAnimationFrame(frame);}requestAnimationFrame(frame);
 load();
