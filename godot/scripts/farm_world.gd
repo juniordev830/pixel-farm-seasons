@@ -102,15 +102,24 @@ func _lighting() -> void:
     var sun := DirectionalLight3D.new()
     sun.name = "Sun"
     sun.rotation_degrees = Vector3(-53.0, -27.0, 0.0)
-    sun.light_energy = 1.2
+    sun.light_color = Color("#fff1d4")
+    sun.light_energy = 1.4
     sun.shadow_enabled = true
     add_child(sun)
 
     var world_environment := WorldEnvironment.new()
     world_environment.name = "WorldEnvironment"
     var env := Environment.new()
-    env.background_mode = Environment.BG_COLOR
-    env.background_color = SKY
+    # A true gradient sky replaces the solid dark-blue backdrop in gameplay.
+    var sky := Sky.new()
+    var sky_mat := ProceduralSkyMaterial.new()
+    sky_mat.sky_top_color = Color("#609cc6")
+    sky_mat.sky_horizon_color = Color("#c8dfe4")
+    sky_mat.ground_bottom_color = Color("#465638")
+    sky_mat.ground_horizon_color = Color("#c8d4be")
+    sky.sky_material = sky_mat
+    env.sky = sky
+    env.background_mode = Environment.BG_SKY
     env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
     env.ambient_light_color = Color("#e7ebdb")
     env.ambient_light_energy = 0.82
