@@ -57,6 +57,7 @@ function render(){
  const hour=world.minute/60,night=hour>=19||hour<6,dusk=hour>=17&&hour<19;
  const seasons=['Primavera','Verão','Outono','Inverno'],seasonIndex=Math.floor((world.day-1)/7)%4,season=seasons[seasonIndex];
  const rainy=world.day%5===0,autumn=seasonIndex===2,winter=seasonIndex===3;
+ const wind=Math.sin(world.minute*.08)*3;
  const sky=night?'#152842':dusk?'#db9977':rainy?'#849aa7':winter?'#b9d3db':'#91c9e5';
  ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
  // Distant hills use slower parallax than foreground.
@@ -88,8 +89,8 @@ function render(){
   const ty=horizon+18+(i%3)*13;
   ctx.fillStyle='#69533e';ctx.fillRect(tx,ty-18,11,60);
   ctx.fillStyle=night?'#2e5d3b':winter?'#69867b':autumn?'#b47737':'#367846';
-  ctx.beginPath();ctx.arc(tx+5,ty-28,28,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=night?'#3c6b45':winter?'#8ba49a':autumn?'#c18b43':'#4f9752';ctx.beginPath();ctx.arc(tx-8,ty-38,17,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(tx+5+wind,ty-28,28,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=night?'#3c6b45':winter?'#8ba49a':autumn?'#c18b43':'#4f9752';ctx.beginPath();ctx.arc(tx-8+wind*1.3,ty-38,17,0,Math.PI*2);ctx.fill();
  }
  // Draw distant plots before near plots for depth.
  const sorted=plots.slice().sort((p,q)=>q.z-p.z);
