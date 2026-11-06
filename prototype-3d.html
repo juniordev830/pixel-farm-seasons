@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Farm Seasons 3D — Experimental</title>
+<style>html,body{margin:0;overflow:hidden;background:#87b7d2;font:16px system-ui;color:#fff}#hud{position:absolute;top:12px;left:12px;padding:14px 18px;border-radius:14px;background:#172a24dd;max-width:370px;line-height:1.7}#help{position:absolute;bottom:14px;left:12px;background:#172a24dd;padding:10px;border-radius:12px}#touch{position:absolute;bottom:15px;right:12px;display:flex;gap:8px}button{background:#315b3c;color:white;border:1px solid #b4d7a0;border-radius:12px;padding:16px;font-size:18px;touch-action:none}@media(pointer:fine){#touch{display:none}}</style>
+</head><body><div id="hud"><b>🌾 PIXEL FARM SEASONS 3D</b><div id="stats"></div><div id="msg">Explore a fazenda. Aproxime-se da horta e pressione F.</div></div><div id="help">WASD / setas: andar · F: plantar / regar / colher · E: comer · R: descansar · P: salvar · L: carregar</div><div id="touch"><button data-key="a">◀</button><button data-key="w">▲</button><button data-key="s">▼</button><button data-key="d">▶</button><button data-action="f">🌱</button></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+const scene=new THREE.Scene();scene.background=new THREE.Color('#94c9eb');scene.fog=new THREE.Fog('#94c9eb',90,270);
+const camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.1,500);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xe9f6ff,0x59613a,2));
+const sun=new THREE.DirectionalLight(0xffe3b2,2.3);sun.position.set(-35,60,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-100;sun.shadow.camera.right=100;sun.shadow.camera.top=100;sun.shadow.camera.bottom=-100;scene.add(sun);
+const mat=(color)=>new THREE.MeshStandardMaterial({color,roughness:.95});
+const grass=mat('#74a85a'),soil=mat('#725039'),wood=mat('#835a38'),roof=mat('#a84c3b'),wall=mat('#ead8b7'),blue=mat('#2565ad'),red=mat('#b63d39'),leaf=mat('#427d42'),skin=mat('#d4a078');
+function box(w,h,d,m,x,y,z,parent=scene){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
+function sphere(r,m,x,y,z,parent=scene){const o=new THREE.Mesh(new THREE.SphereGeometry(r,12,8),m);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o;}
+box(280,.25,280,grass,0,-.15,0);box(6,.05,95,mat('#bca27a'),0,.02,-6);
+function house(x,z,w,d,h){box(w,h,d,wall,x,h/2,z);const a=box(w+2,1,d+2,roof,x,h+.35,z);a.rotation.z=.16;box(2.4,3,.12,wood,x,h*0+1.5,z+d/2+.07);for(const dx of [-w*.3,w*.3])box(1.7,1.5,.13,mat('#9ed0e0'),x+dx,h*.6,z+d/2+.08);}
+house(-19,-19,13,10,7);house(13,-21,13,10,5.5);
+box(5,2.2,8,blue,13,1.2,-17);box(4,1.4,4,blue,13,2.9,-17);
+for(const dx of [-2.8,2.8])for(const dz of [-2.6,2.6]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.95,.95,.55,14),mat('#272b2e'));wheel.rotation.z=Math.PI/2;wheel.position.set(13+dx,.9,-17+dz);scene.add(wheel);}
+for(let i=0;i<55;i++){const x=((i*43)%145)-72,z=((i*71)%135)-67;if(Math.abs(x)<13&&Math.abs(z)<32)continue;box(.9,5,.9,wood,x,2.5,z);sphere(3.1,leaf,x,6,z);sphere(2.2,leaf,x-1.4,6.6,z);}
+const plots=[];for(let i=0;i<12;i++){const x=-18+(i%4)*3.8,z=4+Math.floor(i/4)*4.5;box(3.1,.18,3.3,soil,x,.07,z);plots.push({x,z,stage:0,day:0,water:false,plant:null});}
+const farmer=new THREE.Group();scene.add(farmer);
+box(1.2,1.65,.75,mat('#346b9b'),0,2.25,0,farmer);box(.4,1.25,.4,mat('#394d39'),-.35,.8,0,farmer);box(.4,1.25,.4,mat('#394d39'),.35,.8,0,farmer);
+sphere(.57,skin,0,3.55,0,farmer);box(1.45,.16,1.45,mat('#a98b4a'),0,4.06,0,farmer);box(.87,.3,.87,mat('#b59653'),0,4.25,0,farmer);
+const state={x:0,z:12,day:1,minute:420,energy:100,hunger:0,coins:40,seeds:8,harvest:0};farmer.position.set(state.x,0,state.z);
+const keys=new Set(),stats=document.querySelector('#stats'),msg=document.querySelector('#msg');
+function message(s){msg.textContent=s;}
+function nearest(){return plots.reduce((a,b)=>Math.hypot(b.x-state.x,b.z-state.z)<Math.hypot(a.x-state.x,a.z-state.z)?b:a);}
+function farm(){const p=nearest();if(Math.hypot(p.x-state.x,p.z-state.z)>4)return message('Chegue mais perto da horta.');if(!p.stage){if(!state.seeds)return message('Sem sementes.');state.seeds--;p.stage=1;p.day=state.day;p.water=false;p.plant=sphere(.55,mat('#74c44b'),p.x,.85,p.z);message('Plantado! Pressione F para regar.');}else if(!p.water){p.water=true;message('Regado! Espere até o próximo dia.');}else if(state.day>p.day){scene.remove(p.plant);p.plant.geometry.dispose();p.stage=0;p.plant=null;state.harvest++;state.coins+=12;message('Colheita vendida automaticamente: +12 moedas.');}else message('Aguarde o crescimento.');}
+function save(){localStorage.setItem('pixel-farm-3d-v1',JSON.stringify({...state,plots:plots.map(p=>({stage:p.stage,day:p.day,water:p.water}))}));message('Partida salva.');}
+function load(){try{const s=JSON.parse(localStorage.getItem('pixel-farm-3d-v1'));if(!s)return;for(const k of Object.keys(state))if(Number.isFinite(s[k]))state[k]=s[k];farmer.position.set(state.x,0,state.z);plots.forEach((p,i)=>{if(p.plant){scene.remove(p.plant);p.plant.geometry.dispose();p.plant=null;}const q=s.plots?.[i];p.stage=q?.stage===1?1:0;p.day=q?.day||0;p.water=q?.water===true;if(p.stage)p.plant=sphere(.55,mat('#74c44b'),p.x,.85,p.z);});message('Partida carregada.');}catch{message('Falha ao carregar partida.');}}
+function action(k){if(k==='f')farm();if(k==='p')save();if(k==='l')load();if(k==='e'){state.hunger=Math.max(0,state.hunger-45);state.energy=Math.min(100,state.energy+10);}if(k==='r')state.energy=Math.min(100,state.energy+25);}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys.add(k);if(!e.repeat)action(k);});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
+for(const b of document.querySelectorAll('#touch button')){const k=b.dataset.key;if(k){b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(k);});for(const ev of ['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>keys.delete(k));}else b.addEventListener('click',()=>action(b.dataset.action));}
+const clock=new THREE.Clock();let saveTimer=0;function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);state.minute+=dt*3;if(state.minute>=1440){state.minute-=1440;state.day++;}state.hunger=Math.min(100,state.hunger+dt*.11);if(state.minute>720&&state.minute<1080)state.energy=Math.max(0,state.energy-dt*.11);
+const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));const len=Math.hypot(dx,dz);if(len){const speed=state.energy<20?3:7;state.x=Math.max(-125,Math.min(125,state.x+dx/len*speed*dt));state.z=Math.max(-125,Math.min(125,state.z+dz/len*speed*dt));farmer.rotation.y=Math.atan2(dx,dz);farmer.position.set(state.x,0,state.z);}
+const behind=new THREE.Vector3(state.x,7,state.z+12);camera.position.lerp(behind,Math.min(1,dt*5));camera.lookAt(state.x,2,state.z-6);
+const night=state.minute<360||state.minute>=1140;scene.background.set(night?'#233653':'#94c9eb');scene.fog.color.copy(scene.background);sun.intensity=night?.35:2.3;
+stats.textContent='🪙 '+state.coins+'  🌱 '+state.seeds+'  🥕 '+state.harvest+'  ⚡ '+Math.round(state.energy)+'  🍲 '+Math.round(state.hunger)+'  | Dia '+state.day+' · '+String(Math.floor(state.minute/60)).padStart(2,'0')+':'+String(Math.floor(state.minute%60)).padStart(2,'0');
+renderer.render(scene,camera);}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+</script></body></html>
