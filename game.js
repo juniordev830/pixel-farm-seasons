@@ -23,7 +23,7 @@ addEventListener('blur',()=>keys.clear());
 for(const button of document.querySelectorAll('.touch button')){
  const hold=button.dataset.hold,action=button.dataset.key;
  if(hold){const down=e=>{e.preventDefault();keys.add(hold);};const up=e=>{e.preventDefault();keys.delete(hold);};button.addEventListener('pointerdown',down);button.addEventListener('pointerup',up);button.addEventListener('pointercancel',up);button.addEventListener('pointerleave',up);}
- else button.addEventListener('click',()=>{if(action==='f')farm();else if(action==='e')eat();else if(action==='p')save();else if(action==='b'||action==='v')trade(action);});
+ else button.addEventListener('click',()=>{if(action==='f')farm();else if(action==='e')eat();else if(action==='p')save();else if(action==='t')vehicle();else if(action==='x')expand();else if(action==='b'||action==='v')trade(action);});
 }
 function update(dt){
 world.minute+=dt*2;autosaveElapsed+=dt;if(autosaveElapsed>=60){autosaveElapsed=0;try{localStorage.setItem(saveKey,JSON.stringify({player,world,plots,lastMealDay}));}catch{}}while(world.minute>=1440){world.minute-=1440;world.day++;lastMealDay=0;}
