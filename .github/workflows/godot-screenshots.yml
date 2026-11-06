@@ -9,6 +9,8 @@ on:
       - "godot/scripts/environment_art_pass.gd"
       - "godot/scripts/farm_world.gd"
       - "godot/scripts/visual_detail_pass.gd"
+      - "godot/scripts/cozy_reference_art.gd"
+      - "godot/shaders/**"
       - "godot/scripts/life_sim.gd"
       - "godot/scenes/farm_world.tscn"
       - ".github/workflows/godot-screenshots.yml"
