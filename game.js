@@ -18,6 +18,11 @@ function eat(){player.hunger=clamp(player.hunger-65,0,100);player.energy=clamp(p
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys.add(k);if(!e.repeat&&k==='e')eat();if(!e.repeat&&k==='f')farm();if(!e.repeat&&(k==='b'||k==='v'))trade(k);if(!e.repeat&&k==='p')save();if(!e.repeat&&k==='l')load();if(!e.repeat&&k==='r'){player.energy=clamp(player.energy+25,0,100);message.textContent='Você descansou um pouco.';}});
 addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 addEventListener('blur',()=>keys.clear());
+for(const button of document.querySelectorAll('.touch button')){
+ const hold=button.dataset.hold,action=button.dataset.key;
+ if(hold){const down=e=>{e.preventDefault();keys.add(hold);};const up=e=>{e.preventDefault();keys.delete(hold);};button.addEventListener('pointerdown',down);button.addEventListener('pointerup',up);button.addEventListener('pointercancel',up);button.addEventListener('pointerleave',up);}
+ else button.addEventListener('click',()=>{if(action==='f')farm();else if(action==='e')eat();else if(action==='p')save();else if(action==='b'||action==='v')trade(action);});
+}
 function update(dt){
 world.minute+=dt*2;autosaveElapsed+=dt;if(autosaveElapsed>=60){autosaveElapsed=0;try{localStorage.setItem(saveKey,JSON.stringify({player,world,plots,lastMealDay}));}catch{}}while(world.minute>=1440){world.minute-=1440;world.day++;lastMealDay=0;}
 const hour=world.minute/60;const night=hour>=19||hour<6;
