@@ -2,7 +2,7 @@
 (() => {
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const clock=document.getElementById('clock'),energyUI=document.getElementById('energy'),hungerUI=document.getElementById('hunger'),message=document.getElementById('message');
-const keys=new Set(),player={x:0,z:0,energy:100,hunger:0,coins:40,seeds:8,harvest:0,vehicle:'foot',land:0},world={minute:420,day:1};
+const keys=new Set(),player={x:-180,z:80,energy:100,hunger:0,coins:40,seeds:8,harvest:0,vehicle:'foot',land:0},world={minute:420,day:1};
 const plots=Array.from({length:12},(_,i)=>({x:-180+(i%4)*85,z:80+Math.floor(i/4)*80,planted:-1,watered:false}));
 const saveKey='pixel-farm-seasons-v1';
 function notice(s){message.textContent=s;}
