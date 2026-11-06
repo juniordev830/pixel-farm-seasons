@@ -52,6 +52,7 @@ var driving := false
 var initialized := false
 var save_tick := 0.0
 var lighting_tick := 0.0
+var last_sky_step := -1
 var last_travel_position := Vector3.ZERO
 var last_reminder_id := ""
 var reminder_day := 0
@@ -801,7 +802,11 @@ func _update_light() -> void:
         var env := environment.environment
         env.ambient_light_color = Color("#48516e").lerp(Color("#d8dfd0"), daylight)
         env.ambient_light_energy = 0.22 + daylight * 0.36
-        if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
+        # Updating a ProceduralSkyMaterial can rebuild the sky texture. Keep
+        # that expensive work to one update per five in-game minutes.
+        var sky_step := int(minutes / 5.0)
+        if sky_step != last_sky_step and env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
+            last_sky_step = sky_step
             var sky_material := env.sky.sky_material as ProceduralSkyMaterial
             sky_material.sky_top_color = Color("#1f385a").lerp(Color("#498dc1"), daylight)
             sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#bedce7"), daylight).lerp(Color("#f1caa3"), golden * 0.22)
