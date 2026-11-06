@@ -8,7 +8,7 @@ const CHECKER_RED_LIGHT := Color("#c36b5b")
 const JEANS := Color("#365c79")
 const HAT := Color("#d8bc79")
 const BOOTS := Color("#59412f")
-const ANIMATED_FARMER = preload("res://assets/kenney/characters/character-male-a.glb")
+const ANIMATED_FARMER = preload("res://assets/kenney/characters/character-male-b.glb")
 
 var farmer: CharacterBody3D
 var left_leg: Node3D
@@ -70,16 +70,16 @@ func _install_animated_farmer() -> void:
     imported_model = rig
     imported_model.name = "FazendeiroAnimado"
     imported_model.position = Vector3(0, -1.08, 0)
-    imported_model.scale = Vector3.ONE * 2.68
+    imported_model.scale = Vector3.ONE * 2.57
     imported_model.rotation.y = PI
     add_child(imported_model)
     animation_player = _find_animation_player(imported_model)
     current_anim = ""
     _play_farm_animation("idle")
     # Hat, backpack and denim details are preserved as recognizable farm gear.
-    _cylinder(self, Vector3(0, 0.78, 0), 0.52, 0.075, HAT)
-    _cylinder(self, Vector3(0, 0.89, 0), 0.30, 0.24, Color("#e4c98a"))
-    _cylinder(self, Vector3(0, 0.85, 0), 0.312, 0.05, Color("#75563b"))
+    _cylinder(self, Vector3(0, 0.68, 0), 0.52, 0.075, HAT)
+    _cylinder(self, Vector3(0, 0.79, 0), 0.30, 0.24, Color("#e4c98a"))
+    _cylinder(self, Vector3(0, 0.75, 0), 0.312, 0.05, Color("#75563b"))
     _box(self, Vector3(0, -0.11, 0.32), Vector3(0.56, 0.66, 0.26), Color("#7d5c43"))
     _box(self, Vector3(0, -0.32, 0.48), Vector3(0.48, 0.23, 0.055), Color("#a58154"))
 
