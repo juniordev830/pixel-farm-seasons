@@ -37,6 +37,7 @@ func _mat(tint: Color, glow: bool = false) -> StandardMaterial3D:
 func _box(label: String, at: Vector3, size: Vector3, tint: Color) -> MeshInstance3D:
     var obj := MeshInstance3D.new()
     obj.name = label
+    obj.set_meta("cozy_kind", label)
     var mesh := BoxMesh.new()
     mesh.size = size
     obj.mesh = mesh
@@ -49,6 +50,7 @@ func _box(label: String, at: Vector3, size: Vector3, tint: Color) -> MeshInstanc
 func _ball(label: String, at: Vector3, size: Vector3, tint: Color) -> MeshInstance3D:
     var obj := MeshInstance3D.new()
     obj.name = label
+    obj.set_meta("cozy_kind", label)
     var mesh := SphereMesh.new()
     mesh.radius = 0.5
     mesh.height = 1.0
