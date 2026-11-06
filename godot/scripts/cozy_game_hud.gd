@@ -220,6 +220,11 @@ func _refresh_data() -> void:
 
     var old_layer := get_parent().get_node_or_null("HUD") as CanvasLayer
     if old_layer != null:
+        # O HUD antigo continua como fonte de texto, mas nao deve se sobrepor ao HUD novo.
+        for old_name in ["Help", "LifeStats", "LifeHint", "LifeNotice", "FarmerThought"]:
+            var old_widget := old_layer.get_node_or_null(old_name) as CanvasItem
+            if old_widget != null:
+                old_widget.hide()
         var hint := old_layer.get_node_or_null("LifeHint") as Label
         if hint != null:
             prompt.text = hint.text
