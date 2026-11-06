@@ -3,14 +3,14 @@ extends Node3D
 ## Os modelos sao temporarios: substitua-os por GLB/GLTF mantendo as posicoes.
 ## A cena respeita o controlador existente em scripts/farmer_controller.gd.
 
-const GRASS := Color("#6c9f5c")
-const GRASS_LIGHT := Color("#84ae67")
+const GRASS := Color("#64895b")
+const GRASS_LIGHT := Color("#759962")
 const WOOD := Color("#875b38")
 const WOOD_LIGHT := Color("#c79964")
 const SOIL := Color("#654631")
 const CREAM := Color("#f5e4c2")
 const ROOF := Color("#a9533a")
-const LEAVES := Color("#4e8151")
+const LEAVES := Color("#4a7050")
 const SKY := Color("#b4d5ed")
 
 var rng := RandomNumberGenerator.new()
@@ -131,7 +131,7 @@ func _terrain() -> void:
     _box("Terreno principal", Vector3(0, -0.18, 0), Vector3(100, 0.35, 100), GRASS, true)
 
     # Caminho de terra saindo do portao e levando ao casarao.
-    _box("Estrada da fazenda", Vector3(-4, 0.015, 17), Vector3(4.5, 0.035, 40), Color("#b79b75"))
+    _box("Estrada da fazenda", Vector3(-4, 0.015, 17), Vector3(4.5, 0.035, 40), Color("#9d866c"))
     _box("Caminho ate a varanda", Vector3(-9, 0.022, -7.5), Vector3(12.5, 0.04, 2.1), Color("#c3a57d"))
     for i in range(26):
         var x := rng.randf_range(-45.0, 45.0)
