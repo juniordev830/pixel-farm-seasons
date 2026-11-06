@@ -5,6 +5,25 @@ extends Node3D
 ## Assets: Kenney Nature Kit (CC0), from Hidencod/tge-assets.
 
 const NATURE := "res://assets/kenney/nature/"
+# Static references ensure every GLB is packed in the Windows export.
+const MODEL_SCENES := {
+    "tree-detailed.glb": preload("res://assets/kenney/nature/tree-detailed.glb"),
+    "tree-oak.glb": preload("res://assets/kenney/nature/tree-oak.glb"),
+    "tree-plateau.glb": preload("res://assets/kenney/nature/tree-plateau.glb"),
+    "tree-pineroundb.glb": preload("res://assets/kenney/nature/tree-pineroundb.glb"),
+    "tree-default.glb": preload("res://assets/kenney/nature/tree-default.glb"),
+    "tree-fat.glb": preload("res://assets/kenney/nature/tree-fat.glb"),
+    "rock-largea.glb": preload("res://assets/kenney/nature/rock-largea.glb"),
+    "rock-largeb.glb": preload("res://assets/kenney/nature/rock-largeb.glb"),
+    "rock-smalla.glb": preload("res://assets/kenney/nature/rock-smalla.glb"),
+    "flower-purpleb.glb": preload("res://assets/kenney/nature/flower-purpleb.glb"),
+    "flower-yellowb.glb": preload("res://assets/kenney/nature/flower-yellowb.glb"),
+    "flower-redb.glb": preload("res://assets/kenney/nature/flower-redb.glb"),
+    "plant-bushdetailed.glb": preload("res://assets/kenney/nature/plant-bushdetailed.glb"),
+    "plant-bushlarge.glb": preload("res://assets/kenney/nature/plant-bushlarge.glb"),
+    "crops-cornstagec.glb": preload("res://assets/kenney/nature/crops-cornstagec.glb"),
+    "tree-tall.glb": preload("res://assets/kenney/nature/tree-tall.glb")
+}
 const TREES := [
     "tree-detailed.glb", "tree-oak.glb", "tree-plateau.glb",
     "tree-pineroundb.glb", "tree-default.glb", "tree-fat.glb"
@@ -25,9 +44,9 @@ func _ready() -> void:
 
 
 func _packed(filename: String) -> PackedScene:
-    if not loaded.has(filename):
-        loaded[filename] = load(NATURE + filename)
-    return loaded[filename] as PackedScene
+    # A runtime string-based load is not guaranteed to be discovered by the
+    # Godot export dependency scanner, unlike these static preload references.
+    return MODEL_SCENES.get(filename) as PackedScene
 
 
 func _place(filename: String, at: Vector3, size: float, spin: float = 0.0) -> Node3D:
