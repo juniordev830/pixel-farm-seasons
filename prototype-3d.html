@@ -10,13 +10,22 @@ const camera=new THREE.PerspectiveCamera(66,innerWidth/innerHeight,.1,500);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xe9f6ff,0x59613a,2));
 const sun=new THREE.DirectionalLight(0xffe3b2,2.3);sun.position.set(-35,60,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-100;sun.shadow.camera.right=100;sun.shadow.camera.top=100;sun.shadow.camera.bottom=-100;scene.add(sun);
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 const mat=(color)=>new THREE.MeshStandardMaterial({color,roughness:.95});
 const grass=mat('#74a85a'),soil=mat('#725039'),wood=mat('#835a38'),roof=mat('#a84c3b'),wall=mat('#ead8b7'),blue=mat('#2565ad'),red=mat('#b63d39'),leaf=mat('#427d42'),skin=mat('#d4a078');
 function box(w,h,d,m,x,y,z,parent=scene){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;}
 function sphere(r,m,x,y,z,parent=scene){const o=new THREE.Mesh(new THREE.SphereGeometry(r,12,8),m);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o;}
-box(280,.25,280,grass,0,-.15,0);box(6,.05,95,mat('#bca27a'),0,.02,-6);
+box(280,.25,280,grass,0,-.15,0);
+// Deterministic grass clumps and wildflowers, using lightweight instanced meshes.
+const vegetationGeo=new THREE.ConeGeometry(.16,.65,4),vegetationMat=new THREE.MeshStandardMaterial({color:'#508b41',roughness:1});
+const grassTufts=new THREE.InstancedMesh(vegetationGeo,vegetationMat,750);const transform=new THREE.Object3D();for(let i=0;i<750;i++){const x=((i*67.31)%180)-90,z=((i*43.73)%180)-90;if(Math.abs(x)<6&&z>-45&&z<40){transform.position.set(x,-2,z);}else transform.position.set(x,.28,z);transform.rotation.y=i*2.4;transform.scale.setScalar(.65+(i%7)*.11);transform.updateMatrix();grassTufts.setMatrixAt(i,transform.matrix);}grassTufts.instanceMatrix.needsUpdate=true;scene.add(grassTufts);box(6,.05,95,mat('#bca27a'),0,.02,-6);
 function house(x,z,w,d,h){box(w,h,d,wall,x,h/2,z);const a=box(w+2,1,d+2,roof,x,h+.35,z);a.rotation.z=.16;box(2.4,3,.12,wood,x,h*0+1.5,z+d/2+.07);for(const dx of [-w*.3,w*.3])box(1.7,1.5,.13,mat('#9ed0e0'),x+dx,h*.6,z+d/2+.08);}
 house(-19,-19,13,10,7);house(13,-21,13,10,5.5);
+// Warm farmhouse windows and a small porch lamp.
+const lamp=new THREE.PointLight(0xffc77d,2.4,20);lamp.position.set(-19,5,-12);scene.add(lamp);
+for(const x of [-23,-15])box(1.6,1.8,.18,mat('#d8bb74'),x,4,-13.85);
+// Pebble path connecting the house to the garden.
+for(let i=0;i<16;i++){const x=-19+Math.sin(i*2.7)*.65,z=-11+i*1.6;box(1.5,.12,1.1,mat(i%2?'#c3b9a2':'#aaa08b'),x,.04,z);}
 box(5,2.2,8,blue,13,1.2,-17);box(4,1.4,4,blue,13,2.9,-17);
 for(const dx of [-2.8,2.8])for(const dz of [-2.6,2.6]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.95,.95,.55,14),mat('#272b2e'));wheel.rotation.z=Math.PI/2;wheel.position.set(13+dx,.9,-17+dz);scene.add(wheel);}
 for(let i=0;i<55;i++){const x=((i*43)%145)-72,z=((i*71)%135)-67;if(Math.abs(x)<13&&Math.abs(z)<32)continue;box(.9,5,.9,wood,x,2.5,z);sphere(3.1,leaf,x,6,z);sphere(2.2,leaf,x-1.4,6.6,z);}
@@ -44,7 +53,10 @@ const clock=new THREE.Clock();let saveTimer=0;function animate(){requestAnimatio
 const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));const len=Math.hypot(dx,dz);if(len){const speed=state.energy<20?3:7;state.x=Math.max(-125,Math.min(125,state.x+dx/len*speed*dt));state.z=Math.max(-125,Math.min(125,state.z+dz/len*speed*dt));farmer.rotation.y=Math.atan2(dx,dz);farmer.position.set(state.x,0,state.z);}
 const behind=new THREE.Vector3(state.x,7,state.z+12);camera.position.lerp(behind,Math.min(1,dt*5));camera.lookAt(state.x,2,state.z-6);
 rotor.rotation.z+=dt*.65;
-const night=state.minute<360||state.minute>=1140;scene.background.set(night?'#233653':'#94c9eb');scene.fog.color.copy(scene.background);sun.intensity=night?.35:2.3;
+const night=state.minute<360||state.minute>=1140,dusk=state.minute>=1020&&state.minute<1140;
+scene.background.set(night?'#233653':dusk?'#e5a17d':'#94c9eb');scene.fog.color.copy(scene.background);
+sun.intensity=night?.35:dusk?1.4:2.3;lamp.intensity=night?3.5:dusk?1.5:.35;
+renderer.toneMappingExposure=night?.85:dusk?1.05:1.25;
 stats.textContent='🪙 '+state.coins+'  🌱 '+state.seeds+'  🥕 '+state.harvest+'  ⚡ '+Math.round(state.energy)+'  🍲 '+Math.round(state.hunger)+'  | Dia '+state.day+' · '+String(Math.floor(state.minute/60)).padStart(2,'0')+':'+String(Math.floor(state.minute%60)).padStart(2,'0');
 renderer.render(scene,camera);}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 </script></body></html>
