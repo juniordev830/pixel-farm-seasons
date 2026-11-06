@@ -7,7 +7,19 @@ const plots=Array.from({length:12},(_,i)=>({x:-180+(i%4)*85,z:80+Math.floor(i/4)
 const saveKey='pixel-farm-seasons-v1';
 function notice(s){message.textContent=s;}
 function save(){try{localStorage.setItem(saveKey,JSON.stringify({player,world,plots,lastMealDay}));notice('Jogo salvo!');}catch{notice('Não foi possível salvar neste navegador.');}}
-function load(){try{const s=JSON.parse(localStorage.getItem(saveKey)||'null');if(!s)return;Object.assign(player,s.player);Object.assign(world,s.world);s.plots?.forEach((p,i)=>{if(plots[i])Object.assign(plots[i],p)});lastMealDay=s.lastMealDay||0;notice('Jogo carregado!');}catch{notice('Save inválido: iniciando nova partida.');}}
+function load(){try{
+ const s=JSON.parse(localStorage.getItem(saveKey)||'null');if(!s)return;
+ if(!s.player||!s.world||!Array.isArray(s.plots)||!Number.isFinite(s.world.minute)||!Number.isInteger(s.world.day)||s.world.day<1)throw Error('save inválido');
+ const safeNumber=(value,fallback,min,max)=>Number.isFinite(value)?Math.max(min,Math.min(max,value)):fallback;
+ for(const k of ['x','z'])player[k]=safeNumber(s.player[k],player[k],-10000,10000);
+ for(const k of ['energy','hunger'])player[k]=safeNumber(s.player[k],player[k],0,100);
+ for(const k of ['coins','seeds','harvest','land'])player[k]=Math.floor(safeNumber(s.player[k],player[k],0,1000000));
+ player.vehicle=['foot','fusca','bike'].includes(s.player.vehicle)?s.player.vehicle:'foot';
+ world.day=s.world.day;world.minute=safeNumber(s.world.minute,420,0,1439.999);
+ s.plots.slice(0,plots.length).forEach((p,i)=>{if(!p||typeof p!=='object')return;plots[i].planted=Number.isFinite(p.planted)?p.planted:-1;plots[i].watered=p.watered===true;});
+ lastMealDay=Number.isInteger(s.lastMealDay)?s.lastMealDay:0;notice('Jogo carregado!');
+ }catch{notice('Save inválido: iniciando nova partida.');}}
+
 function nearestPlot(){return plots.reduce((a,p)=>Math.hypot(p.x-player.x,p.z-player.z)<Math.hypot(a.x-player.x,a.z-player.z)?p:a,plots[0]);}
 function farm(){const p=nearestPlot();if(Math.hypot(p.x-player.x,p.z-player.z)>95)return notice('Aproxime-se da horta.');if(p.planted<0){if(player.seeds<=0)return notice('Sem sementes! Aperte B para comprar.');p.planted=world.day*1440+world.minute;p.watered=false;player.seeds--;notice('Semente plantada! Aperte F novamente para regar.');}else if(!p.watered){p.watered=true;notice('Plantação regada. Aguarde um dia do jogo.');}else if(world.day*1440+world.minute-p.planted>=1440){p.planted=-1;p.watered=false;player.harvest++;notice('Colheita realizada! Aperte V para vender.');}else notice('Ainda está crescendo.');}
 function vehicle(){if(Math.hypot(player.x+65,player.z-30)>100)return notice('Aproxime-se da garagem para usar um veículo.');player.vehicle=player.vehicle==='foot'?'fusca':player.vehicle==='fusca'?'bike':'foot';notice(player.vehicle==='fusca'?'Entrou no Fusca azul.':player.vehicle==='bike'?'Pegou a bicicleta Monark vermelha.':'Saiu do veículo.');}
