@@ -220,11 +220,11 @@ func _flowering_trees() -> void:
 
 func _distant_landscape() -> void:
     # Very low silhouettes on the horizon, far outside the playable terrain.
-    for x, z, width, height in [
-        [-96.0, -96.0, 105.0, 20.0],
-        [-14.0, -108.0, 119.0, 25.0],
-        [87.0, -94.0, 112.0, 21.0]
+    for hill in [
+        Vector4(-96.0, -96.0, 105.0, 20.0),
+        Vector4(-14.0, -108.0, 119.0, 25.0),
+        Vector4(87.0, -94.0, 112.0, 21.0)
     ]:
-        var rise := _ball("Colinas distantes", Vector3(x, -7.5, z),
-            Vector3(width, height, 44.0), Color("#77908a"))
+        var rise := _ball("Colinas distantes", Vector3(hill.x, -7.5, hill.y),
+            Vector3(hill.z, hill.w, 44.0), Color("#77908a"))
         rise.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
