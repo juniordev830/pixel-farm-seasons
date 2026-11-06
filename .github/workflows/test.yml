@@ -1,0 +1,17 @@
+name: Testar protótipo de fazenda
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar lógica do jogo
+        run: node --test tests/game.test.cjs
+      - name: Verificar sintaxe JavaScript
+        run: node --check game.js
