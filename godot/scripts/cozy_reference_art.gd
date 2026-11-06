@@ -96,8 +96,17 @@ func _shade_ground() -> void:
         var soil := ShaderMaterial.new()
         soil.shader = earth
         for child in get_parent().get_children():
-            if child is MeshInstance3D and String(child.name).begins_with("Canteiro de terra"):
+            if child is MeshInstance3D and String(child.get_meta("native_prop", child.name)).begins_with("Canteiro de terra"):
                 (child as MeshInstance3D).material_override = soil
+    var path_shader := load("res://shaders/dirt_path_stylized.gdshader") as Shader
+    if path_shader != null:
+        var dirt := ShaderMaterial.new()
+        dirt.shader = path_shader
+        for child in get_parent().get_children():
+            if child is MeshInstance3D:
+                var tag := String(child.get_meta("native_prop", child.name))
+                if tag.begins_with("Estrada da fazenda") or tag.begins_with("Caminho ate a varanda"):
+                    (child as MeshInstance3D).material_override = dirt
 
 
 func _farmhouse_details() -> void:
