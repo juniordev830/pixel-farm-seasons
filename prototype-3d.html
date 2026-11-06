@@ -21,6 +21,12 @@ box(5,2.2,8,blue,13,1.2,-17);box(4,1.4,4,blue,13,2.9,-17);
 for(const dx of [-2.8,2.8])for(const dz of [-2.6,2.6]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.95,.95,.55,14),mat('#272b2e'));wheel.rotation.z=Math.PI/2;wheel.position.set(13+dx,.9,-17+dz);scene.add(wheel);}
 for(let i=0;i<55;i++){const x=((i*43)%145)-72,z=((i*71)%135)-67;if(Math.abs(x)<13&&Math.abs(z)<32)continue;box(.9,5,.9,wood,x,2.5,z);sphere(3.1,leaf,x,6,z);sphere(2.2,leaf,x-1.4,6.6,z);}
 const plots=[];for(let i=0;i<12;i++){const x=-18+(i%4)*3.8,z=4+Math.floor(i/4)*4.5;box(3.1,.18,3.3,soil,x,.07,z);plots.push({x,z,stage:0,day:0,water:false,plant:null});}
+// Fence rails and posts around the vegetable garden.
+for(let i=0;i<=9;i++){const x=-22+i*3.1;for(const z of [1,18])box(.32,2,.32,wood,x,1,z);}for(const z of [1,18]){box(28,.22,.25,wood,-8,1.5,z);box(28,.22,.25,wood,-8,.8,z);}
+// Small pond with a calm blue surface.
+const water=new THREE.Mesh(new THREE.CircleGeometry(7,32),new THREE.MeshStandardMaterial({color:'#4a9ec2',metalness:.15,roughness:.25}));water.rotation.x=-Math.PI/2;water.position.set(-38,.02,-10);scene.add(water);
+// A rustic windmill gives the distant landscape a landmark.
+box(1.6,13,1.6,wood,44,6.5,-40);const rotor=new THREE.Group();rotor.position.set(44,12,-38.8);scene.add(rotor);for(let i=0;i<4;i++){const blade=box(.9,5,.22,mat('#e8d5ac'),0,2.5,0,rotor);blade.rotation.z=i*Math.PI/2;blade.position.set(-Math.sin(i*Math.PI/2)*2.5,Math.cos(i*Math.PI/2)*2.5,0);}
 const farmer=new THREE.Group();scene.add(farmer);
 box(1.2,1.65,.75,mat('#346b9b'),0,2.25,0,farmer);box(.4,1.25,.4,mat('#394d39'),-.35,.8,0,farmer);box(.4,1.25,.4,mat('#394d39'),.35,.8,0,farmer);
 sphere(.57,skin,0,3.55,0,farmer);box(1.45,.16,1.45,mat('#a98b4a'),0,4.06,0,farmer);box(.87,.3,.87,mat('#b59653'),0,4.25,0,farmer);
@@ -37,6 +43,7 @@ for(const b of document.querySelectorAll('#touch button')){const k=b.dataset.key
 const clock=new THREE.Clock();let saveTimer=0;function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.05);state.minute+=dt*3;if(state.minute>=1440){state.minute-=1440;state.day++;}state.hunger=Math.min(100,state.hunger+dt*.11);if(state.minute>720&&state.minute<1080)state.energy=Math.max(0,state.energy-dt*.11);
 const dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),dz=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));const len=Math.hypot(dx,dz);if(len){const speed=state.energy<20?3:7;state.x=Math.max(-125,Math.min(125,state.x+dx/len*speed*dt));state.z=Math.max(-125,Math.min(125,state.z+dz/len*speed*dt));farmer.rotation.y=Math.atan2(dx,dz);farmer.position.set(state.x,0,state.z);}
 const behind=new THREE.Vector3(state.x,7,state.z+12);camera.position.lerp(behind,Math.min(1,dt*5));camera.lookAt(state.x,2,state.z-6);
+rotor.rotation.z+=dt*.65;
 const night=state.minute<360||state.minute>=1140;scene.background.set(night?'#233653':'#94c9eb');scene.fog.color.copy(scene.background);sun.intensity=night?.35:2.3;
 stats.textContent='🪙 '+state.coins+'  🌱 '+state.seeds+'  🥕 '+state.harvest+'  ⚡ '+Math.round(state.energy)+'  🍲 '+Math.round(state.hunger)+'  | Dia '+state.day+' · '+String(Math.floor(state.minute/60)).padStart(2,'0')+':'+String(Math.floor(state.minute%60)).padStart(2,'0');
 renderer.render(scene,camera);}animate();addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
