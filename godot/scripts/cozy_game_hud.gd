@@ -130,13 +130,15 @@ func _build_ui() -> void:
     energy_text = _text(needs_stack, "Energy", "Energia 96%", 15, CREAM)
     energy_bar = _bar(needs_stack, GOOD)
 
-    var agenda := _panel(root_control, "Agenda", Vector2(-300, 98), Vector2(280, 210))
+    var agenda := _panel(root_control, "Agenda", Vector2(-300, 98), Vector2(280, 284))
     agenda.set_anchors_preset(Control.PRESET_TOP_RIGHT)
     var agenda_stack := _stack(agenda, 7)
     _text(agenda_stack, "AgendaTitle", "ROTINA DA FAZENDA", 18, ACCENT)
     tasks = _text(agenda_stack, "AgendaTasks",
         "[ ] Cafe da manha\n[ ] Almoco\n[ ] Jantar\n[ ] Cuidar dos animais",
         16, CREAM)
+    tasks.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    tasks.custom_minimum_size = Vector2(242, 0)
 
     var bottom_panel := _panel(root_control, "Inventory", Vector2(20, -126), Vector2(490, 105))
     bottom_panel.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
@@ -205,6 +207,7 @@ func _refresh_data() -> void:
         "[x]" if bool(life.get("cow_fed")) else "[ ]",
         "[x]" if bool(life.get("animals_watered")) else "[ ]"
     ]
+    tasks.text += "\n\nMISSAO: " + String(life.call("current_mission_text"))
 
     inventory.text = "Comida %d  |  Racao %d  |  Sementes %d  |  Ovos %d" % [
         int(life.get("food")), int(life.get("feed")),
