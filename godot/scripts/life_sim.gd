@@ -793,18 +793,18 @@ func _update_light() -> void:
     var golden := maxf(dawn, dusk)
     var sun := get_parent().get_node_or_null("Sun") as DirectionalLight3D
     if sun != null:
-        sun.light_energy = 0.1 + daylight * 1.40
+        sun.light_energy = 0.08 + daylight * 0.76
         sun.light_color = Color("#fff3df").lerp(Color("#f5bd85"), golden * 0.70)
         sun.rotation_degrees = Vector3(-12 - daylight * 56.0, -27, 0)
     var environment := get_parent().get_node_or_null("WorldEnvironment") as WorldEnvironment
     if environment != null and environment.environment != null:
         var env := environment.environment
         env.ambient_light_color = Color("#48516e").lerp(Color("#d8dfd0"), daylight)
-        env.ambient_light_energy = 0.28 + daylight * 0.66
+        env.ambient_light_energy = 0.22 + daylight * 0.36
         if env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
             var sky_material := env.sky.sky_material as ProceduralSkyMaterial
-            sky_material.sky_top_color = Color("#192844").lerp(Color("#598fbd"), daylight)
-            sky_material.sky_horizon_color = Color("#514c69").lerp(Color("#c0dce7"), daylight).lerp(Color("#ebc39c"), golden * 0.42)
+            sky_material.sky_top_color = Color("#1f385a").lerp(Color("#498dc1"), daylight)
+            sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#bedce7"), daylight).lerp(Color("#f1caa3"), golden * 0.22)
             sky_material.ground_horizon_color = Color("#414758").lerp(Color("#c8d4bf"), daylight)
             sky_material.ground_bottom_color = Color("#28322d").lerp(Color("#536d45"), daylight)
 
