@@ -196,8 +196,8 @@ func _pergola() -> void:
 
 func _farm_sign_and_lanterns() -> void:
     # Sign is placed beside existing interactable mission board.
-    _box("Totem fazenda madeira", Vector3(-2.2, 1.53, 13.20), Vector3(2.45, 1.1, 0.23), WOOD_DARK)
-    _box("Totem fazenda interno", Vector3(-2.2, 1.53, 13.34), Vector3(2.27, 0.92, 0.055), WOOD_LITE)
+    _box("Totem fazenda madeira", Vector3(-7.0, 1.53, 8.20), Vector3(2.45, 1.1, 0.23), WOOD_DARK)
+    _box("Totem fazenda interno", Vector3(-7.0, 1.53, 8.34), Vector3(2.27, 0.92, 0.055), WOOD_LITE)
     var label := Label3D.new()
     label.name = "Placa de boas-vindas"
     label.text = "PIXEL FARM\nSEASONS"
@@ -205,13 +205,13 @@ func _farm_sign_and_lanterns() -> void:
     label.pixel_size = 0.010
     label.modulate = Color("#553b28")
     label.outline_size = 0
-    label.position = Vector3(-2.2, 1.54, 13.39)
+    label.position = Vector3(-7.0, 1.54, 8.39)
     label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
     add_child(label)
-    for x in [-3.6, -0.85]:
-        var glow := _box("Lampiao de entrada", Vector3(x, 1.33, 14.2), Vector3(0.30, 0.41, 0.29), GOLD)
+    for x in [-8.3, -5.75]:
+        var glow := _box("Lampiao de entrada", Vector3(x, 1.33, 9.20), Vector3(0.30, 0.41, 0.29), GOLD)
         glow.material_override = _mat(GOLD, true)
-        _box("Lampiao poste", Vector3(x, 0.68, 14.2), Vector3(0.11, 1.36, 0.11), WOOD_DARK)
+        _box("Lampiao poste", Vector3(x, 0.68, 9.20), Vector3(0.11, 1.36, 0.11), WOOD_DARK)
 
 
 func _flowering_trees() -> void:
