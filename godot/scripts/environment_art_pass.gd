@@ -41,7 +41,7 @@ func _ground_available(x: float, z: float) -> bool:
     return true
 
 
-func _make_multimesh(label: String, mesh: Mesh, count: int, mat: Material) -> MultiMeshInstance3D:
+func _make_multimesh(label: String, mesh: PrimitiveMesh, count: int, mat: Material) -> MultiMeshInstance3D:
     mesh.material = mat
     var mm := MultiMesh.new()
     mm.transform_format = MultiMesh.TRANSFORM_3D
