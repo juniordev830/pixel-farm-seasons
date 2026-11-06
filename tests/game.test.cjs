@@ -9,7 +9,7 @@ function start(){
  const context2d={fillRect(){},beginPath(){},moveTo(){},lineTo(){},fill(){},arc(){},fillText(){}};
  for(const id of ['clock','energy','hunger','message','game'])nodes[id]={textContent:'',getContext:()=>context2d,width:960,height:540};
  const storage=new Map();let nextFrame;
- const sandbox={document:{getElementById:id=>nodes[id]},performance:{now:()=>0},requestAnimationFrame:cb=>{nextFrame=cb},addEventListener:(name,fn)=>{handlers[name]=fn},localStorage:{setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)||null},Math,Number,String,Array,JSON};
+ const sandbox={document:{getElementById:id=>nodes[id],querySelectorAll:()=>[]},performance:{now:()=>0},requestAnimationFrame:cb=>{nextFrame=cb},addEventListener:(name,fn)=>{handlers[name]=fn},localStorage:{setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)||null},Math,Number,String,Array,JSON};
  vm.runInNewContext(source,sandbox,{filename:'game.js'});
  const key=k=>handlers.keydown({key:k,repeat:false,preventDefault(){}});
  const frame=t=>{nextFrame(t)};
