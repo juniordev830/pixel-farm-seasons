@@ -1,70 +1,67 @@
-# 🌾 Pixel Farm Seasons
+# 🌾 Pixel Farm Seasons — Beta 3D para PC
 
-Simulador de vida rural com agricultura, animais, exploração e aventuras. **Projeto em desenvolvimento**.
+Simulador de fazenda em terceira pessoa, desenvolvido em **Godot 4.3**, com fazendeiro, ambiente rural low-poly, rotina diária, agricultura, animais, economia, veículo e uma campanha curta. A versão web 2D permanece separada.
 
-## 🎮 Estado atual
-- **Prévia web 2D jogável:** `index.html`, `style.css`, `game.js`.
-- **Protótipo 3D Godot 4:** controlador inicial em `godot/scripts/farmer_controller.gd`. Ainda não há uma cena 3D completa nem jogo 3D testado.
-- **Conceitos visuais:** casa de dois andares com varanda e rede, fazendeiro(a), veículos e fazenda low-poly. Imagens de referência serão adicionadas em `docs/concept-art/` quando seus arquivos estiverem disponíveis.
+> **Estado em 06/11/2026:** compilação Windows x64 criada com sucesso e testes Godot headless aprovados. **Ainda é uma versão beta:** faltam validação manual em Windows, artes/animações finais, funcionalidades de mundo aberto avançado e adaptação para Android.
 
-## ▶️ Como jogar a prévia web
-1. Baixe o repositório ou abra `index.html` em um navegador.
-2. Selecione um dos 16 terrenos.
-3. Clique em **Plantar** (custa 2 moedas) e **Regar**.
-4. Avance um dia; regue novamente e avance mais um dia.
-5. Clique em **Colher** (recebe 6 moedas). As estações mudam a cada 7 dias.
-6. O progresso é salvo no navegador via `localStorage`.
+## 🎮 Baixar e jogar no Windows 64 bits
 
-## 🕹️ Controles planejados para o 3D
-- **W/A/S/D:** caminhar; **mouse:** girar a câmera livremente.
-- **Shift:** correr; **Espaço:** pular; **Ctrl:** agachar.
-- **V:** alternar entre primeira e terceira pessoa.
-- **Esc:** liberar cursor.
-- Controles para celular, veículos e interação com objetos ainda serão desenvolvidos.
+1. Entre em [Actions — compilação Windows](https://github.com/juniordev830/pixel-farm-seasons/actions/workflows/godot-export-windows.yml) e abra a execução concluída com sucesso da branch `feature/complete-3d-gameplay-20261106`.
+2. Em **Artifacts**, baixe `PixelFarmSeasons-Windows64` (pode ser necessário entrar na sua conta GitHub).
+3. Extraia o ZIP externo e o ZIP interno, mantendo `PixelFarmSeasons.exe` e `PixelFarmSeasons.pck` **na mesma pasta**.
+4. Abra `PixelFarmSeasons.exe`. Para salvar ou pausar, pressione **P**.
 
-## 🏡 Visão do jogo 3D
-O jogador escolhe fazendeiro ou fazendeira e começa com casa de dois andares, varanda e espaço para rede, um carro antigo e bicicleta Monark vermelha. A casa terá cômodos exploráveis, escadas, móveis interativos, descanso e reformas. A fazenda terá plantio, ordenha diária, animais com necessidades, clima, estações, construção e defesa contra lobos (combate e cercas/cães). Trator, cortador de grama, caminhonete e outros equipamentos serão adquiridos com a progressão.
+O executável não exige instalar o editor Godot. A compilação vem do projeto em `godot/`, não do protótipo 2D da raiz.
 
-### Rotina viva
-Comprar uma vaca gera tarefas como alimentação e ordenha às 6h. À noite o personagem demonstra sono; o jogador decide quando dormir. Descansar na rede recupera parte da energia. Saúde e energia serão indicadores distintos.
+## O que você consegue fazer
 
-### Evolução
-Planejamento de 30 níveis iniciais, XP por trabalho, exploração, missões e proteção da propriedade; desbloqueios graduais e recompensas especiais a cada 5 níveis. Desbloquear não significa receber automaticamente todo equipamento.
+- Explorar o sítio 3D com câmera em terceira pessoa e alternar para primeira pessoa;
+- Entrar na casa de dois andares e interagir com geladeira, refeições, cama, rede, TV, rádio e notebook demonstrativos;
+- Cuidar de vaca e galinhas, alimentar, dar água, ordenhar e colher ovos;
+- Plantar, regar e colher **30 canteiros**, com cenoura, milho e tomate;
+- Dirigir o Fusca azul simplificado e consertá-lo na oficina da garagem;
+- Visitar a venda da vila, comprar suprimentos e vender produção;
+- Viver com dia/noite, estações, clima, lembretes de almoço, saciedade e energia;
+- Evoluir até o nível 30 e concluir **seis missões** com recompensas;
+- Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa.
 
-## 🧰 Tecnologias
-| Camada | Tecnologia | Uso |
-| --- | --- | --- |
-| Prévia web | HTML5 | Estrutura e botões |
-| Prévia web | CSS3 | Aparência e layout responsivo |
-| Prévia web | JavaScript | Plantio, rega, colheita, tempo e moedas |
-| Salvamento web | localStorage | Persistência local |
-| Protótipo 3D | Godot 4 | Engine planejada para mundo 3D |
-| Scripts 3D | GDScript | Movimento, física e câmera |
+A bicicleta Monark vermelha é um **modelo decorativo** neste beta; ainda não é dirigível.
 
-## 📁 Estrutura
-```text
-index.html                 # interface web
-style.css                  # estilos web
-game.js                    # regras da prévia web
-godot/
-  README.md                # configuração inicial do Godot
-  scripts/
-    farmer_controller.gd   # controle de personagem 3D
-docs/
-  GAME_DESIGN.md           # sistemas e etapas de implementação
-```
+## 🕹️ Comandos PC
 
-## 🛠️ Etapas de desenvolvimento
-1. Controlador 3D e câmera livre (código inicial adicionado; cena pendente).
-2. Cena com terreno, casa de dois andares, varanda, escadas e rede.
-3. Relógio, sono, energia e interações com móveis.
-4. Animais, curral e tarefas de rotina.
-5. Veículos dirigíveis e manutenção.
-6. Lobos, combate, cães e proteção.
-7. Missões, inventário, economia e 30 níveis.
-8. Otimização e controles para Android.
+| Tecla | Ação |
+| --- | --- |
+| WASD | Andar ou dirigir |
+| Mouse | Girar câmera |
+| Shift | Correr |
+| Espaço | Pular |
+| Ctrl | Caminhar mais devagar |
+| E | Interagir com objetos, horta, animais e mercado |
+| F | Trocar ferramenta da horta |
+| G | Alternar semente |
+| V | Alternar entre primeira e terceira pessoa |
+| P | Abrir menu de pausa, salvar e continuar |
+| Esc | Liberar cursor do mouse |
 
-**Nota:** a prévia web não implementa ainda os sistemas 3D descritos. A documentação distingue recursos existentes de recursos planejados.
+## 🧑‍🌾 Objetivos da campanha
 
-## 🤝 Desenvolvimento
-Alterações em branch separada, revisadas por Pull Request antes de chegar à `main`.
+Você começa perto da **placa de objetivos**. A campanha introduz o ciclo completo da fazenda, com missões de colheita, cuidado dos animais, leite, ovos, vendas e sobrevivência por sete dias. Ao concluir os seis objetivos, o **modo livre permanece disponível**.
+
+## 🛠️ Abrir o código no Godot
+
+1. Selecione a branch `feature/complete-3d-gameplay-20261106` e baixe o código.
+2. Instale Godot 4.3 ou uma versão compatível.
+3. Importe `godot/project.godot`.
+4. Pressione **F5**; cena principal: `res://scenes/farm_world.tscn`.
+
+O projeto é procedural e usa meshes low-poly temporários, reduzindo dependências de assets externos.
+
+## ✅ Testes e manutenção
+
+Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, menu e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
+
+O desenvolvimento acontece em branch separada; PR: [#14](https://github.com/juniordev830/pixel-farm-seasons/pull/14). A branch `main` não recebeu essas alterações.
+
+## Limites atuais
+
+Este beta **não é o jogo comercial final** nem um mundo aberto 3D realista. Animações e modelos definitivos, bicicleta pilotável, missões avançadas, combate, otimização completa e versão Android ainda são etapas futuras. A prévia 2D `index.html` continua disponível separadamente.
