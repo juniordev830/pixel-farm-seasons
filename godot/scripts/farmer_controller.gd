@@ -19,6 +19,7 @@ var _original_arm_length: float
 var _desired_arm_length: float
 
 func _ready() -> void:
+    camera_arm.add_excluded_object(get_rid())
     _original_arm_length = camera_arm.spring_length
     _desired_arm_length = _original_arm_length
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -47,6 +48,9 @@ func _physics_process(delta: float) -> void:
     var stick := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
     var direction := (global_transform.basis * Vector3(stick.x, 0.0, stick.y)).normalized()
     var speed := crouch_speed if Input.is_action_pressed("crouch") else (run_speed if Input.is_action_pressed("sprint") else walk_speed)
+    var life := get_parent().get_node_or_null("LifeSim")
+    if life != null and life.has_method("movement_multiplier"):
+        speed *= float(life.call("movement_multiplier"))
     velocity.x = direction.x * speed
     velocity.z = direction.z * speed
     move_and_slide()
