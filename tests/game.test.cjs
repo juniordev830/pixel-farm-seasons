@@ -17,7 +17,7 @@ function start(){
 }
 test('interface inicializa e relógio avança sem movimento',()=>{
  const s=start();s.frame(1000);assert.match(s.nodes.clock.textContent,/Dia 1/);assert.match(s.nodes.clock.textContent,/07:00/);
- s.frame(2000);assert.match(s.nodes.clock.textContent,/07:00/);
+ for(let i=2;i<=40;i++)s.frame(i*1000);assert.match(s.nodes.clock.textContent,/07:04/);
 });
 test('compra de sementes desconta moedas',()=>{
  const s=start();s.key('b');s.frame(1000);assert.match(s.nodes.clock.textContent,/🪙 35/);assert.match(s.nodes.clock.textContent,/🌱 11/);
