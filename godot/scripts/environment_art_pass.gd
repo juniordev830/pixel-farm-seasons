@@ -41,8 +41,8 @@ func _ground_available(x: float, z: float) -> bool:
     return true
 
 
-func _make_multimesh(label: String, mesh: PrimitiveMesh, count: int, mat: Material) -> MultiMeshInstance3D:
-    mesh.material = mat
+func _make_multimesh(label: String, mesh: Mesh, count: int, mat: Material) -> MultiMeshInstance3D:
+    mesh.surface_set_material(0, mat)
     var mm := MultiMesh.new()
     mm.transform_format = MultiMesh.TRANSFORM_3D
     mm.use_colors = true
@@ -71,21 +71,40 @@ func _build_environment() -> void:
     _dry_field_edges()
 
 
+func _grass_blades() -> ArrayMesh:
+    # Pointed leaf blades replace rectangular sticks; each tuft has three
+    # angled triangular leaves. All tufts share the same 6-triangle mesh.
+    var mesh_builder := SurfaceTool.new()
+    mesh_builder.begin(Mesh.PRIMITIVE_TRIANGLES)
+    for j in range(3):
+        var angle := float(j) * TAU / 3.0
+        var side := Vector3(cos(angle), 0, sin(angle))
+        var across := Vector3(-sin(angle), 0, cos(angle))
+        var base := side * 0.085
+        var tip := side * 0.18 + Vector3(0, 0.36, 0)
+        for sign_index in range(2):
+            var signed := 1.0 if sign_index == 0 else -1.0
+            mesh_builder.add_vertex(base + across * 0.078 * signed)
+            mesh_builder.add_vertex(base - across * 0.078 * signed)
+            mesh_builder.add_vertex(tip)
+    mesh_builder.generate_normals()
+    return mesh_builder.commit()
+
+
 func _paint_ground() -> void:
-    # Two crossed tufts per spot add parallax and fine scale to the green floor.
-    var blade_mesh := BoxMesh.new()
-    blade_mesh.size = Vector3(0.075, 0.34, 0.055)
+    # Instanced tapering leaves, no collision and low GPU overhead.
+    var blade_mesh := _grass_blades()
     var spots: Array[Vector3] = []
-    for i in range(2000):
+    for i in range(3300):
         var x := rng.randf_range(-47.0, 47.0)
         var z := rng.randf_range(-47.0, 47.0)
         if _ground_available(x, z):
-            spots.append(Vector3(x, 0.12, z))
+            spots.append(Vector3(x, 0.02, z))
     for side in range(2):
         var node := _make_multimesh("Capim instanciado %d" % side, blade_mesh, spots.size(), _tinted_material())
         var mm := node.multimesh
         for i in range(spots.size()):
-            var height := rng.randf_range(0.5, 1.55)
+            var height := rng.randf_range(0.55, 1.35)
             var angle := rng.randf_range(-PI, PI) + float(side) * PI * 0.5
             var offset := Vector3(0.12 if side else -0.12, 0, 0)
             var xf := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3(1.0, height, 1.0)), spots[i] + offset)
