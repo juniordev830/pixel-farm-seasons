@@ -8,6 +8,7 @@ const CHECKER_RED_LIGHT := Color("#c36b5b")
 const JEANS := Color("#365c79")
 const HAT := Color("#d8bc79")
 const BOOTS := Color("#59412f")
+const ANIMATED_FARMER = preload("res://assets/kenney/characters/character-male-a.glb")
 
 var farmer: CharacterBody3D
 var left_leg: Node3D
@@ -15,17 +16,80 @@ var right_leg: Node3D
 var left_arm: Node3D
 var right_arm: Node3D
 var gait_time := 0.0
+var imported_model: Node3D
+var animation_player: AnimationPlayer
+var current_anim := ""
 
 
 func _ready() -> void:
     farmer = get_parent().get_parent() as CharacterBody3D
     _build_character()
+    _install_animated_farmer()
     var old_body := get_parent().get_node_or_null("Body") as Node3D
     var old_head := get_parent().get_node_or_null("Head") as Node3D
     if old_body != null:
         old_body.visible = false
     if old_head != null:
         old_head.visible = false
+
+
+func _find_animation_player(node: Node) -> AnimationPlayer:
+    if node is AnimationPlayer:
+        return node as AnimationPlayer
+    for child in node.get_children():
+        var match_player := _find_animation_player(child)
+        if match_player != null:
+            return match_player
+    return null
+
+
+func _choose_animation(action: String) -> String:
+    if animation_player == null:
+        return ""
+    if animation_player.has_animation(action):
+        return action
+    for candidate in animation_player.get_animation_list():
+        var test := String(candidate)
+        if test.ends_with("/" + action) or test.ends_with(":" + action):
+            return test
+    return ""
+
+
+func _install_animated_farmer() -> void:
+    if ANIMATED_FARMER == null:
+        push_warning("Farmer model not available; leaving placeholder visible")
+        return
+    var rig := ANIMATED_FARMER.instantiate() as Node3D
+    if rig == null:
+        return
+    # Hide primitive humanoid but keep those nodes for backwards-compatible
+    # tests; only the new rigged model is rendered during gameplay.
+    for item in get_children():
+        if item is MeshInstance3D or item == left_leg or item == right_leg or item == left_arm or item == right_arm:
+            (item as Node3D).visible = false
+    imported_model = rig
+    imported_model.name = "FazendeiroAnimado"
+    imported_model.position = Vector3(0, -1.08, 0)
+    imported_model.scale = Vector3.ONE * 2.68
+    imported_model.rotation.y = PI
+    add_child(imported_model)
+    animation_player = _find_animation_player(imported_model)
+    current_anim = ""
+    _play_farm_animation("idle")
+    # Hat, backpack and denim details are preserved as recognizable farm gear.
+    _cylinder(self, Vector3(0, 0.78, 0), 0.52, 0.075, HAT)
+    _cylinder(self, Vector3(0, 0.89, 0), 0.30, 0.24, Color("#e4c98a"))
+    _cylinder(self, Vector3(0, 0.85, 0), 0.312, 0.05, Color("#75563b"))
+    _box(self, Vector3(0, -0.11, 0.32), Vector3(0.56, 0.66, 0.26), Color("#7d5c43"))
+    _box(self, Vector3(0, -0.32, 0.48), Vector3(0.48, 0.23, 0.055), Color("#a58154"))
+
+
+func _play_farm_animation(name: String) -> void:
+    var actual := _choose_animation(name)
+    if animation_player == null or actual.is_empty() or current_anim == actual:
+        return
+    current_anim = actual
+    animation_player.play(actual, 0.20)
 
 
 func _mat(color: Color) -> StandardMaterial3D:
@@ -130,6 +194,17 @@ func _process(delta: float) -> void:
     if farmer == null:
         return
     var horizontal_speed := Vector2(farmer.velocity.x, farmer.velocity.z).length()
+    if imported_model != null:
+        var wanted := "idle"
+        if not farmer.is_on_floor():
+            wanted = "jump"
+        elif horizontal_speed > 5.15:
+            wanted = "sprint"
+        elif horizontal_speed > 0.15:
+            wanted = "walk"
+        elif Input.is_action_pressed("crouch"):
+            wanted = "crouch"
+        _play_farm_animation(wanted)
     var moving := horizontal_speed > 0.15 and farmer.is_on_floor()
     if moving:
         gait_time += delta * (9.0 if horizontal_speed < 5.0 else 13.0)
