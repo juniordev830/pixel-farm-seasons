@@ -41,6 +41,7 @@ func _material(color: Color, metallic: float = 0.0) -> StandardMaterial3D:
 func _box(label: String, at: Vector3, dimensions: Vector3, color: Color, solid: bool = false) -> MeshInstance3D:
     var obj := MeshInstance3D.new()
     obj.name = label
+    obj.set_meta("native_prop", label)
     var shape := BoxMesh.new()
     shape.size = dimensions
     obj.mesh = shape
@@ -62,6 +63,7 @@ func _box(label: String, at: Vector3, dimensions: Vector3, color: Color, solid: 
 func _ball(label: String, at: Vector3, dimensions: Vector3, color: Color) -> MeshInstance3D:
     var obj := MeshInstance3D.new()
     obj.name = label
+    obj.set_meta("native_prop", label)
     var mesh := SphereMesh.new()
     mesh.radius = 0.5
     mesh.height = 1.0
@@ -78,6 +80,7 @@ func _ball(label: String, at: Vector3, dimensions: Vector3, color: Color) -> Mes
 func _cylinder(label: String, at: Vector3, radius: float, height: float, color: Color, top_ratio: float = 1.0) -> MeshInstance3D:
     var obj := MeshInstance3D.new()
     obj.name = label
+    obj.set_meta("native_prop", label)
     var mesh := CylinderMesh.new()
     mesh.bottom_radius = radius
     mesh.top_radius = radius * top_ratio
