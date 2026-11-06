@@ -29,12 +29,14 @@ function update(dt){
 world.minute+=dt*2;autosaveElapsed+=dt;if(autosaveElapsed>=60){autosaveElapsed=0;try{localStorage.setItem(saveKey,JSON.stringify({player,world,plots,lastMealDay}));}catch{}}while(world.minute>=1440){world.minute-=1440;world.day++;lastMealDay=0;}
 const hour=world.minute/60;const night=hour>=19||hour<6;
 player.hunger=clamp(player.hunger+dt*.12,0,100);
-if(hour>=12&&lastMealDay!==world.day){player.hunger=clamp(player.hunger+dt*.25,0,100);player.energy=clamp(player.energy-dt*.18,0,100);if(mealWarningDay!==world.day){message.textContent='Eita, já passou da hora de almoçar!';mealWarningDay=world.day;}}
+if(hour>=12&&hour<18&&lastMealDay!==world.day){player.hunger=clamp(player.hunger+dt*.25,0,100);player.energy=clamp(player.energy-dt*.18,0,100);if(mealWarningDay!==world.day){message.textContent='Eita, já passou da hora de almoçar!';mealWarningDay=world.day;}}
 if(hour>=22||hour<5)player.energy=clamp(player.energy-dt*.24,0,100);
+if(player.hunger>=80)player.energy=clamp(player.energy-dt*.3,0,100);
 let dx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft'));
 let dz=Number(keys.has('w')||keys.has('arrowup'))-Number(keys.has('s')||keys.has('arrowdown'));
 const len=Math.hypot(dx,dz)||1,speed=(player.vehicle==='fusca'?150:player.vehicle==='bike'?90:55)*(player.energy<25?.45:1);
 const limit=400+player.land*200;player.x=clamp(player.x+dx/len*speed*dt,-limit,limit);player.z=clamp(player.z+dz/len*speed*dt,-limit,limit);
+if((dx||dz)&&player.vehicle==='foot')player.energy=clamp(player.energy-dt*.045,0,100);
 clock.textContent='🪙 '+player.coins+' | 🌱 '+player.seeds+' | 🥕 '+player.harvest+' | Dia '+world.day+' · '+String(Math.floor(world.minute/60)).padStart(2,'0')+':'+String(Math.floor(world.minute%60)).padStart(2,'0');
 energyUI.textContent='Energia: '+Math.round(player.energy);hungerUI.textContent='Fome: '+Math.round(player.hunger);
 }
