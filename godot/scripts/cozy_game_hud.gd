@@ -125,7 +125,7 @@ func _build_ui() -> void:
 
     var status := _panel(root_control, "Needs", Vector2(20, 124), Vector2(235, 113))
     var needs_stack := _stack(status, 3)
-    hunger_text = _text(needs_stack, "Hunger", "Fome 82%", 15, CREAM)
+    hunger_text = _text(needs_stack, "Hunger", "Saciedade 82%", 15, CREAM)
     hunger_bar = _bar(needs_stack, WARNING)
     energy_text = _text(needs_stack, "Energy", "Energia 96%", 15, CREAM)
     energy_bar = _bar(needs_stack, GOOD)
@@ -186,9 +186,9 @@ func _refresh_data() -> void:
     subtitle.text = "Dia %d  |  %s  |  %s" % [
         day, String(life.call("_time_string")), String(life.call("_season"))
     ]
-    money.text = "R$ %d" % cash
+    money.text = "R$ %d | Nv.%d" % [cash, int(life.get("level"))]
 
-    hunger_text.text = "Fome  %d%%" % int(hunger)
+    hunger_text.text = "Saciedade  %d%%" % int(hunger)
     energy_text.text = "Energia  %d%%" % int(energy)
     hunger_bar.value = hunger
     energy_bar.value = energy
