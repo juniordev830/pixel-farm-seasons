@@ -27,7 +27,8 @@ func _ready() -> void:
     _pond()
     _vehicle()
     _trees()
-    _sky_details()
+    # The old flat oval cloud meshes made the sky look artificial.
+    # The procedural sky provides the backdrop without floating ellipsoids.
 
 
 func _material(color: Color, metallic: float = 0.0) -> StandardMaterial3D:
@@ -126,6 +127,10 @@ func _lighting() -> void:
     env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
     env.ambient_light_color = Color("#e7ebdb")
     env.ambient_light_energy = 0.82
+    env.fog_enabled = true
+    env.fog_light_color = Color("#cad7cf")
+    env.fog_density = 0.004
+    env.fog_sky_affect = 0.20
     world_environment.environment = env
     add_child(world_environment)
 
