@@ -40,6 +40,7 @@ func _place(filename: String, at: Vector3, size: float, spin: float = 0.0) -> No
         return null
     add_child(node)
     node.name = "3D asset " + filename.get_basename()
+    node.set_meta("asset_id", filename)
     node.position = at
     node.scale = Vector3.ONE * size
     node.rotation.y = spin
@@ -62,11 +63,11 @@ func _replace_generic_trees() -> void:
     var positions: Array[Vector3] = []
     var variations: Array[float] = []
     for node in world.get_children():
-        if node is MeshInstance3D and String(node.name).begins_with("Tronco"):
+        if node is MeshInstance3D and String(node.get_meta("native_prop", node.name)).begins_with("Tronco"):
             positions.append(Vector3(node.position.x, 0, node.position.z))
             variations.append(clampf(node.position.y / 1.4, 0.65, 1.45))
             node.visible = false
-        elif node is MeshInstance3D and (String(node.name).begins_with("Copa baixa") or String(node.name).begins_with("Copa alta")):
+        elif node is MeshInstance3D and (String(node.get_meta("native_prop", node.name)).begins_with("Copa baixa") or String(node.get_meta("native_prop", node.name)).begins_with("Copa alta")):
             node.visible = false
     for i in range(positions.size()):
         var filename := String(TREES[i % TREES.size()])
@@ -81,7 +82,7 @@ func _replace_orchard() -> void:
     var orchards: Array[Vector3] = []
     for node in details.get_children():
         if node is MeshInstance3D:
-            var title := String(node.name)
+            var title := String(node.get_meta("native_prop", node.name))
             if title.begins_with("Tronco do pomar"):
                 orchards.append(Vector3(node.position.x, 0, node.position.z))
             if title.begins_with("Tronco do pomar") or title.begins_with("Copa do pomar") or title.begins_with("Fruta do pomar"):
@@ -97,8 +98,8 @@ func _improve_cherry_trees() -> void:
         return
     var centers: Array[Vector3] = []
     for node in details.get_children():
-        if node is MeshInstance3D and String(node.name).begins_with("Cerejeira"):
-            if String(node.name).begins_with("Cerejeira tronco"):
+        if node is MeshInstance3D and String(node.get_meta("cozy_kind", node.name)).begins_with("Cerejeira"):
+            if String(node.get_meta("cozy_kind", node.name)).begins_with("Cerejeira tronco"):
                 centers.append(Vector3(node.position.x, 0, node.position.z))
             node.visible = false
     # A smaller, more irregular blossom layer over a detailed imported tree.
@@ -205,7 +206,7 @@ func _round_off_car() -> void:
     if car == null:
         return
     for node in car.get_children():
-        if node is MeshInstance3D and (String(node.name).begins_with("Fusca azul") or String(node.name).begins_with("Parabrisa Fusca") or String(node.name).begins_with("Pneu carro")):
+        if node is MeshInstance3D and (String(node.get_meta("native_prop", node.name)).begins_with("Fusca azul") or String(node.get_meta("native_prop", node.name)).begins_with("Parabrisa Fusca") or String(node.get_meta("native_prop", node.name)).begins_with("Pneu carro")):
             node.visible = false
     var blue := Color("#5b9db4")
     _round_sphere("Fusca carroceria arredondada", Vector3(0, 0.12, 0), Vector3(1.79, 1.00, 3.42), blue, car)
