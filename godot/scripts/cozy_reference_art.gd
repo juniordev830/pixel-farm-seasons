@@ -211,7 +211,7 @@ func _flowering_trees() -> void:
         trunk.rotation.y = rng.randf_range(-0.25, 0.25)
         for i in range(7):
             var angle := float(i) * TAU / 7.0
-            var crown := center + Vector3(cos(angle) * 1.45, rng.randf_range(3.65, 5.20), sin(angle) * 1.28)
+            var crown: Vector3 = center + Vector3(cos(angle) * 1.45, rng.randf_range(3.65, 5.20), sin(angle) * 1.28)
             _ball("Cerejeira copa florida", crown, Vector3(2.65, 2.55, 2.55),
                 PINK if i % 3 == 0 else PINK_LIGHT)
         _ball("Cerejeira copa central", center + Vector3(0, 5.0, 0),
