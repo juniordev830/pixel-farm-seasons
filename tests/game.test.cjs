@@ -6,7 +6,7 @@ const vm=require('node:vm');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../game.js'),'utf8');
 function start(){
  const handlers={};const nodes={};
- const context2d={fillRect(){},beginPath(){},moveTo(){},lineTo(){},fill(){},arc(){},fillText(){}};
+ const context2d={fillRect(){},beginPath(){},moveTo(){},lineTo(){},fill(){},arc(){},fillText(){},stroke(){}};
  for(const id of ['clock','energy','hunger','message','game'])nodes[id]={textContent:'',getContext:()=>context2d,width:960,height:540};
  const storage=new Map();let nextFrame;
  const sandbox={document:{getElementById:id=>nodes[id],querySelectorAll:()=>[]},performance:{now:()=>0},requestAnimationFrame:cb=>{nextFrame=cb},addEventListener:(name,fn)=>{handlers[name]=fn},localStorage:{setItem:(k,v)=>storage.set(k,v),getItem:k=>storage.get(k)||null},Math,Number,String,Array,JSON};
