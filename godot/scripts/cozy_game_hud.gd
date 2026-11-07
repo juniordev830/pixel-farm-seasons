@@ -3,11 +3,11 @@ extends CanvasLayer
 ## Somente apresenta dados da LifeSim; nao modifica a simulacao.
 ## HUD dinamica: dia, estacao, relogio, fome, energia, atividades, ferramentas.
 
-const BG := Color(0.105, 0.145, 0.125, 0.91)
-const BORDER := Color(0.64, 0.55, 0.34, 0.95)
+const BG := Color(0.085, 0.132, 0.120, 0.86)
+const BORDER := Color(0.69, 0.64, 0.47, 0.64)
 const CREAM := Color("#fff1cd")
 const MUTED := Color("#d1d8bd")
-const ACCENT := Color("#f0be68")
+const ACCENT := Color("#e7c68c")
 const GOOD := Color("#72b873")
 const WARNING := Color("#df9656")
 const DANGER := Color("#d66557")
@@ -60,10 +60,10 @@ func _panel(parent: Control, panel_name: String, at: Vector2, size: Vector2) -> 
     var style := StyleBoxFlat.new()
     style.bg_color = BG
     style.border_color = BORDER
-    style.set_border_width_all(2)
-    style.set_corner_radius_all(13)
+    style.set_border_width_all(1)
+    style.set_corner_radius_all(17)
     style.content_margin_left = 12
-    style.content_margin_top = 9
+    style.content_margin_top = 10
     style.content_margin_right = 12
     style.content_margin_bottom = 9
     panel.add_theme_stylebox_override("panel", style)
@@ -170,10 +170,10 @@ func _build_ui() -> void:
 
 func _quick_style(selected: bool) -> StyleBoxFlat:
     var style := StyleBoxFlat.new()
-    style.bg_color = Color("#293629") if selected else Color("#202d28")
-    style.border_color = ACCENT if selected else Color("#788566")
-    style.set_border_width_all(3 if selected else 1)
-    style.set_corner_radius_all(11)
+    style.bg_color = Color(0.20, 0.27, 0.20, 0.90) if selected else Color(0.11, 0.17, 0.16, 0.82)
+    style.border_color = ACCENT if selected else Color(0.70, 0.75, 0.60, 0.38)
+    style.set_border_width_all(2 if selected else 1)
+    style.set_corner_radius_all(14)
     style.content_margin_left = 7
     style.content_margin_top = 9
     style.content_margin_right = 7
