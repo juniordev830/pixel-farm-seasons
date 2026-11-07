@@ -27,6 +27,18 @@ func _run() -> void:
     var camera := farm.get_node_or_null("Farmer/CameraPivot/SpringArm3D/Camera3D") as Camera3D
     _expect(character != null, "character art node exists")
     _expect(camera != null and camera.fov <= 65.0, "camera has tighter cinematic perspective")
+    var farmer := farm.get_node_or_null("Farmer") as CharacterBody3D
+    var camera_arm := farm.get_node_or_null("Farmer/CameraPivot/SpringArm3D") as SpringArm3D
+    _expect(camera_arm != null and camera_arm.spring_length >= 4.0, "camera starts behind farmer")
+    if farmer != null and camera_arm != null:
+        var toggle_event := InputEventAction.new()
+        toggle_event.action = "toggle_camera"
+        toggle_event.pressed = true
+        farmer._unhandled_input(toggle_event)
+        for i in range(20):
+            await physics_frame
+        _expect(camera_arm.spring_length >= 4.0, "V cannot switch camera to first person")
+        _expect(farmer.get_node("Visuals").visible, "farmer remains visible in third person")
     if character != null:
         var model := character.get("imported_model") as Node3D
         var player := character.get("animation_player") as AnimationPlayer
@@ -46,7 +58,7 @@ func _run() -> void:
     farm.queue_free()
     await process_frame
     if failures.is_empty():
-        print("PASSOU: animated rigged farmer, walk, sprint, sky and path shading.")
+        print("PASSOU: animated farmer, third-person camera, walk, sprint, sky and path shading.")
         quit(0)
     else:
         print("FALHAS: ", failures)
