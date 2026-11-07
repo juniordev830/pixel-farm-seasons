@@ -4,10 +4,10 @@ extends Node3D
 ## Purely cosmetic: no collisions, no changes to farming, movement or saves.
 
 const GRASS_TONES := [
-    Color("#4e7941"), Color("#68924a"), Color("#7ca052"), Color("#a0ae62")
+    Color("#487a43"), Color("#64934d"), Color("#89a75e"), Color("#8da269")
 ]
 const GRAVEL_TONES := [
-    Color("#a5967c"), Color("#cfbda0"), Color("#817868"), Color("#b6a995")
+    Color("#a99176"), Color("#b39e83"), Color("#917d68"), Color("#bea78c")
 ]
 const BLOSSOMS := [
     Color("#eac666"), Color("#f7e6c0"), Color("#d88378"), Color("#c7b6d8")
@@ -95,7 +95,7 @@ func _paint_ground() -> void:
     # Instanced tapering leaves, no collision and low GPU overhead.
     var blade_mesh := _grass_blades()
     var spots: Array[Vector3] = []
-    for i in range(3300):
+    for i in range(4100):
         var x := rng.randf_range(-47.0, 47.0)
         var z := rng.randf_range(-47.0, 47.0)
         if _ground_available(x, z):
@@ -104,7 +104,7 @@ func _paint_ground() -> void:
         var node := _make_multimesh("Capim instanciado %d" % side, blade_mesh, spots.size(), _tinted_material())
         var mm := node.multimesh
         for i in range(spots.size()):
-            var height := rng.randf_range(0.55, 1.35)
+            var height := rng.randf_range(0.40, 1.05)
             var angle := rng.randf_range(-PI, PI) + float(side) * PI * 0.5
             var offset := Vector3(0.12 if side else -0.12, 0, 0)
             var xf := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3(1.0, height, 1.0)), spots[i] + offset)
@@ -115,8 +115,8 @@ func _paint_ground() -> void:
 func _road_details() -> void:
     # Small gravel breaks up the large monochrome brown road.
     var stone := BoxMesh.new()
-    stone.size = Vector3(0.19, 0.045, 0.14)
-    var count := 390
+    stone.size = Vector3(0.14, 0.025, 0.09)
+    var count := 100
     var node := _make_multimesh("Cascalho no caminho", stone, count, _tinted_material())
     var mm := node.multimesh
     for i in range(count):
@@ -124,7 +124,7 @@ func _road_details() -> void:
         var z := rng.randf_range(-2.0, 35.0)
         var xf := Transform3D(Basis(Vector3.UP, rng.randf_range(-PI, PI)).scaled(
             Vector3(rng.randf_range(0.45, 1.5), 1.0, rng.randf_range(0.6, 1.8))),
-            Vector3(x, 0.068, z))
+            Vector3(x, 0.045, z))
         mm.set_instance_transform(i, xf)
         mm.set_instance_color(i, GRAVEL_TONES[rng.randi_range(0, GRAVEL_TONES.size() - 1)])
 
