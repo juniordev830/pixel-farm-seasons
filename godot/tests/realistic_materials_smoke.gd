@@ -30,7 +30,7 @@ func _run() -> void:
     if art != null:
         _check(art.get("applied_count") >= 10, "Materiais aplicados na casa, telhados e cercas")
 
-    for label in ["Casa - paredes de dois pavimentos", "Telhado esquerdo",
+    for label in ["Telhado esquerdo",
                   "Telhado direito", "Pilar da varanda", "Silo pequeno"]:
         var found := false
         for node in world.get_children():
@@ -47,6 +47,14 @@ func _run() -> void:
                     label + ": rugosidade configurada")
             break
         _check(found, label + ": geometria original preservada")
+
+    # LifeSim removes the original solid shell to make the house enterable.
+    # Validate the actual wall rather than its deleted placeholder.
+    var life := world.get_node_or_null("LifeSim")
+    var facade := life.get_node_or_null("Parede oeste") as MeshInstance3D if life != null else null
+    _check(facade != null, "Fachada real da casa mantida")
+    if facade != null:
+        _check(facade.material_override is ShaderMaterial, "Material do reboco aplicado na fachada")
 
     _check(world.get_node_or_null("Farmer") != null, "Controlador do fazendeiro mantido")
     _check(world.get_node_or_null("FarmingSystem") != null, "Horta mantida")
