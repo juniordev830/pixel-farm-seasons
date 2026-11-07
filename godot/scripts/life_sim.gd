@@ -874,7 +874,9 @@ func _save_progress() -> void:
         "cow_milked": cow_milked, "eggs_collected": eggs_collected,
         "meals": meals, "ready_meal": ready_meal,
         "car_pos": [car.global_position.x, car.global_position.y, car.global_position.z],
-        "car_rot": car.rotation.y
+        "car_rot": car.rotation.y,
+        "farmer_pos": [farmer.global_position.x, farmer.global_position.y, farmer.global_position.z],
+        "farmer_rot": farmer.rotation.y
     }
     var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
     if file != null:
@@ -930,5 +932,16 @@ func _load_progress() -> void:
     if typeof(car_pos) == TYPE_ARRAY and car_pos.size() == 3:
         car.global_position = Vector3(float(car_pos[0]), float(car_pos[1]), float(car_pos[2]))
     car.rotation.y = float(data.get("car_rot", car.rotation.y))
+    # Saves antigos continuam validos mesmo sem posicao do fazendeiro.
+    var saved_farmer_position: Variant = data.get("farmer_pos", [])
+    if farmer != null and typeof(saved_farmer_position) == TYPE_ARRAY and saved_farmer_position.size() == 3:
+        var restored_position := Vector3(float(saved_farmer_position[0]), float(saved_farmer_position[1]), float(saved_farmer_position[2]))
+        if is_finite(restored_position.x) and is_finite(restored_position.y) and is_finite(restored_position.z) and restored_position.length() < 20000.0:
+            farmer.global_position = restored_position
+            last_travel_position = restored_position
+    if farmer != null:
+        var restored_yaw := float(data.get("farmer_rot", farmer.rotation.y))
+        if is_finite(restored_yaw):
+            farmer.rotation.y = restored_yaw
     if farm_system != null:
         farm_system.call("restore", data.get("farming", []))
