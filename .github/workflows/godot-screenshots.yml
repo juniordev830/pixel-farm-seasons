@@ -6,6 +6,7 @@ on:
       - feature/complete-3d-gameplay-20261106
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
+      - "release/**"
     paths:
       - "godot/tests/capture_gameplay.gd"
       - "godot/scripts/environment_art_pass.gd"
