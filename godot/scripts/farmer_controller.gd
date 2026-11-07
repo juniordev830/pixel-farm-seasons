@@ -23,7 +23,11 @@ func _unhandled_input(event: InputEvent) -> void:
     elif event is InputEventMouseButton and event.pressed:
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-        _apply_mouse_look(event.relative)
+        _apply_mouse_look(_mouse_motion_delta(event as InputEventMouseMotion))
+
+func _mouse_motion_delta(event: InputEventMouseMotion) -> Vector2:
+    # Godot 4.3: screen_relative is independent of window stretch/resolution.
+    return event.screen_relative
 
 func _apply_mouse_look(relative: Vector2) -> void:
     # Isolated so headless regression tests do not depend on OS mouse capture.
