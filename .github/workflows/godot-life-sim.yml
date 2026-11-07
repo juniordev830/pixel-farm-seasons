@@ -8,6 +8,7 @@ on:
       - "feature/complete-3d-gameplay-*"
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
+      - "release/**"
     paths:
       - "godot/**"
       - ".github/workflows/godot-life-sim.yml"
