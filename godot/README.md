@@ -4,7 +4,7 @@ Este diretório contém a versão 3D **beta para PC**. Consulte o [README princi
 
 ## Abrir no editor
 
-1. Baixe a branch `feature/complete-3d-gameplay-20261106`.
+1. Baixe a branch `release/pixel-farm-seasons-windows-rc1-20261107`.
 2. No Godot 4.3, importe `project.godot` deste diretório.
 3. Pressione **F5** para iniciar `res://scenes/farm_world.tscn`.
 
