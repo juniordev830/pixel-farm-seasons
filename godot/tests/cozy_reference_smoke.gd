@@ -52,8 +52,11 @@ func _run() -> void:
     _check(lake != null and lake.material_override is ShaderMaterial,
         "Lago usa shader animado de agua")
     if lake != null and lake.material_override is ShaderMaterial:
-        _check((lake.material_override as ShaderMaterial).shader != null,
-            "Recurso de agua carregado")
+        var lake_shader := (lake.material_override as ShaderMaterial).shader
+        _check(lake_shader != null, "Recurso de agua carregado")
+        if lake_shader != null:
+            _check(lake_shader.resource_path == "res://shaders/water_stylized.gdshader",
+                "Lago usa o shader correto, nao outro material")
     var hud := world.get_node_or_null("CozyGameHUD")
     _check(hud != null and hud.get_node_or_null("CozyOverlay/QuickTools") != null,
         "Quick farming toolbar visible in live HUD")
