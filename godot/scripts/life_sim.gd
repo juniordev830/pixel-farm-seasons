@@ -812,8 +812,8 @@ func _update_light() -> void:
         if sky_step != last_sky_step and env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
             last_sky_step = sky_step
             var sky_material := env.sky.sky_material as ProceduralSkyMaterial
-            sky_material.sky_top_color = Color("#1f385a").lerp(Color("#6e9cb7"), daylight)
-            sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#dfddce"), daylight).lerp(Color("#f6c99e"), golden * 0.28)
+            sky_material.sky_top_color = Color("#1f385a").lerp(Color("#5baad2"), daylight)
+            sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#deebec"), daylight).lerp(Color("#f6c99e"), golden * 0.26)
             sky_material.ground_horizon_color = Color("#414758").lerp(Color("#c8d4bf"), daylight)
             sky_material.ground_bottom_color = Color("#28322d").lerp(Color("#536d45"), daylight)
 

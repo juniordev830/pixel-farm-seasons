@@ -117,8 +117,8 @@ func _lighting() -> void:
     # A true gradient sky replaces the solid dark-blue backdrop in gameplay.
     var sky := Sky.new()
     var sky_mat := ProceduralSkyMaterial.new()
-    sky_mat.sky_top_color = Color("#6f9bb4")
-    sky_mat.sky_horizon_color = Color("#dfdbca")
+    sky_mat.sky_top_color = Color("#5baad2")
+    sky_mat.sky_horizon_color = Color("#deebec")
     sky_mat.ground_bottom_color = Color("#465638")
     sky_mat.ground_horizon_color = Color("#c8d4be")
     sky.sky_material = sky_mat

@@ -59,7 +59,7 @@ script = ExtResource("7_farmer_art")
 
 [node name="CameraPivot" type="Node3D" parent="Farmer"]
 position = Vector3(0, 0.75, 0)
-rotation = Vector3(-0.14, 0, 0)
+rotation = Vector3(-0.22, 0, 0)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Farmer/CameraPivot"]
 spring_length = 5.8
