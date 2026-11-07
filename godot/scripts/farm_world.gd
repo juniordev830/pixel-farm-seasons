@@ -105,9 +105,9 @@ func _beam(label: String, a: Vector3, b: Vector3, thickness: float, color: Color
 func _lighting() -> void:
     var sun := DirectionalLight3D.new()
     sun.name = "Sun"
-    sun.rotation_degrees = Vector3(-53.0, -27.0, 0.0)
+    sun.rotation_degrees = Vector3(-49.0, -34.0, 0.0)
     sun.light_color = Color("#fff1d4")
-    sun.light_energy = 1.4
+    sun.light_energy = 1.05
     sun.shadow_enabled = true
     add_child(sun)
 
@@ -117,19 +117,19 @@ func _lighting() -> void:
     # A true gradient sky replaces the solid dark-blue backdrop in gameplay.
     var sky := Sky.new()
     var sky_mat := ProceduralSkyMaterial.new()
-    sky_mat.sky_top_color = Color("#609cc6")
-    sky_mat.sky_horizon_color = Color("#c8dfe4")
+    sky_mat.sky_top_color = Color("#6f9bb4")
+    sky_mat.sky_horizon_color = Color("#dfdbca")
     sky_mat.ground_bottom_color = Color("#465638")
     sky_mat.ground_horizon_color = Color("#c8d4be")
     sky.sky_material = sky_mat
     env.sky = sky
     env.background_mode = Environment.BG_SKY
     env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    env.ambient_light_color = Color("#e7ebdb")
-    env.ambient_light_energy = 0.82
+    env.ambient_light_color = Color("#f1e2c9")
+    env.ambient_light_energy = 0.64
     env.fog_enabled = true
-    env.fog_light_color = Color("#cad7cf")
-    env.fog_density = 0.004
+    env.fog_light_color = Color("#d9cfc0")
+    env.fog_density = 0.003
     env.fog_sky_affect = 0.20
     world_environment.environment = env
     add_child(world_environment)
