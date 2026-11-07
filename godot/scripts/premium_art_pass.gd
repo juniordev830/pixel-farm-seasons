@@ -2,9 +2,11 @@ extends Node3D
 ## Passo visual premium: caminho organico e transicao de solo suave.
 ## Apenas geometria de cena, sem colisoes, sem alterar save ou gameplay.
 ## Material por vertices reduz draw calls e evita arquivos externos.
+const BARN_FINISH := preload("res://shaders/barn_planks_stylized.gdshader")
+const PLASTER_FINISH := preload("res://shaders/cream_plaster_stylized.gdshader")
 const ROAD_STEPS := 72
-const EARTH_DARK := Color("#806044")
-const EARTH_LIGHT := Color("#ad8760")
+const EARTH_DARK := Color("#755d49")
+const EARTH_LIGHT := Color("#a28568")
 const GRASS_EDGE := Color("#5b7c4b")
 const CROSS_SECTIONS := [-1.0, -0.84, -0.55, -0.22, 0.22, 0.55, 0.84, 1.0]
 
@@ -90,3 +92,25 @@ func _install() -> void:
         var old_road := get_parent().get_node_or_null(old_name) as MeshInstance3D
         if old_road != null:
             old_road.visible = false
+    _apply_wall_finishes()
+
+
+func _apply_wall_finishes() -> void:
+    # Texturas leves geradas em shader, sem novos objetos nem colisões.
+    var barn := get_parent().get_node_or_null("Celeiro vermelho") as MeshInstance3D
+    if barn != null:
+        var wood := ShaderMaterial.new()
+        wood.shader = BARN_FINISH
+        barn.material_override = wood
+
+    var life := get_parent().get_node_or_null("LifeSim")
+    if life == null:
+        return
+    var plaster := ShaderMaterial.new()
+    plaster.shader = PLASTER_FINISH
+    for wall_name in ["Parede oeste", "Parede leste", "Parede fundos",
+                      "Fachada terreo esquerda", "Fachada terreo direita",
+                      "Fachada segundo andar"]:
+        var wall := life.get_node_or_null(wall_name) as MeshInstance3D
+        if wall != null:
+            wall.material_override = plaster

@@ -34,6 +34,11 @@ func _run() -> void:
         for title in ["Estrada da fazenda", "Caminho ate a varanda"]:
             var legacy := world.get_node_or_null(title) as MeshInstance3D
             _expect(legacy != null and not legacy.visible, "Caminho retangular oculto: " + title)
+    var barn := world.get_node_or_null("Celeiro vermelho") as MeshInstance3D
+    _expect(barn != null and barn.material_override is ShaderMaterial, "Celeiro com madeira texturizada")
+    var sim_node := world.get_node_or_null("LifeSim")
+    var wall := sim_node.get_node_or_null("Parede fundos") as MeshInstance3D if sim_node != null else null
+    _expect(wall != null and wall.material_override is ShaderMaterial, "Casa com reboco texturizado")
     var arm := world.get_node_or_null("Farmer/CameraPivot/SpringArm3D") as SpringArm3D
     var camera := world.get_node_or_null("Farmer/CameraPivot/SpringArm3D/Camera3D") as Camera3D
     _expect(arm != null and arm.spring_length >= 4.0 and arm.spring_length < 5.0,
