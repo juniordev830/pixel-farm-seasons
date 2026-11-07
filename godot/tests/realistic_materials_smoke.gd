@@ -51,7 +51,9 @@ func _run() -> void:
     # LifeSim removes the original solid shell to make the house enterable.
     # Validate the actual wall rather than its deleted placeholder.
     var life := world.get_node_or_null("LifeSim")
-    var facade := life.get_node_or_null("Parede oeste") as MeshInstance3D if life != null else null
+    var facade: MeshInstance3D = null
+    if life != null:
+        facade = life.get_node_or_null("Parede oeste") as MeshInstance3D
     _check(facade != null, "Fachada real da casa mantida")
     if facade != null:
         _check(facade.material_override is ShaderMaterial, "Material do reboco aplicado na fachada")
