@@ -1,15 +1,15 @@
-# 🌾 Pixel Farm Seasons — candidato a lançamento 3D para PC
+# 🌾 Pixel Farm Seasons — campanha 3D para PC (beta jogável)
 
 Simulador de fazenda em terceira pessoa, desenvolvido em **Godot 4.3**, com fazendeiro, ambiente rural low-poly, rotina diária, agricultura, animais, economia, veículo e uma campanha curta. A versão web 2D permanece separada.
 
-> **Estado de 07/11/2026:** candidato à compilação Windows x64 integrada; validar os workflows e o pacote da branch de lançamento antes da distribuição. **Ainda é uma versão beta:** faltam validação manual em Windows, artes/animações finais, funcionalidades de mundo aberto avançado e adaptação para Android.
+> **Estado de 07/11/2026:** a versão 3D já foi integrada à `main`. Esta atualização acrescenta menu inicial, recuperação/backup de save e tela de conclusão da campanha. **Ainda é uma versão beta:** faltam validação manual em Windows, artes/animações finais, funcionalidades de mundo aberto avançado e adaptação para Android.
 
 ## 🎮 Baixar e jogar no Windows 64 bits
 
-1. Entre em [Actions — compilação Windows](https://github.com/juniordev830/pixel-farm-seasons/actions/workflows/godot-export-windows.yml) e abra a execução concluída com sucesso da branch `release/pixel-farm-seasons-windows-rc1-20261107`.
+1. Entre em [Actions — compilação Windows](https://github.com/juniordev830/pixel-farm-seasons/actions/workflows/godot-export-windows.yml) e abra uma execução concluída com sucesso da revisão desejada (`main` após integração ou o PR desta melhoria).
 2. Em **Artifacts**, baixe `PixelFarmSeasons-Windows64` (pode ser necessário entrar na sua conta GitHub).
 3. Extraia o ZIP externo e o ZIP interno, mantendo `PixelFarmSeasons.exe` e `PixelFarmSeasons.pck` **na mesma pasta**.
-4. Abra `PixelFarmSeasons.exe`. Para salvar ou pausar, pressione **P**.
+4. Abra `PixelFarmSeasons.exe`, escolha **Continuar** ou **Nova partida** no menu principal. Para salvar ou pausar durante o jogo, pressione **P**.
 
 O executável não exige instalar o editor Godot. A compilação vem do projeto em `godot/`, não do protótipo 2D da raiz.
 
@@ -22,8 +22,9 @@ O executável não exige instalar o editor Godot. A compilação vem do projeto 
 - Dirigir o Fusca azul simplificado e consertá-lo na oficina da garagem;
 - Visitar a venda da vila, comprar suprimentos e vender produção;
 - Viver com dia/noite, estações, clima, lembretes de almoço e perda gradual extra de energia se atrasar a refeição após 12h;
-- Evoluir até o nível 30 e concluir **seis missões** com recompensas;
+- Evoluir até o nível 30 e concluir **seis missões** com recompensas, tela de vitória e opção de modo livre;
 - Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa, preservando também a posição do fazendeiro.
+- Retomar o progresso pelo menu inicial ou começar nova partida após confirmação; o save anterior recebe backup local `.backup`.
 
 A bicicleta Monark vermelha é um **modelo decorativo** neste beta; ainda não é dirigível.
 
@@ -49,10 +50,10 @@ Você começa perto da **placa de objetivos**. A campanha introduz o ciclo compl
 
 ## 🛠️ Abrir o código no Godot
 
-1. Selecione a branch `release/pixel-farm-seasons-windows-rc1-20261107` e baixe o código.
+1. Baixe o código atualizado da `main` (após aprovação do PR) ou da branch de desenvolvimento que deseja testar.
 2. Instale Godot 4.3 ou uma versão compatível.
 3. Importe `godot/project.godot`.
-4. Pressione **F5**; cena principal: `res://scenes/farm_world.tscn`.
+4. Pressione **F5**; cena principal: `res://scenes/main_menu.tscn`. O jogo 3D está em `res://scenes/farm_world.tscn`.
 
 O projeto é procedural e usa meshes low-poly temporários, reduzindo dependências de assets externos.
 
@@ -60,7 +61,7 @@ O projeto é procedural e usa meshes low-poly temporários, reduzindo dependênc
 
 Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, menu e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
 
-O desenvolvimento integrado acontece em uma branch de lançamento separada, com PR de consolidação. As branches históricas de melhorias continuam preservadas. A branch `main` não recebeu essas alterações.
+A RC1 3D foi integrada à `main` pelo PR #23. As novas melhorias seguem em branch separada com validação por GitHub Actions; as branches históricas permanecem preservadas.
 
 ## Limites atuais
 
