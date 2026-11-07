@@ -1,4 +1,5 @@
 extends Node3D
+signal campaign_won
 ## Pixel Farm Seasons — vertical slice de vida rural.
 ## Complementa a cena farm_world.tscn sem mexer no jogo web 2D.
 ## Os modelos sao prototipos; nao ha streaming real de TV, radio ou Internet.
@@ -687,6 +688,8 @@ func _review_missions() -> void:
     if not campaign_finished and Missions.completed(mission_stats, mission_completed):
         campaign_finished = true
         _announce("PARABENS! VOCE CONCLUIU A CAMPANHA DA FAZENDA! O modo livre continua.")
+        _save_progress()
+        campaign_won.emit()
     elif newly_completed:
         _save_progress()
 
