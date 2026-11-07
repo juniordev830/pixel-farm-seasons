@@ -65,11 +65,19 @@ func _run() -> void:
     farm.tool_index = 0
     farm.seed_type = 2  # Tomate
     farm.interact(1)
+    # Salva e restaura tambem a posicao real do fazendeiro.
+    var saved_position := Vector3(-4.2, 1.4, 7.8)
+    life.farmer.global_position = saved_position
+    life.farmer.rotation.y = 1.1
     life._save_progress()
+    life.farmer.global_position = Vector3(10.0, 1.4, 10.0)
+    life.farmer.rotation.y = 0.0
     life.harvested = 0
     life.seeds = 0
     farm.plots[1]["planted"] = false
     life._load_progress()
+    _expect(life.farmer.global_position.distance_to(saved_position) < 0.01, "Posicao do fazendeiro restaurada")
+    _expect(is_equal_approx(life.farmer.rotation.y, 1.1), "Orientacao do fazendeiro restaurada")
 
     _expect(int(life.harvested) == 3, "Colheita restaurada")
     _expect(int(life.seeds) == 8, "Sementes restauradas")
