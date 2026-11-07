@@ -63,3 +63,16 @@ func _apply_finishes() -> void:
         mesh_instance.material_override = selections[tag] as Material
         mesh_instance.set_meta("realism_surface", tag)
         applied_count += 1
+
+    # LifeSim replaces the temporary solid house with enterable walls.
+    # Finish the actual visible facade after PremiumArtPass has run.
+    var life := get_parent().get_node_or_null("LifeSim")
+    if life != null:
+        for wall_name in ["Parede oeste", "Parede leste", "Parede fundos",
+                          "Fachada terreo esquerda", "Fachada terreo direita",
+                          "Fachada segundo andar"]:
+            var wall := life.get_node_or_null(wall_name) as MeshInstance3D
+            if wall != null:
+                wall.material_override = plaster
+                wall.set_meta("realism_surface", wall_name)
+                applied_count += 1
