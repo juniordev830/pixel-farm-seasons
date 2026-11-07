@@ -1,0 +1,135 @@
+name: Godot 4.3 - importar e testar cena 3D
+
+on:
+  push:
+    branches:
+      - feature/rural-life-simulator-v1
+      - desenvolvimento-3d
+      - "feature/complete-3d-gameplay-*"
+      - "feature/real-3d-nature-assets-*"
+      - "feature/character-visual-rebuild-*"
+      - "release/**"
+    paths:
+      - "godot/**"
+      - ".github/workflows/godot-life-sim.yml"
+  pull_request:
+    paths:
+      - "godot/**"
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Smoke test headless do projeto Godot
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Godot 4.3 oficial para Linux
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" \
+            -o /tmp/godot.zip
+          unzip -oq /tmp/godot.zip -d /tmp
+          sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+          godot --version
+
+      - name: Importar cena e compilar scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --editor --quit 2>&1 | tee /tmp/godot_import.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:' /tmp/godot_import.log; then exit 1; fi
+
+      - name: Testar plantio, rega, colheita e save/load
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/farming_smoke.gd 2>&1 | tee /tmp/godot_farm_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARMING TEST FAILED:' /tmp/godot_farm_test.log; then exit 1; fi
+
+      - name: Testar relogio por atividades, viagem e sono
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/event_clock_smoke.gd 2>&1 | tee /tmp/godot_event_clock.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|EVENT CLOCK TEST FAILED:' /tmp/godot_event_clock.log; then exit 1; fi
+
+      - name: Validar telhados, iluminacao e paisagismo
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/visual_detail_smoke.gd 2>&1 | tee /tmp/godot_visual_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|VISUAL PASS TEST FAILED:' /tmp/godot_visual_test.log; then exit 1; fi
+
+      - name: Validar interface visual e alertas de rotina
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/cozy_hud_smoke.gd 2>&1 | tee /tmp/godot_hud_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|COZY HUD TEST FAILED:' /tmp/godot_hud_test.log; then exit 1; fi
+
+      - name: Verificar modelo estilizado do fazendeiro
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/farmer_art_smoke.gd 2>&1 | tee /tmp/godot_farmer_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARMER ART TEST FAILED:' /tmp/godot_farmer_test.log; then exit 1; fi
+
+      - name: Testar fome, energia e evolucao do personagem
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/rural_vitals_smoke.gd 2>&1 | tee /tmp/godot_vitals_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|RURAL VITALS TEST FAILED:" /tmp/godot_vitals_test.log; then exit 1; fi
+
+      - name: Validar menu de pausa e salvamento
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/pause_menu_smoke.gd 2>&1 | tee /tmp/godot_pause_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|PAUSE MENU TEST FAILED:" /tmp/godot_pause_test.log; then exit 1; fi
+
+      - name: Verificar campanha, objetivos e recompensas
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/farm_missions_smoke.gd 2>&1 | tee /tmp/godot_campaign.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|FARM MISSIONS TEST FAILED:' /tmp/godot_campaign.log; then exit 1; fi
+
+      - name: Testar estilo visual integrado a cena 3D
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/cozy_reference_smoke.gd 2>&1 | tee /tmp/godot_cozy_reference_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|COZY REFERENCE TEST FAILED:" /tmp/godot_cozy_reference_test.log; then exit 1; fi
+
+      - name: Validar assets reais importados e visual 3D melhorado
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/asset_quality_smoke.gd 2>&1 | tee /tmp/quality-assets.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|QUALITY ASSET TEST FAILED:" /tmp/quality-assets.log; then exit 1; fi
+
+      - name: Testar personagem animado, enquadramento e materiais naturais
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/animated_farmer_smoke.gd 2>&1 | tee /tmp/animated_farmer_test.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|ANIMATED FARMER TEST FAILED:" /tmp/animated_farmer_test.log; then exit 1; fi
+
+      - name: Testar estrada organica, enquadramento e gameplay
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/premium_visual_smoke.gd 2>&1 | tee /tmp/godot_premium_visual.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|PREMIUM VISUAL TEST FAILED:" /tmp/godot_premium_visual.log; then exit 1; fi
+
+      - name: Iniciar mundo por 120 frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --quit-after 120 2>&1 | tee /tmp/godot_run.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:' /tmp/godot_run.log; then exit 1; fi
