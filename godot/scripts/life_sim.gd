@@ -426,12 +426,15 @@ func advance_activity(activity: String) -> void:
 func advance_minutes(amount: float) -> void:
     if not is_finite(amount) or amount <= 0.0:
         return
+    # Atrasar o almoco apos 12h acrescenta desgaste gradual ate 16h30.
+    # Uma refeicao ja realizada nao recebe penalidade extra.
+    var missed_lunch_cost := TimeRules.missed_lunch_energy_cost(minutes, amount, bool(meals.get("almoco", false)))
     minutes += amount
     var running := farmer != null and not driving and Input.is_action_pressed("sprint") and farmer.velocity.length() > 0.2
     var nighttime := minutes >= 1320.0 or minutes < 330.0
     var state: Dictionary = VitalRules.advance(hunger, energy, amount, running, nighttime)
     hunger = float(state["satiety"])
-    energy = float(state["energy"])
+    energy = maxf(0.0, float(state["energy"]) - missed_lunch_cost)
     while minutes >= DAY_MINUTES:
         minutes -= DAY_MINUTES
         day += 1
