@@ -6,6 +6,7 @@ on:
       - "feature/complete-3d-gameplay-*"
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
+      - "release/**"
     paths:
       - "godot/**"
       - ".github/workflows/godot-export-windows.yml"
@@ -72,11 +73,11 @@ jobs:
         run: |
           set -euo pipefail
           cat > dist/LEIA-ME-WINDOWS.txt <<'EOF'
-          PIXEL FARM SEASONS — prototipo 3D para Windows 64 bits
+          PIXEL FARM SEASONS — candidato de lancamento 3D para Windows 64 bits
           1. Extraia todos os arquivos deste ZIP para uma mesma pasta.
           2. Abra PixelFarmSeasons.exe. Mantenha PixelFarmSeasons.pck ao lado do EXE.
           3. Controles: WASD andar, mouse camera, E interagir, F ferramenta,
-             G semente, Shift correr, Espaco pular, V trocar camera e P pausar.
+             G semente, Shift correr, Espaco pular, P pausar, Esc liberar mouse.
           4. Comece pela placa de missoes proxima ao personagem.
           5. Salvamento automatico a cada 30 segundos ou pelo menu P.
           OBS.: Modelos e efeitos sao provisórios. Esta e uma versao beta,
