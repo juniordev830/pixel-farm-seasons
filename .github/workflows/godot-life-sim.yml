@@ -5,6 +5,8 @@ on:
     branches:
       - feature/rural-life-simulator-v1
       - desenvolvimento-3d
+      - main
+      - "feature/game-finish-flow-*"
       - "feature/complete-3d-gameplay-*"
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
