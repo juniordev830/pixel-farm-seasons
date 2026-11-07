@@ -28,6 +28,7 @@ func _run() -> void:
     if menu != null:
         _check(not menu.visible, "Menu inicia fechado")
         _check(menu.get_node_or_null("Backdrop") != null, "Painel construido")
+        _check(menu.find_child("BackToMenu", true, false) != null, "Saida segura para o menu presente")
         menu.pause_game()
         _check(paused, "Pausa a simulacao")
         _check(menu.visible, "Menu abre")
