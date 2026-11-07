@@ -44,3 +44,19 @@ static func meal_activity(meal: String) -> String:
     if meal == "cafe" or meal == "almoco" or meal == "jantar":
         return meal
     return "almoco"
+
+
+## Consequencia do almoco atrasado: das 12h as 16h30.
+## O aviso ja aparece as 11h; a janela de tolerancia evita punicao imediata.
+## A funcao cobre apenas a janela do dia corrente, sem cobrar minutos fora dela.
+const LUNCH_LATE_MINUTE := 720.0
+const LUNCH_LATE_END_MINUTE := 990.0
+const LUNCH_LATE_ENERGY_PER_MINUTE := 0.04
+
+
+static func missed_lunch_energy_cost(start_minutes: float, elapsed_minutes: float, ate_lunch: bool) -> float:
+    if ate_lunch or not is_finite(start_minutes) or not is_finite(elapsed_minutes) or elapsed_minutes <= 0.0:
+        return 0.0
+    var start := maxf(start_minutes, LUNCH_LATE_MINUTE)
+    var finish := minf(start_minutes + elapsed_minutes, LUNCH_LATE_END_MINUTE)
+    return maxf(0.0, finish - start) * LUNCH_LATE_ENERGY_PER_MINUTE
