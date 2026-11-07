@@ -39,6 +39,23 @@ func _run() -> void:
             await physics_frame
         _expect(camera_arm.spring_length >= 4.0, "V cannot switch camera to first person")
         _expect(farmer.get_node("Visuals").visible, "farmer remains visible in third person")
+        # Regression: third-person lock must not disable mouse look or pitch limits.
+        var pivot := farmer.get_node("CameraPivot") as Node3D
+        var original_yaw := farmer.rotation.y
+        var look_event := InputEventMouseMotion.new()
+        look_event.relative = Vector2(120.0, -80.0)
+        Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+        farmer._unhandled_input(look_event)
+        _expect(not is_equal_approx(farmer.rotation.y, original_y), "mouse still rotates farmer and rear camera")
+        _expect(pivot.rotation.x >= float(farmer.get("min_pitch")) and pivot.rotation.x <= float(farmer.get("max_pitch")),
+            "mouse look keeps camera pitch within configured limits")
+        look_event.relative = Vector2(0.0, 10000.0)
+        farmer._unhandled_input(look_event)
+        _expect(is_equal_approx(pivot.rotation.x, float(farmer.get("min_pitch"))), "camera cannot look below minimum pitch")
+        look_event.relative = Vector2(0.0, -10000.0)
+        farmer._unhandled_input(look_event)
+        _expect(is_equal_approx(pivot.rotation.x, float(farmer.get("max_pitch"))), "camera cannot look above maximum pitch")
+        _expect(camera_arm.spring_length >= 4.0, "mouse look preserves third-person camera distance")
     if character != null:
         var model := character.get("imported_model") as Node3D
         var player := character.get("animation_player") as AnimationPlayer
