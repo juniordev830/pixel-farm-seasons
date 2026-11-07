@@ -46,7 +46,7 @@ func _run() -> void:
         look_event.relative = Vector2(120.0, -80.0)
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
         farmer._unhandled_input(look_event)
-        _expect(not is_equal_approx(farmer.rotation.y, original_y), "mouse still rotates farmer and rear camera")
+        _expect(not is_equal_approx(farmer.rotation.y, original_yaw), "mouse still rotates farmer and rear camera")
         _expect(pivot.rotation.x >= float(farmer.get("min_pitch")) and pivot.rotation.x <= float(farmer.get("max_pitch")),
             "mouse look keeps camera pitch within configured limits")
         look_event.relative = Vector2(0.0, 10000.0)
