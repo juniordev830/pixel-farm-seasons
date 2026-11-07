@@ -134,6 +134,15 @@ func _farmhouse_details() -> void:
             var offset := float(i) * 0.19 - 0.29
             _ball("Folhagem varanda", Vector3(x + offset, 0.92, -7.60), Vector3(0.39, 0.43, 0.32), LEAF)
             _ball("Flor varanda", Vector3(x + offset, 1.08, -7.50), Vector3(0.16, 0.16, 0.15), PINK if i % 2 == 0 else PINK_LIGHT)
+    # Facade finishing: door surround and shallow stone doorstep.
+    # Keep doorway open; these are decorative, non-colliding trim pieces.
+    for door_x in [-16.03, -13.97]:
+        _box("Batente porta artesanal", Vector3(door_x, 1.38, -10.22),
+            Vector3(0.14, 2.60, 0.12), WOOD_DARK)
+    _box("Arco madeira sobre porta", Vector3(-15.0, 2.72, -10.22),
+        Vector3(2.20, 0.17, 0.18), WOOD_LITE)
+    _box("Degrau de pedra da varanda", Vector3(-15.0, 0.13, -6.94),
+        Vector3(2.45, 0.23, 0.48), STONE)
     # Roof and balcony cross-beams create silhouettes that read as timber,
     # instead of bare cubes at a distance.
     for x in [-19.35, -16.3, -13.4, -10.65]:
