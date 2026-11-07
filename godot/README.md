@@ -20,7 +20,7 @@ Este diretório contém a versão 3D **beta para PC**. Consulte o [README princi
 - `scripts/farm_missions.gd` e `scripts/campaign_ending.gd`: campanha de seis objetivos, tela de vitoria e modo livre;
 - `scripts/farmer_controller.gd`: movimento e câmera;
 - `scripts/cozy_game_hud.gd`: HUD;
-- `scripts/pause_menu.gd`: pausar, retomar e salvar;
+- `scripts/pause_menu.gd`: pausar, retomar, salvar e voltar ao menu;
 - `tests/`: testes automatizados;
 - `export_presets.cfg`: preset Windows x64.
 
