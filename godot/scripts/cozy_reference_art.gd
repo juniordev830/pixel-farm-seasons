@@ -108,6 +108,16 @@ func _shade_ground() -> void:
                 if tag.begins_with("Estrada da fazenda") or tag.begins_with("Caminho ate a varanda"):
                     (child as MeshInstance3D).material_override = dirt
 
+    # Apply animated water only to the existing lake mesh.
+    # Preserve geometry, location and all gameplay interactions.
+    var lake := get_parent().get_node_or_null("Lago de agua azul") as MeshInstance3D
+    if lake != null:
+        var water_shader := load("res://shaders/water_stylized.gdshader") as Shader
+        if water_shader != null:
+            var water_material := ShaderMaterial.new()
+            water_material.shader = water_shader
+            lake.material_override = water_material
+
 
 func _farmhouse_details() -> void:
     # Warm window-light behind shutters and handmade porch details.
