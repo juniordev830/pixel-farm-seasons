@@ -44,16 +44,15 @@ func _run() -> void:
         var original_yaw := farmer.rotation.y
         var look_event := InputEventMouseMotion.new()
         look_event.relative = Vector2(120.0, -80.0)
-        Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-        farmer._unhandled_input(look_event)
+        farmer.call("_apply_mouse_look", look_event.relative)
         _expect(not is_equal_approx(farmer.rotation.y, original_yaw), "mouse still rotates farmer and rear camera")
         _expect(pivot.rotation.x >= float(farmer.get("min_pitch")) and pivot.rotation.x <= float(farmer.get("max_pitch")),
             "mouse look keeps camera pitch within configured limits")
         look_event.relative = Vector2(0.0, 10000.0)
-        farmer._unhandled_input(look_event)
+        farmer.call("_apply_mouse_look", look_event.relative)
         _expect(is_equal_approx(pivot.rotation.x, float(farmer.get("min_pitch"))), "camera cannot look below minimum pitch")
         look_event.relative = Vector2(0.0, -10000.0)
-        farmer._unhandled_input(look_event)
+        farmer.call("_apply_mouse_look", look_event.relative)
         _expect(is_equal_approx(pivot.rotation.x, float(farmer.get("max_pitch"))), "camera cannot look above maximum pitch")
         _expect(camera_arm.spring_length >= 4.0, "mouse look preserves third-person camera distance")
     if character != null:
