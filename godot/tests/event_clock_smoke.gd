@@ -58,6 +58,27 @@ func _run() -> void:
     _check(not life.hud_thought.text.contains("11h"), "Lembrete desaparece apos almocar")
     life.meals["almoco"] = false
 
+    # Atrasar o almoco apos 12h cobra energia extra, mas antes disso nao.
+    var time_rules = load("res://scripts/rural_time.gd")
+    _check(is_equal_approx(float(time_rules.missed_lunch_energy_cost(660.0, 60.0, false)), 0.0), "Sem multa antes de meio-dia")
+    _check(is_equal_approx(float(time_rules.missed_lunch_energy_cost(710.0, 20.0, false)), 0.4), "Cobra apenas o tempo depois de 12h")
+    _check(is_equal_approx(float(time_rules.missed_lunch_energy_cost(960.0, 60.0, false)), 1.2), "Limita desgaste ate 16h30")
+    _check(is_equal_approx(float(time_rules.missed_lunch_energy_cost(720.0, 60.0, true)), 0.0), "Almoco realizado cancela a penalidade")
+    _check(is_equal_approx(float(time_rules.missed_lunch_energy_cost(720.0, -5.0, false)), 0.0), "Duracao invalida nao cobra energia")
+    life.minutes = 720.0
+    life.hunger = 75.0
+    life.energy = 75.0
+    life.meals["almoco"] = false
+    life.advance_minutes(30.0)
+    var energy_without_lunch := float(life.energy)
+    life.minutes = 720.0
+    life.hunger = 75.0
+    life.energy = 75.0
+    life.meals["almoco"] = true
+    life.advance_minutes(30.0)
+    _check(is_equal_approx(float(life.energy) - energy_without_lunch, 1.2), "Atraso de almoco provoca perda gradual extra de energia")
+    life.meals["almoco"] = false
+
     life.minutes = 390.0
     life.advance_activity("preparar_refeicao")
     _check(is_equal_approx(float(life.minutes), 400.0), "Preparar cafe consome 10 minutos")
