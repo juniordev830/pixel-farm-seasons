@@ -47,6 +47,13 @@ func _run() -> void:
         _check(barn_details >= 2, "Detailed barn front")
     var terrain := world.get_node_or_null("Terreno principal") as MeshInstance3D
     _check(terrain != null and terrain.material_override is ShaderMaterial, "Grass shader applied to actual terrain")
+    var lake := world.get_node_or_null("Lago de agua azul") as MeshInstance3D
+    _check(lake != null, "Lago continua na cena")
+    _check(lake != null and lake.material_override is ShaderMaterial,
+        "Lago usa shader animado de agua")
+    if lake != null and lake.material_override is ShaderMaterial:
+        _check((lake.material_override as ShaderMaterial).shader != null,
+            "Recurso de agua carregado")
     var hud := world.get_node_or_null("CozyGameHUD")
     _check(hud != null and hud.get_node_or_null("CozyOverlay/QuickTools") != null,
         "Quick farming toolbar visible in live HUD")
