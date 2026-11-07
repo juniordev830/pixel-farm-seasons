@@ -127,6 +127,13 @@ jobs:
           godot --headless --path godot --script res://tests/premium_visual_smoke.gd 2>&1 | tee /tmp/godot_premium_visual.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|PREMIUM VISUAL TEST FAILED:" /tmp/godot_premium_visual.log; then exit 1; fi
 
+      - name: Validar materiais realistas sem alterar jogabilidade
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/realistic_materials_smoke.gd 2>&1 | tee /tmp/godot_realism_test.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|REALISM PASS TEST FAILED:' /tmp/godot_realism_test.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |
