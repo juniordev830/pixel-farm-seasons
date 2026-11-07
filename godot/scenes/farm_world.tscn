@@ -81,7 +81,7 @@ theme_override_colors/font_shadow_color = Color(0.08, 0.14, 0.14, 1)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 19
-text = "🌾 PIXEL FARM SEASONS — Fazenda 3D\nWASD: andar   Mouse: câmera   Shift: correr   Espaço: pular   V: câmera   Esc: liberar mouse"
+text = "🌾 PIXEL FARM SEASONS — Fazenda 3D\nWASD: andar   Mouse: câmera   Shift: correr   Espaço: pular   Esc: liberar mouse"
 
 [node name="LifeSim" type="Node3D" parent="."]
 script = ExtResource("3_life")
