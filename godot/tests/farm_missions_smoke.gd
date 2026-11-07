@@ -45,6 +45,14 @@ func _run() -> void:
         life._review_missions()
         _expect(bool(life.campaign_finished), "Campanha com final alcancavel")
         _expect(Missions.completed(life.mission_stats, life.mission_completed), "Todas missoes completas")
+        var ending := world.get_node_or_null("CampaignEnding")
+        _expect(ending != null, "Tela final instalada no mundo")
+        if ending != null:
+            _expect(bool(ending.visible), "Tela final aparece quando ganha")
+            _expect(paused, "Campanha pausada ao exibir final")
+            ending.continue_after_victory()
+            _expect(not paused, "Modo livre retoma simulacao")
+            _expect(not bool(ending.visible), "Tela final fecha sem resetar progresso")
     world.queue_free()
     await process_frame
     if failures.is_empty():
