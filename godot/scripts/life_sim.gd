@@ -798,22 +798,22 @@ func _update_light() -> void:
     var golden := maxf(dawn, dusk)
     var sun := get_parent().get_node_or_null("Sun") as DirectionalLight3D
     if sun != null:
-        sun.light_energy = 0.08 + daylight * 0.76
-        sun.light_color = Color("#fff3df").lerp(Color("#f5bd85"), golden * 0.70)
-        sun.rotation_degrees = Vector3(-12 - daylight * 56.0, -27, 0)
+        sun.light_energy = 0.10 + daylight * 0.83
+        sun.light_color = Color("#fff0d6").lerp(Color("#eab277"), golden * 0.58)
+        sun.rotation_degrees = Vector3(-15.0 - daylight * 47.0, -34.0, 0)
     var environment := get_parent().get_node_or_null("WorldEnvironment") as WorldEnvironment
     if environment != null and environment.environment != null:
         var env := environment.environment
-        env.ambient_light_color = Color("#48516e").lerp(Color("#d8dfd0"), daylight)
-        env.ambient_light_energy = 0.22 + daylight * 0.36
+        env.ambient_light_color = Color("#48516e").lerp(Color("#eadfc9"), daylight)
+        env.ambient_light_energy = 0.19 + daylight * 0.30
         # Updating a ProceduralSkyMaterial can rebuild the sky texture. Keep
         # that expensive work to one update per five in-game minutes.
         var sky_step := int(minutes / 5.0)
         if sky_step != last_sky_step and env.sky != null and env.sky.sky_material is ProceduralSkyMaterial:
             last_sky_step = sky_step
             var sky_material := env.sky.sky_material as ProceduralSkyMaterial
-            sky_material.sky_top_color = Color("#1f385a").lerp(Color("#498dc1"), daylight)
-            sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#bedce7"), daylight).lerp(Color("#f1caa3"), golden * 0.22)
+            sky_material.sky_top_color = Color("#1f385a").lerp(Color("#6e9cb7"), daylight)
+            sky_material.sky_horizon_color = Color("#57627b").lerp(Color("#dfddce"), daylight).lerp(Color("#f6c99e"), golden * 0.28)
             sky_material.ground_horizon_color = Color("#414758").lerp(Color("#c8d4bf"), daylight)
             sky_material.ground_bottom_color = Color("#28322d").lerp(Color("#536d45"), daylight)
 
