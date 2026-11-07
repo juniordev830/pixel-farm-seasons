@@ -23,8 +23,12 @@ func _unhandled_input(event: InputEvent) -> void:
     elif event is InputEventMouseButton and event.pressed:
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
     if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-        rotate_y(-event.relative.x * mouse_sensitivity)
-        camera_pivot.rotation.x = clamp(camera_pivot.rotation.x - event.relative.y * mouse_sensitivity, min_pitch, max_pitch)
+        _apply_mouse_look(event.relative)
+
+func _apply_mouse_look(relative: Vector2) -> void:
+    # Isolated so headless regression tests do not depend on OS mouse capture.
+    rotate_y(-relative.x * mouse_sensitivity)
+    camera_pivot.rotation.x = clamp(camera_pivot.rotation.x - relative.y * mouse_sensitivity, min_pitch, max_pitch)
 
 func _physics_process(delta: float) -> void:
     if not is_on_floor():
