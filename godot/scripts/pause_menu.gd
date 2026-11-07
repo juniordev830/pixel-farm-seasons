@@ -52,7 +52,7 @@ func _build_menu() -> void:
     stack.add_child(sub)
 
     var help := Label.new()
-    help.text = "WASD: andar / dirigir    Mouse: camera\nShift: correr   Espaco: pular\nE: interagir    F: ferramenta    G: semente\nV: alternar camera    P: pausar/continuar"
+    help.text = "WASD: andar / dirigir    Mouse: camera\nShift: correr   Espaco: pular\nE: interagir    F: ferramenta    G: semente\nP: pausar/continuar"
     help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     stack.add_child(help)
