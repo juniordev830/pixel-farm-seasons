@@ -23,7 +23,7 @@ O executável não exige instalar o editor Godot. A compilação vem do projeto 
 - Visitar a venda da vila, comprar suprimentos e vender produção;
 - Viver com dia/noite, estações, clima, lembretes de almoço e perda gradual extra de energia se atrasar a refeição após 12h;
 - Evoluir até o nível 30 e concluir **seis missões** com recompensas;
-- Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa.
+- Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa, preservando também a posição do fazendeiro.
 
 A bicicleta Monark vermelha é um **modelo decorativo** neste beta; ainda não é dirigível.
 
