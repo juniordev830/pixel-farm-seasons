@@ -18,7 +18,13 @@ void fragment() {
         * cos(p.y * 1.1 - TIME * movement_speed * 0.8);
     float ripples = sin(p.x * 4.1 + p.y * 2.3 - TIME * movement_speed * 2.0);
     float mix_factor = clamp(0.53 + 0.19 * slow + 0.06 * ripples, 0.0, 1.0);
-    ALBEDO = mix(water_dark.rgb, water_light.rgb, mix_factor);
+    // Slightly brighter at grazing angles, without textures or extra draw calls.
+    // NORMAL and VIEW are both in view space in Godot spatial fragment shaders.
+    float facing = clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0);
+    float grazing = 1.0 - facing;
+    float rim = grazing * grazing * grazing;
+    ALBEDO = mix(water_dark.rgb, water_light.rgb,
+        clamp(mix_factor + 0.18 * rim, 0.0, 1.0));
     ROUGHNESS = 0.36;
     SPECULAR = 0.65;
 }
