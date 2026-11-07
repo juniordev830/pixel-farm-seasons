@@ -188,13 +188,13 @@ func _build_quickbar() -> void:
     var height := get_viewport().get_visible_rect().size.y
     var row := HBoxContainer.new()
     row.name = "QuickTools"
-    row.position = Vector2((width - 480.0) * 0.5, height - 92.0)
+    row.position = Vector2((width - 540.0) * 0.5, height - 88.0)
     row.mouse_filter = Control.MOUSE_FILTER_IGNORE
     row.add_theme_constant_override("separation", 6)
     root_control.add_child(row)
     for label in ["PLANTAR", "REGAR", "COLHER", "SEMENTES", "PRODUCAO", "OVOS"]:
         var slot := PanelContainer.new()
-        slot.custom_minimum_size = Vector2(74, 67)
+        slot.custom_minimum_size = Vector2(84, 64)
         slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
         slot.add_theme_stylebox_override("panel", _quick_style(false))
         row.add_child(slot)
@@ -202,14 +202,14 @@ func _build_quickbar() -> void:
         text_node.text = label
         text_node.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
         text_node.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-        text_node.add_theme_font_size_override("font_size", 12)
+        text_node.add_theme_font_size_override("font_size", 13)
         text_node.add_theme_color_override("font_color", CREAM)
         text_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
         slot.add_child(text_node)
         quick_slots.append(slot)
         quick_labels.append(text_node)
     var help := _text(root_control, "QuickToolsHelp", "F: trocar ferramenta   |   G: trocar semente   |   E: interagir", 13, CREAM)
-    help.position = Vector2((width - 410.0) * 0.5, height - 116.0)
+    help.position = Vector2((width - 480.0) * 0.5, height - 115.0)
 
 
 func _refresh_quickbar() -> void:

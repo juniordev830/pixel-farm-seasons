@@ -23,6 +23,12 @@ func _ready() -> void:
 func _ground_available(x: float, z: float) -> bool:
     if absf(x) > 47.0 or absf(z) > 47.0:
         return false
+    # Evita folhas atravessando o novo caminho curvo e suas bordas.
+    if z >= -9.0 and z <= 40.0:
+        var road_bend := 1.0 - smoothstep(-8.0, 8.0, z)
+        var road_x := -4.0 - 10.7 * road_bend
+        if absf(x - road_x) < 2.8:
+            return false
     # Roads, porch, garage, barn, fields, pen and pond stay clear.
     if x > -6.8 and x < -1.0 and z > -4.0 and z < 40.0:
         return false
@@ -95,7 +101,7 @@ func _paint_ground() -> void:
     # Instanced tapering leaves, no collision and low GPU overhead.
     var blade_mesh := _grass_blades()
     var spots: Array[Vector3] = []
-    for i in range(4100):
+    for i in range(3200):
         var x := rng.randf_range(-47.0, 47.0)
         var z := rng.randf_range(-47.0, 47.0)
         if _ground_available(x, z):
@@ -104,7 +110,7 @@ func _paint_ground() -> void:
         var node := _make_multimesh("Capim instanciado %d" % side, blade_mesh, spots.size(), _tinted_material())
         var mm := node.multimesh
         for i in range(spots.size()):
-            var height := rng.randf_range(0.40, 1.05)
+            var height := rng.randf_range(0.32, 0.82)
             var angle := rng.randf_range(-PI, PI) + float(side) * PI * 0.5
             var offset := Vector3(0.12 if side else -0.12, 0, 0)
             var xf := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3(1.0, height, 1.0)), spots[i] + offset)

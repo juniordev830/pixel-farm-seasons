@@ -120,6 +120,13 @@ jobs:
           godot --headless --path godot --script res://tests/animated_farmer_smoke.gd 2>&1 | tee /tmp/animated_farmer_test.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|ANIMATED FARMER TEST FAILED:" /tmp/animated_farmer_test.log; then exit 1; fi
 
+      - name: Testar estrada organica, enquadramento e gameplay
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/premium_visual_smoke.gd 2>&1 | tee /tmp/godot_premium_visual.log
+          if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|PREMIUM VISUAL TEST FAILED:" /tmp/godot_premium_visual.log; then exit 1; fi
+
       - name: Iniciar mundo por 120 frames
         shell: bash
         run: |

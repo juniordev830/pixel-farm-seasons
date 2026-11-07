@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/farm_world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/farmer_controller.gd" id="2_farmer"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/environment_art_pass.gd" id="9_environment_art"]
 [ext_resource type="Script" path="res://scripts/cozy_reference_art.gd" id="10_cozy_reference"]
 [ext_resource type="Script" path="res://scripts/asset_quality_pass.gd" id="11_assets"]
+[ext_resource type="Script" path="res://scripts/premium_art_pass.gd" id="12_premium"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.37
@@ -59,15 +60,15 @@ script = ExtResource("7_farmer_art")
 
 [node name="CameraPivot" type="Node3D" parent="Farmer"]
 position = Vector3(0, 0.75, 0)
-rotation = Vector3(-0.22, 0, 0)
+rotation = Vector3(-0.27, 0, 0)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Farmer/CameraPivot"]
-spring_length = 5.8
+spring_length = 4.65
 margin = 0.2
 
 [node name="Camera3D" type="Camera3D" parent="Farmer/CameraPivot/SpringArm3D"]
 current = true
-fov = 63.0
+fov = 59.0
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -104,6 +105,9 @@ script = ExtResource("10_cozy_reference")
 
 [node name="AssetQualityPass" type="Node3D" parent="."]
 script = ExtResource("11_assets")
+
+[node name="PremiumArtPass" type="Node3D" parent="."]
+script = ExtResource("12_premium")
 
 [node name="PauseMenu" type="CanvasLayer" parent="."]
 layer = 20

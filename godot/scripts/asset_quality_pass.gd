@@ -167,7 +167,7 @@ func _add_detail_props() -> void:
         if environment != null and not bool(environment.call("_ground_available", x, z)):
             continue
         var model := String(FLOWERS[i % FLOWERS.size()])
-        if _place(model, Vector3(x, 0.02, z), rng.randf_range(1.7, 3.1), rng.randf_range(-PI, PI)) != null:
+        if _place(model, Vector3(x, 0.02, z), rng.randf_range(1.10, 1.80), rng.randf_range(-PI, PI)) != null:
             flower_count += 1
     for i in range(42):
         var x := rng.randf_range(-43.0, 43.0)
@@ -175,23 +175,23 @@ func _add_detail_props() -> void:
         if environment != null and not bool(environment.call("_ground_available", x, z)):
             continue
         var model := "plant-bushdetailed.glb" if i % 2 == 0 else "plant-bushlarge.glb"
-        _place(model, Vector3(x, 0.0, z), rng.randf_range(2.0, 3.2), rng.randf_range(-PI, PI))
+        _place(model, Vector3(x, 0.0, z), rng.randf_range(1.35, 2.15), rng.randf_range(-PI, PI))
     for i in range(24):
         var x := rng.randf_range(-44.0, 44.0)
         var z := rng.randf_range(-43.0, 43.0)
         if environment != null and not bool(environment.call("_ground_available", x, z)):
             continue
-        if _place(String(ROCKS[i % ROCKS.size()]), Vector3(x, 0.015, z), rng.randf_range(1.6, 3.5), rng.randf_range(-PI, PI)) != null:
+        if _place(String(ROCKS[i % ROCKS.size()]), Vector3(x, 0.015, z), rng.randf_range(0.85, 1.70), rng.randf_range(-PI, PI)) != null:
             rocks_count += 1
     # Grouped flowering shrubs frame the approach without blocking roads.
     for p in [Vector3(-9.1, 0.02, 1.4), Vector3(-9.5, 0.02, 3.5),
               Vector3(0.9, 0.02, 6.4), Vector3(1.5, 0.02, 10.4),
               Vector3(-6.2, 0.02, 21.5), Vector3(-0.1, 0.02, 25.0)]:
-        _place("plant-bushdetailed.glb", p, 2.1, rng.randf_range(-PI, PI))
+        _place("plant-bushdetailed.glb", p, 1.70, rng.randf_range(-PI, PI))
     # Flowers near the porch and beds, carefully outside walking paths.
     for x in [-20.35, -19.8, -9.55, -8.95]:
         for z in [-6.4, -5.9, -5.4]:
-            _place(String(FLOWERS[rng.randi_range(0, FLOWERS.size() - 1)]), Vector3(x, 0.08, z), 2.4, rng.randf_range(-PI, PI))
+            _place(String(FLOWERS[rng.randi_range(0, FLOWERS.size() - 1)]), Vector3(x, 0.08, z), 1.65, rng.randf_range(-PI, PI))
     # A handful of high-quality decorative crop models at the edge of the
     # vegetable plot; live planted crops remain controlled by FarmingSystem.
     for z in [1.5, 4.0, 6.5, 9.0]:
