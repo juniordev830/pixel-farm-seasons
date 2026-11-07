@@ -44,8 +44,15 @@ func _run() -> void:
         var original_yaw := farmer.rotation.y
         var look_event := InputEventMouseMotion.new()
         look_event.relative = Vector2(120.0, -80.0)
-        farmer.call("_apply_mouse_look", look_event.relative)
+        look_event.screen_relative = Vector2(40.0, -20.0)
+        _expect(farmer.call("_mouse_motion_delta", look_event) == look_event.screen_relative,
+            "camera input uses unscaled screen-relative mouse motion")
+        _expect(farmer.call("_mouse_motion_delta", look_event) != look_event.relative,
+            "camera ignores resolution-scaled mouse motion")
+        farmer.call("_apply_mouse_look", farmer.call("_mouse_motion_delta", look_event))
         _expect(not is_equal_approx(farmer.rotation.y, original_yaw), "mouse still rotates farmer and rear camera")
+        _expect(is_equal_approx(farmer.rotation.y, original_yaw - 40.0 * float(farmer.get("mouse_sensitivity"))),
+            "camera yaw follows unscaled mouse delta")
         _expect(pivot.rotation.x >= float(farmer.get("min_pitch")) and pivot.rotation.x <= float(farmer.get("max_pitch")),
             "mouse look keeps camera pitch within configured limits")
         look_event.relative = Vector2(0.0, 10000.0)
