@@ -77,11 +77,16 @@ func _install_animated_farmer() -> void:
     current_anim = ""
     _play_farm_animation("idle")
     # Hat, backpack and denim details are preserved as recognizable farm gear.
-    _cylinder(self, Vector3(0, 0.68, 0), 0.52, 0.075, HAT)
-    _cylinder(self, Vector3(0, 0.79, 0), 0.30, 0.24, Color("#e4c98a"))
-    _cylinder(self, Vector3(0, 0.75, 0), 0.312, 0.05, Color("#75563b"))
-    _box(self, Vector3(0, -0.11, 0.32), Vector3(0.56, 0.66, 0.26), Color("#7d5c43"))
-    _box(self, Vector3(0, -0.32, 0.48), Vector3(0.48, 0.23, 0.055), Color("#a58154"))
+    # Cozy art pass: straw hat, curved leather satchel and restrained details.
+    # All meshes are cosmetic children of FarmerArt; rig and animations stay intact.
+    _cylinder(self, Vector3(0, 0.71, 0), 0.49, 0.052, Color("#e7c781"))
+    _cylinder(self, Vector3(0, 0.85, 0), 0.305, 0.25, Color("#d4ad62"))
+    _cylinder(self, Vector3(0, 0.79, 0), 0.316, 0.045, Color("#70503a"))
+    _ball(self, Vector3(0, -0.10, 0.34), Vector3(0.68, 0.78, 0.43), Color("#826044"))
+    _box(self, Vector3(0, 0.16, 0.53), Vector3(0.50, 0.13, 0.12), Color("#b08a5a"))
+    _box(self, Vector3(0, -0.17, 0.56), Vector3(0.10, 0.17, 0.045), Color("#d9b87b"))
+    _box(self, Vector3(-0.25, 0.02, 0.12), Vector3(0.085, 0.62, 0.08), Color("#b89467"))
+    _box(self, Vector3(0.25, 0.02, 0.12), Vector3(0.085, 0.62, 0.08), Color("#b89467"))
 
 
 func _play_farm_animation(name: String) -> void:
@@ -115,7 +120,7 @@ func _cylinder(parent: Node3D, at: Vector3, radius: float, height: float, color:
     mesh.top_radius = radius
     mesh.bottom_radius = radius
     mesh.height = height
-    mesh.radial_segments = 16
+    mesh.radial_segments = 24
     node.mesh = mesh
     node.position = at
     node.material_override = _mat(color)
