@@ -41,12 +41,23 @@ func _run() -> void:
         _check(int(valid.get("day", 0)) == 8, "Dia restaurado")
         _check(int(valid.get("level", 0)) == 4, "Nivel restaurado")
         _check(bool(valid.get("finished", false)), "Campanha concluida reconhecida")
-        file = FileAccess.open(TEST_SAVE, FileAccess.WRITE)
-        if file != null:
-            file.store_string("{save-quebrado")
-            file = null
-            var invalid: Dictionary = MainMenu.inspect_save(TEST_SAVE)
-            _check(not bool(invalid.get("valid", true)), "Save corrompido bloqueado")
+        var invalid_saves := [
+            '{"version":1,"day":"oito","coins":245}',
+            '{"version":1,"day":8,"coins":"245"}',
+            '{"version":1,"day":0,"coins":245}',
+            '{"version":1,"day":8,"coins":-1}',
+            '{"version":1,"day":8.5,"coins":245}',
+            '{"version":1,"day":8,"coins":245,"level":"alto"}',
+            '{"version":2,"day":8,"coins":245}',
+            "{save-quebrado"
+        ]
+        for invalid_contents in invalid_saves:
+            file = FileAccess.open(TEST_SAVE, FileAccess.WRITE)
+            if file != null:
+                file.store_string(invalid_contents)
+                file = null
+                var invalid: Dictionary = MainMenu.inspect_save(TEST_SAVE)
+                _check(not bool(invalid.get("valid", true)), "Save malformado bloqueado: " + invalid_contents)
     if FileAccess.file_exists(TEST_SAVE):
         DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_SAVE))
 
