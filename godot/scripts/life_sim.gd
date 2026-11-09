@@ -52,6 +52,7 @@ var tv_on := false
 var radio_on := false
 var notebook_on := false
 var driving := false
+var car_speed := 0.0
 var initialized := false
 var save_tick := 0.0
 var lighting_tick := 0.0
@@ -484,16 +485,46 @@ func _reset_travel_position() -> void:
     last_travel_position = car.global_position if driving and car != null else farmer.global_position
 
 
+## Smooth driving with forward/reverse limits and braking before changing direction.
+## Pure helper for headless regression tests; no Input or physics dependency.
+static func next_car_speed(current: float, throttle: float, condition: float, delta: float) -> float:
+    if not is_finite(current) or not is_finite(throttle) or not is_finite(condition) or not is_finite(delta):
+        return 0.0
+    if delta <= 0.0:
+        return current
+    var input_amount: float = clampf(throttle, -1.0, 1.0)
+    var power: float = clampf(condition / 100.0, 0.2, 1.0)
+    var limit: float = 12.0 if input_amount >= 0.0 else 5.0
+    var target: float = input_amount * limit * power
+    var response: float = 7.5
+    if absf(input_amount) < 0.05:
+        response = 8.0  # Coasting drag.
+        target = 0.0
+    elif current * target < 0.0:
+        response = 16.0  # Brake before reversing direction.
+    return move_toward(current, target, response * delta)
+
+
 func _physics_process(delta: float) -> void:
     if not initialized or not driving or car == null:
         return
     var accelerator := Input.get_action_strength("move_forward") - Input.get_action_strength("move_back")
     var steering := Input.get_action_strength("move_left") - Input.get_action_strength("move_right")
-    var speed := 12.0 * clampf(car_condition / 100.0, 0.2, 1.0)
-    if absf(accelerator) > 0.05:
-        car.rotate_y(steering * delta * 0.85 * signf(accelerator))
-        car_condition = maxf(0.0, car_condition - delta * 0.006)
-    car.velocity = -car.global_transform.basis.z * accelerator * speed
+    car_speed = next_car_speed(car_speed, accelerator, car_condition, delta)
+    if absf(car_speed) > 0.15 and absf(steering) > 0.05:
+        var steering_scale: float = clampf(absf(car_speed) / 6.0, 0.25, 1.0)
+        car.rotate_y(steering * delta * 0.85 * signf(car_speed) * steering_scale)
+    if absf(car_speed) > 0.05:
+        car_condition = maxf(0.0, car_condition - absf(car_speed) * delta * 0.0005)
+    # Keep vertical velocity: replacing it with horizontal movement prevented
+    # the car from settling onto slopes and terrain after going airborne.
+    var vertical_speed: float = car.velocity.y
+    if car.is_on_floor():
+        vertical_speed = 0.0
+    else:
+        vertical_speed -= float(ProjectSettings.get_setting("physics/3d/default_gravity")) * delta
+    car.velocity = -car.global_transform.basis.z * car_speed
+    car.velocity.y = vertical_speed
     car.move_and_slide()
     farmer.global_position = car.global_position + Vector3(0, 1.05, 0)
     farmer.rotation.y = car.rotation.y
@@ -759,6 +790,8 @@ func _enter_car() -> void:
         _announce("Carro precisa de reparo na oficina.")
         return
     driving = true
+    car_speed = 0.0
+    car.velocity = Vector3.ZERO
     _reset_travel_position()
     farmer.set_physics_process(false)
     var visuals := farmer.get_node_or_null("Visuals") as Node3D
@@ -769,6 +802,8 @@ func _enter_car() -> void:
 
 func _exit_car() -> void:
     driving = false
+    car_speed = 0.0
+    car.velocity = Vector3.ZERO
     var offset := car.global_transform.basis.x * 2.2
     farmer.global_position = car.global_position + offset + Vector3(0, 0.8, 0)
     _reset_travel_position()
