@@ -52,10 +52,17 @@ func _run() -> void:
             await physics_frame
         var released: float = float(life.get("car_speed"))
         _check(released < moving, "Fusca perde velocidade ao soltar acelerador")
+        var car: CharacterBody3D = life.get("car") as CharacterBody3D
+        if car != null:
+            car.global_position.y += 2.0
+            car.velocity = Vector3.ZERO
+            var raised_height: float = car.global_position.y
+            for i in range(12):
+                await physics_frame
+            _check(car.global_position.y < raised_height - 0.05, "Gravidade faz o carro voltar ao terreno")
         life.call("_exit_car")
         _check(not bool(life.get("driving")), "Sair termina a direcao")
         _check(is_zero_approx(float(life.get("car_speed"))), "Sair zera a velocidade")
-        var car: CharacterBody3D = life.get("car") as CharacterBody3D
         _check(car != null and car.velocity.is_zero_approx(), "Carro nao continua andando sem motorista")
 
     Input.action_release("move_forward")
