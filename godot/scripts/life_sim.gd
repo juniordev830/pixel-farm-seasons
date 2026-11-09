@@ -911,10 +911,13 @@ func _load_progress() -> void:
             mission_stats[key] = maxi(0, int(stored_stats.get(key, 0)))
     var stored_completed: Variant = data.get("mission_completed", [])
     if typeof(stored_completed) == TYPE_ARRAY:
-        for key in stored_completed:
-            if typeof(key) == TYPE_STRING and String(key) not in mission_completed:
-                mission_completed.append(String(key))
-    campaign_finished = bool(data.get("campaign_finished", false))
+        # Ignore unknown/duplicate entries; a partial or modified save must not
+        # create a false victory or hide remaining objectives.
+        for goal in Missions.GOALS:
+            var key := String(goal["key"])
+            if key in stored_completed:
+                mission_completed.append(key)
+    campaign_finished = Missions.completed(mission_stats, mission_completed)
     food = maxi(0, int(data.get("food", food)))
     feed = maxi(0, int(data.get("feed", feed)))
     seeds = maxi(0, int(data.get("seeds", seeds)))
