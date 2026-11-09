@@ -57,6 +57,25 @@ static func inspect_save(path: String) -> Dictionary:
         for coord in coords:
             if (typeof(coord) != TYPE_FLOAT and typeof(coord) != TYPE_INT) or not is_finite(float(coord)):
                 return {"valid": false, "reason": "corrupt"}
+    # Nested statistics and crop records must not contain values that fail
+    # conversion when LifeSim/FarmingSystem restores them.
+    if data.has("mission_stats"):
+        var stats: Variant = data["mission_stats"]
+        if typeof(stats) != TYPE_DICTIONARY:
+            return {"valid": false, "reason": "corrupt"}
+        for field in ["harvested", "animal_days", "milk", "eggs", "sold", "days"]:
+            if stats.has(field) and not _valid_save_integer(stats[field], 0):
+                return {"valid": false, "reason": "corrupt"}
+    if data.has("farming"):
+        var plots: Variant = data["farming"]
+        if typeof(plots) != TYPE_ARRAY:
+            return {"valid": false, "reason": "corrupt"}
+        for plot in plots:
+            if typeof(plot) != TYPE_DICTIONARY:
+                continue
+            for field in ["crop", "growth"]:
+                if plot.has(field) and not _valid_save_integer(plot[field], 0):
+                    return {"valid": false, "reason": "corrupt"}
     var claimed: Variant = data.get("mission_completed", [])
     if typeof(claimed) != TYPE_ARRAY:
         return {"valid": false, "reason": "corrupt"}
