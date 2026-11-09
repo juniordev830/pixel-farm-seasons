@@ -4,7 +4,6 @@ Renderer-agnostic: game clients can use these values for sky, ambient lighting,
 house windows and stars without tying gameplay to a particular graphics engine.
 """
 from dataclasses import dataclass
-from math import cos, pi
 
 @dataclass(frozen=True)
 class Lighting:
@@ -25,7 +24,9 @@ def lighting_at(minute: int) -> Lighting:
     if 5 <= hour < 7:
         phase = "sunrise"
         daylight = (hour - 5) / 2
-        sky = _mix((19, 28, 66), (255, 175, 115), daylight)
+        # Twilight passes through a warm midpoint, then smoothly returns to day blue.
+        sky = (_mix((19, 26, 58), (255, 175, 115), hour - 5)
+               if hour < 6 else _mix((255, 175, 115), (111, 191, 244), hour - 6))
     elif 7 <= hour < 17:
         phase = "day"
         daylight = 1.0
@@ -33,7 +34,9 @@ def lighting_at(minute: int) -> Lighting:
     elif 17 <= hour < 19:
         phase = "sunset"
         daylight = (19 - hour) / 2
-        sky = _mix((22, 26, 61), (255, 147, 94), daylight)
+        # Keep both phase boundaries continuous: blue -> golden hour -> night.
+        sky = (_mix((111, 191, 244), (255, 147, 94), hour - 17)
+               if hour < 18 else _mix((255, 147, 94), (19, 26, 58), hour - 18))
     else:
         phase = "night"
         daylight = 0.0
