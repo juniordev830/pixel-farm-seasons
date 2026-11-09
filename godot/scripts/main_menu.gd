@@ -14,6 +14,14 @@ func _ready() -> void:
     refresh_save_status()
 
 
+static func _valid_save_integer(value: Variant, minimum: int) -> bool:
+    # Godot JSON can decode numeric literals as floating-point values.
+    if typeof(value) != TYPE_INT and typeof(value) != TYPE_FLOAT:
+        return false
+    var number := float(value)
+    return is_finite(number) and number >= float(minimum) and number == floorf(number) and number <= 2147483647.0
+
+
 static func inspect_save(path: String) -> Dictionary:
     if not FileAccess.file_exists(path):
         return {"valid": false, "reason": "missing"}
@@ -24,8 +32,12 @@ static func inspect_save(path: String) -> Dictionary:
     if typeof(decoded) != TYPE_DICTIONARY:
         return {"valid": false, "reason": "corrupt"}
     var data: Dictionary = decoded
-    if int(data.get("version", 0)) != 1 or not data.has("day") or not data.has("coins"):
+    if not _valid_save_integer(data.get("version", null), 1) or int(data.get("version")) != 1:
         return {"valid": false, "reason": "incompatible"}
+    if not _valid_save_integer(data.get("day", null), 1) or not _valid_save_integer(data.get("coins", null), 0):
+        return {"valid": false, "reason": "corrupt"}
+    if data.has("level") and not _valid_save_integer(data.get("level"), 1):
+        return {"valid": false, "reason": "corrupt"}
     return {
         "valid": true,
         "day": maxi(1, int(data.get("day", 1))),
