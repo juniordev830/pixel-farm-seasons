@@ -27,4 +27,5 @@ static func describe(stats: Dictionary, claimed: Array) -> String:
 
 
 static func completed(stats: Dictionary, claimed: Array) -> bool:
-    return claimed.size() >= GOALS.size()
+    # Only canonical objective keys count; extra or duplicate saved values never win.
+    return next_goal(stats, claimed).is_empty()
