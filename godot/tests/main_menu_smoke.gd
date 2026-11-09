@@ -40,7 +40,19 @@ func _run() -> void:
         _check(bool(valid.get("valid", false)), "Save valido reconhecido")
         _check(int(valid.get("day", 0)) == 8, "Dia restaurado")
         _check(int(valid.get("level", 0)) == 4, "Nivel restaurado")
-        _check(bool(valid.get("finished", false)), "Campanha concluida reconhecida")
+        _check(not bool(valid.get("finished", true)), "Indicador antigo sozinho nao conclui campanha")
+        file = FileAccess.open(TEST_SAVE, FileAccess.WRITE)
+        if file != null:
+            file.store_string('{"version":1,"day":8,"coins":245,"level":4,"campaign_finished":true,"mission_completed":["harvest","animals","produce","eggs","market","days"]}')
+            file = null
+            var completed: Dictionary = MainMenu.inspect_save(TEST_SAVE)
+            _check(bool(completed.get("finished", false)), "Campanha completa exige todas as missoes")
+        file = FileAccess.open(TEST_SAVE, FileAccess.WRITE)
+        if file != null:
+            file.store_string('{"version":1,"day":8,"coins":245,"campaign_finished":true,"mission_completed":["harvest","harvest","produce","eggs","market","unknown"]}')
+            file = null
+            var incomplete: Dictionary = MainMenu.inspect_save(TEST_SAVE)
+            _check(not bool(incomplete.get("finished", true)), "Missoes repetidas ou desconhecidas nao completam campanha")
         var invalid_saves := [
             '{"version":1,"day":"oito","coins":245}',
             '{"version":1,"day":8,"coins":"245"}',
@@ -49,6 +61,11 @@ func _run() -> void:
             '{"version":1,"day":8.5,"coins":245}',
             '{"version":1,"day":8,"coins":245,"level":"alto"}',
             '{"version":2,"day":8,"coins":245}',
+            '{"version":1,"day":8,"coins":245,"minutes":"tarde"}',
+            '{"version":1,"day":8,"coins":245,"hunger":null}',
+            '{"version":1,"day":8,"coins":245,"car_pos":[0,"longe",0]}',
+            '{"version":1,"day":8,"coins":245,"mission_completed":"harvest"}',
+            '{"version":1,"day":8,"coins":245,"seeds":"muitas"}',
             "{save-quebrado"
         ]
         for invalid_contents in invalid_saves:
