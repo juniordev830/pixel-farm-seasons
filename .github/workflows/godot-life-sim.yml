@@ -101,6 +101,13 @@ jobs:
           godot --headless --path godot --script res://tests/main_menu_smoke.gd 2>&1 | tee /tmp/godot_main_menu.log
           if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|TITLE SCREEN TEST FAILED:' /tmp/godot_main_menu.log; then exit 1; fi
 
+      - name: Testar escrita segura e recuperacao de saves
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/save_store_smoke.gd 2>&1 | tee /tmp/godot_save_store.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|SAVE STORE TEST FAILED:' /tmp/godot_save_store.log; then exit 1; fi
+
       - name: Verificar campanha, objetivos e recompensas
         shell: bash
         run: |
