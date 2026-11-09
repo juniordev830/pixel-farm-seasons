@@ -66,3 +66,7 @@ A RC1 3D foi integrada à `main` pelo PR #23. As novas melhorias seguem em branc
 ## Limites atuais
 
 Este beta **não é o jogo comercial final** nem um mundo aberto 3D realista. Animações e modelos definitivos, bicicleta pilotável, missões avançadas, combate, otimização completa e versão Android ainda são etapas futuras. A prévia 2D `index.html` continua disponível separadamente.
+
+## Continuidade do céu no protótipo de iluminação Python
+
+O módulo independente `gameplay/day_night.py` interpola o céu entre noite, amanhecer, dia e pôr do sol por uma fase dourada intermediária, sem saltos bruscos de cor nos limites das fases. Os testes de `test_daily_cycle.py` verificam as transições e a repetição do relógio a cada 24 horas. **Isto melhora o modelo de iluminação Python; a aplicação desses parâmetros ao renderizador Godot ainda requer integração visual.**
