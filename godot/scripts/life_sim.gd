@@ -5,6 +5,8 @@ signal campaign_won
 ## Os modelos sao prototipos; nao ha streaming real de TV, radio ou Internet.
 
 const SAVE_PATH := "user://pixel_farm_life_save.json"
+const SaveStore = preload("res://scripts/save_store.gd")
+const SaveValidation = preload("res://scripts/main_menu.gd")
 const DAY_MINUTES := 1440.0
 const TimeRules = preload("res://scripts/rural_time.gd")
 const Schedule = preload("res://scripts/rural_schedule.gd")
@@ -864,7 +866,7 @@ func _announce(message: String) -> void:
         hud_notice.text = message
 
 
-func _save_progress() -> void:
+func _save_progress() -> bool:
     var payload := {
         "version": 1, "day": day, "minutes": minutes, "hunger": hunger,
         "energy": energy, "coins": coins, "food": food, "feed": feed,
@@ -881,18 +883,22 @@ func _save_progress() -> void:
         "farmer_pos": [farmer.global_position.x, farmer.global_position.y, farmer.global_position.z],
         "farmer_rot": farmer.rotation.y
     }
-    var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-    if file != null:
-        file.store_string(JSON.stringify(payload))
+    var saved := SaveStore.write_payload(SAVE_PATH, payload)
+    if not saved:
+        push_warning("LifeSim: nao foi possivel salvar o progresso; save anterior preservado.")
+    return saved
 
 
 func _load_progress() -> void:
-    if not FileAccess.file_exists(SAVE_PATH):
+    var inspected := SaveValidation.inspect_save(SAVE_PATH)
+    if not bool(inspected.get("valid", false)):
         return
-    var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+    var source := String(inspected.get("source", SAVE_PATH))
+    var file := FileAccess.open(source, FileAccess.READ)
     if file == null:
         return
     var decoded: Variant = JSON.parse_string(file.get_as_text())
+    file.close()
     if typeof(decoded) != TYPE_DICTIONARY:
         return
     var data: Dictionary = decoded
