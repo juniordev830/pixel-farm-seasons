@@ -54,12 +54,19 @@ func _run() -> void:
         _check(released < moving, "Fusca perde velocidade ao soltar acelerador")
         var car: CharacterBody3D = life.get("car") as CharacterBody3D
         if car != null:
-            car.global_position.y += 2.0
+            # Move to an open area: the original garage has a low roof that
+            # can block a car moved vertically during a headless physics test.
+            car.global_position = Vector3(0.0, 4.0, 0.0)
             car.velocity = Vector3.ZERO
             var raised_height: float = car.global_position.y
-            for i in range(12):
+            for i in range(18):
                 await physics_frame
-            _check(car.global_position.y < raised_height - 0.05, "Gravidade faz o carro voltar ao terreno")
+            _check(
+                car.global_position.y < raised_height - 0.05,
+                "Gravidade faz o carro descer na area aberta: inicio %.3f, final %.3f" % [
+                    raised_height, car.global_position.y
+                ]
+            )
         life.call("_exit_car")
         _check(not bool(life.get("driving")), "Sair termina a direcao")
         _check(is_zero_approx(float(life.get("car_speed"))), "Sair zera a velocidade")
