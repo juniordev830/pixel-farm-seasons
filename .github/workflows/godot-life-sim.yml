@@ -87,6 +87,13 @@ jobs:
           godot --headless --path godot --script res://tests/rural_vitals_smoke.gd 2>&1 | tee /tmp/godot_vitals_test.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|RURAL VITALS TEST FAILED:" /tmp/godot_vitals_test.log; then exit 1; fi
 
+      - name: Testar aceleracao, frenagem e fisica do Fusca
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/car_motion_smoke.gd 2>&1 | tee /tmp/godot_car_motion.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|CAR MOTION TEST FAILED:' /tmp/godot_car_motion.log; then exit 1; fi
+
       - name: Validar menu de pausa e salvamento
         shell: bash
         run: |
