@@ -19,7 +19,7 @@ O executável não exige instalar o editor Godot. A compilação vem do projeto 
 - Entrar na casa de dois andares e interagir com geladeira, refeições, cama, rede, TV, rádio e notebook demonstrativos;
 - Cuidar de vaca e galinhas, alimentar, dar água, ordenhar e colher ovos;
 - Plantar, regar e colher **30 canteiros**, com cenoura, milho e tomate;
-- Dirigir o Fusca azul simplificado e consertá-lo na oficina da garagem;
+- Dirigir o Fusca azul simplificado com aceleração progressiva, frenagem, ré e gravidade no terreno, além de consertá-lo na oficina da garagem;
 - Visitar a venda da vila, comprar suprimentos e vender produção;
 - Viver com dia/noite, estações, clima, lembretes de almoço e perda gradual extra de energia se atrasar a refeição após 12h;
 - Evoluir até o nível 30 e concluir **seis missões** com recompensas, tela de vitória e opção de modo livre;
@@ -59,7 +59,7 @@ O projeto é procedural e usa meshes low-poly temporários, reduzindo dependênc
 
 ## ✅ Testes e manutenção
 
-Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, menu, recuperação de salvamento e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
+Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, direção do Fusca, menu, recuperação de salvamento e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
 
 A RC1 3D foi integrada à `main` pelo PR #23. As novas melhorias seguem em branch separada com validação por GitHub Actions; as branches históricas permanecem preservadas.
 
