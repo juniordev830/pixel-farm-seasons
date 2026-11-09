@@ -3,6 +3,7 @@ extends Control
 const SAVE_PATH := "user://pixel_farm_life_save.json"
 const GAME_SCENE := "res://scenes/farm_world.tscn"
 const Missions = preload("res://scripts/farm_missions.gd")
+const SaveStore = preload("res://scripts/save_store.gd")
 
 var continue_button: Button
 var summary_label: Label
@@ -24,6 +25,19 @@ static func _valid_save_integer(value: Variant, minimum: int) -> bool:
 
 
 static func inspect_save(path: String) -> Dictionary:
+    var primary := _inspect_save_file(path)
+    if bool(primary.get("valid", false)):
+        primary["source"] = path
+        return primary
+    var recovered := _inspect_save_file(path + ".recovery")
+    if bool(recovered.get("valid", false)):
+        recovered["source"] = path + ".recovery"
+        recovered["recovered"] = true
+        return recovered
+    return primary
+
+
+static func _inspect_save_file(path: String) -> Dictionary:
     if not FileAccess.file_exists(path):
         return {"valid": false, "reason": "missing"}
     var file := FileAccess.open(path, FileAccess.READ)
@@ -178,6 +192,8 @@ func refresh_save_status() -> void:
     continue_button.disabled = not bool(result.get("valid", false))
     if bool(result.get("valid", false)):
         var progress := "Campanha concluida" if bool(result["finished"]) else "Campanha em andamento"
+        if bool(result.get("recovered", false)):
+            progress += " | Backup automatico recuperado"
         summary_label.text = "Partida encontrada: dia %d | nivel %d | R$ %d\n%s" % [
             int(result["day"]), int(result["level"]), int(result["coins"]), progress
         ]
@@ -192,17 +208,13 @@ func _confirm_new_game() -> void:
 
 
 func _start_new_game() -> void:
-    if FileAccess.file_exists(SAVE_PATH):
-        var absolute_save := ProjectSettings.globalize_path(SAVE_PATH)
-        var backup_path := ProjectSettings.globalize_path(SAVE_PATH + ".backup")
-        var backup_result := DirAccess.copy_absolute(absolute_save, backup_path)
-        if backup_result != OK:
-            summary_label.text = "Nao foi possivel fazer backup. Save original preservado."
-            return
-        var remove_result := DirAccess.remove_absolute(absolute_save)
-        if remove_result != OK:
-            summary_label.text = "Nao foi possivel iniciar nova partida. Save original preservado."
-            return
+    var inspected := inspect_save(SAVE_PATH)
+    var source := String(inspected.get("source", SAVE_PATH))
+    if not bool(inspected.get("valid", false)) and not FileAccess.file_exists(source):
+        source = SAVE_PATH + ".recovery"
+    if not SaveStore.reset_for_new_game(SAVE_PATH, source):
+        summary_label.text = "Falha ao criar backup ou limpar save. Partida original preservada no disco."
+        return
     _enter_game()
 
 
