@@ -66,6 +66,10 @@ func _run() -> void:
             '{"version":1,"day":8,"coins":245,"car_pos":[0,"longe",0]}',
             '{"version":1,"day":8,"coins":245,"mission_completed":"harvest"}',
             '{"version":1,"day":8,"coins":245,"seeds":"muitas"}',
+            '{"version":1,"day":8,"coins":245,"mission_stats":{"milk":"quatro"}}',
+            '{"version":1,"day":8,"coins":245,"mission_stats":"desconhecidas"}',
+            '{"version":1,"day":8,"coins":245,"farming":[{"crop":"cenoura"}]}',
+            '{"version":1,"day":8,"coins":245,"farming":false}',
             "{save-quebrado"
         ]
         for invalid_contents in invalid_saves:
