@@ -23,7 +23,7 @@ O executável não exige instalar o editor Godot. A compilação vem do projeto 
 - Visitar a venda da vila, comprar suprimentos e vender produção;
 - Viver com dia/noite, estações, clima, lembretes de almoço e perda gradual extra de energia se atrasar a refeição após 12h;
 - Evoluir até o nível 30 e concluir **seis missões** com recompensas, tela de vitória e opção de modo livre;
-- Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa, preservando também a posição do fazendeiro.
+- Salvar automaticamente a cada 30 segundos e manualmente pelo menu de pausa, preservando também a posição do fazendeiro. A gravação agora usa arquivo temporário e uma cópia de recuperação (`.recovery`), independente do backup de nova partida (`.backup`); se a gravação falhar, o retorno ao menu é bloqueado para evitar perda de progresso.
 - Retomar o progresso pelo menu inicial ou começar nova partida após confirmação; o save anterior recebe backup local `.backup`.
 
 A bicicleta Monark vermelha é um **modelo decorativo** neste beta; ainda não é dirigível.
@@ -59,7 +59,7 @@ O projeto é procedural e usa meshes low-poly temporários, reduzindo dependênc
 
 ## ✅ Testes e manutenção
 
-Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, menu e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
+Os testes automáticos em `.github/workflows/godot-life-sim.yml` cobrem importação, plantio, relógio, visual, HUD, personagem, saciedade, experiência, campanha, menu, recuperação de salvamento e inicialização headless. A compilação Windows é gerada por `.github/workflows/godot-export-windows.yml`. O CI **não substitui** testes com teclado/mouse, FPS, colisões e inspeção visual no Windows real.
 
 A RC1 3D foi integrada à `main` pelo PR #23. As novas melhorias seguem em branch separada com validação por GitHub Actions; as branches históricas permanecem preservadas.
 
