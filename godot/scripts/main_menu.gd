@@ -2,6 +2,7 @@ extends Control
 ## Tela inicial da versao PC. Nunca sobrescreve um save sem confirmacao.
 const SAVE_PATH := "user://pixel_farm_life_save.json"
 const GAME_SCENE := "res://scenes/farm_world.tscn"
+const Missions = preload("res://scripts/farm_missions.gd")
 
 var continue_button: Button
 var summary_label: Label
@@ -38,12 +39,35 @@ static func inspect_save(path: String) -> Dictionary:
         return {"valid": false, "reason": "corrupt"}
     if data.has("level") and not _valid_save_integer(data.get("level"), 1):
         return {"valid": false, "reason": "corrupt"}
+    # Prevent malformed optional save fields from crashing the life simulation.
+    for field in ["minutes", "hunger", "energy", "car_condition", "car_rot", "farmer_rot"]:
+        if data.has(field):
+            var value: Variant = data[field]
+            if (typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT) or not is_finite(float(value)):
+                return {"valid": false, "reason": "corrupt"}
+    for field in ["food", "feed", "seeds", "harvested", "eggs", "milk", "experience"]:
+        if data.has(field) and not _valid_save_integer(data[field], 0):
+            return {"valid": false, "reason": "corrupt"}
+    for field in ["car_pos", "farmer_pos"]:
+        if not data.has(field):
+            continue
+        var coords: Variant = data[field]
+        if typeof(coords) != TYPE_ARRAY or coords.size() != 3:
+            return {"valid": false, "reason": "corrupt"}
+        for coord in coords:
+            if (typeof(coord) != TYPE_FLOAT and typeof(coord) != TYPE_INT) or not is_finite(float(coord)):
+                return {"valid": false, "reason": "corrupt"}
+    var claimed: Variant = data.get("mission_completed", [])
+    if typeof(claimed) != TYPE_ARRAY:
+        return {"valid": false, "reason": "corrupt"}
+    # The same canonical mission keys are used when loading the game.
+    var finished: bool = Missions.completed({}, claimed)
     return {
         "valid": true,
         "day": maxi(1, int(data.get("day", 1))),
         "coins": maxi(0, int(data.get("coins", 0))),
         "level": clampi(int(data.get("level", 1)), 1, 30),
-        "finished": bool(data.get("campaign_finished", false))
+        "finished": finished
     }
 
 
