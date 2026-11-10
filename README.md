@@ -65,6 +65,8 @@ A RC1 3D foi integrada à `main` pelo PR #23. As novas melhorias seguem em branc
 
 ## Limites atuais
 
+Na tela de vitoria, **Salvar e voltar ao menu** so encerra a partida apos confirmar a gravacao. Se salvar falhar, a partida permanece pausada e uma mensagem permite tentar novamente ou continuar no modo livre.
+
 Este beta **não é o jogo comercial final** nem um mundo aberto 3D realista. Animações e modelos definitivos, bicicleta pilotável, missões avançadas, combate, otimização completa e versão Android ainda são etapas futuras. A prévia 2D `index.html` continua disponível separadamente.
 
 ## Continuidade do céu no protótipo de iluminação Python

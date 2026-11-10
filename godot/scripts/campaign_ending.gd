@@ -4,6 +4,7 @@ const MENU_SCENE := "res://scenes/main_menu.tscn"
 
 var backdrop: ColorRect
 var free_play_button: Button
+var save_error: Label
 
 
 func _ready() -> void:
@@ -74,11 +75,20 @@ func _build_screen() -> void:
     title_button.pressed.connect(back_to_menu)
     stack.add_child(title_button)
 
+    save_error = Label.new()
+    save_error.name = "SaveError"
+    save_error.text = "Falha ao salvar. Continue jogando ou tente salvar novamente."
+    save_error.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    save_error.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    save_error.visible = false
+    stack.add_child(save_error)
+
 
 func show_victory() -> void:
     if visible:
         return
     visible = true
+    save_error.visible = false
     Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
     get_tree().paused = true
     free_play_button.grab_focus()
@@ -92,8 +102,12 @@ func continue_after_victory() -> void:
 
 func back_to_menu() -> void:
     var life := get_parent().get_node_or_null("LifeSim")
-    if life != null and bool(life.get("initialized")):
-        life.call("_save_progress")
+    if life == null or not bool(life.get("initialized")):
+        save_error.visible = true
+        return
+    if not bool(life.call("_save_progress")):
+        save_error.visible = true
+        return
     get_tree().paused = false
     Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
     get_tree().change_scene_to_file(MENU_SCENE)
