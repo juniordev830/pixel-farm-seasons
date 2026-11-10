@@ -5,6 +5,8 @@ on:
     branches:
       - feature/rural-life-simulator-v1
       - desenvolvimento-3d
+      - main
+      - "feature/game-finish-flow-*"
       - "feature/complete-3d-gameplay-*"
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
@@ -85,12 +87,40 @@ jobs:
           godot --headless --path godot --script res://tests/rural_vitals_smoke.gd 2>&1 | tee /tmp/godot_vitals_test.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|RURAL VITALS TEST FAILED:" /tmp/godot_vitals_test.log; then exit 1; fi
 
+      - name: Testar aceleracao, frenagem e fisica do Fusca
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/car_motion_smoke.gd 2>&1 | tee /tmp/godot_car_motion.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|CAR MOTION TEST FAILED:' /tmp/godot_car_motion.log; then exit 1; fi
+
       - name: Validar menu de pausa e salvamento
         shell: bash
         run: |
           set -euo pipefail
           godot --headless --path godot --script res://tests/pause_menu_smoke.gd 2>&1 | tee /tmp/godot_pause_test.log
           if grep -E "SCRIPT ERROR|Parse Error:|Parser Error:|PAUSE MENU TEST FAILED:" /tmp/godot_pause_test.log; then exit 1; fi
+
+      - name: Validar tela inicial, continue e leitura de save
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/main_menu_smoke.gd 2>&1 | tee /tmp/godot_main_menu.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|TITLE SCREEN TEST FAILED:' /tmp/godot_main_menu.log; then exit 1; fi
+
+      - name: Testar saida segura da tela de vitoria
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/campaign_ending_smoke.gd 2>&1 | tee /tmp/godot_campaign_ending.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|CAMPAIGN ENDING TEST FAILED:' /tmp/godot_campaign_ending.log; then exit 1; fi
+
+      - name: Testar escrita segura e recuperacao de saves
+        shell: bash
+        run: |
+          set -euo pipefail
+          godot --headless --path godot --script res://tests/save_store_smoke.gd 2>&1 | tee /tmp/godot_save_store.log
+          if grep -E 'SCRIPT ERROR|Parse Error:|Parser Error:|SAVE STORE TEST FAILED:' /tmp/godot_save_store.log; then exit 1; fi
 
       - name: Verificar campanha, objetivos e recompensas
         shell: bash

@@ -69,6 +69,12 @@ func _build_menu() -> void:
     save_button.pressed.connect(save_game)
     stack.add_child(save_button)
 
+    var title_button := Button.new()
+    title_button.name = "BackToMenu"
+    title_button.text = "SALVAR E VOLTAR AO MENU"
+    title_button.pressed.connect(return_to_title)
+    stack.add_child(title_button)
+
 
 func _unhandled_key_input(event: InputEvent) -> void:
     if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_P:
@@ -96,10 +102,22 @@ func resume_game() -> void:
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-func save_game() -> void:
+func save_game() -> bool:
     var life := get_parent().get_node_or_null("LifeSim")
     if life != null and bool(life.get("initialized")):
-        life.call("_save_progress")
+        return bool(life.call("_save_progress"))
+    return false
+
+
+func return_to_title() -> void:
+    if not save_game():
+        push_warning("PauseMenu: salvamento falhou. Retorno ao menu cancelado para nao perder progresso.")
+        return
+    get_tree().paused = false
+    Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+    var result := get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+    if result != OK:
+        push_error("PauseMenu: nao foi possivel abrir o menu principal (%d)." % result)
 
 
 func _exit_tree() -> void:

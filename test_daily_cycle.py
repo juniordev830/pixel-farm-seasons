@@ -58,5 +58,21 @@ class DailyNeedsTests(unittest.TestCase):
         self.assertEqual(lighting_at(23*60).phase, "night")
         self.assertTrue(lighting_at(23*60).house_lights)
 
+    def test_sky_color_transitions_are_continuous(self):
+        day = (111, 191, 244)
+        night = (19, 26, 58)
+        self.assertEqual(lighting_at(5 * 60).sky_rgb, night)
+        self.assertEqual(lighting_at(7 * 60).sky_rgb, day)
+        self.assertEqual(lighting_at(17 * 60).sky_rgb, day)
+        self.assertEqual(lighting_at(19 * 60).sky_rgb, night)
+        for minute in [5 * 60, 6 * 60, 7 * 60, 17 * 60, 18 * 60, 19 * 60]:
+            before = lighting_at(minute - 1).sky_rgb
+            after = lighting_at(minute).sky_rgb
+            self.assertLessEqual(max(abs(a - b) for a, b in zip(before, after)), 5)
+
+    def test_lighting_model_wraps_after_midnight(self):
+        self.assertEqual(lighting_at(12 * 60), lighting_at(12 * 60 + 1440))
+        self.assertEqual(lighting_at(18 * 60).phase, "sunset")
+
 if __name__ == "__main__":
     unittest.main()
