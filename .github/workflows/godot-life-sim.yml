@@ -13,8 +13,11 @@ on:
       - "godot/**"
       - ".github/workflows/godot-life-sim.yml"
   pull_request:
+    branches:
+      - main
     paths:
       - "godot/**"
+      - ".github/workflows/godot-life-sim.yml"
   workflow_dispatch:
 
 jobs:
