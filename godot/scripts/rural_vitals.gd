@@ -18,7 +18,7 @@ static func movement_multiplier(satiety: float, energy: float) -> float:
 static func advance(satiety: float, energy: float, game_minutes: float, sprinting: bool, night: bool) -> Dictionary:
     if not is_finite(game_minutes) or game_minutes <= 0.0:
         return {"satiety": clampf(satiety, 0.0, 100.0), "energy": clampf(energy, 0.0, 100.0)}
-    var next_satiety := maxf(0.0, satiety - game_minutes * 0.06)
+    var next_satiety := clampf(satiety - game_minutes * 0.06, 0.0, 100.0)
     var energy_cost := 0.04
     if sprinting:
         energy_cost += 0.08
@@ -28,5 +28,5 @@ static func advance(satiety: float, energy: float, game_minutes: float, sprintin
         energy_cost += 0.02
     return {
         "satiety": next_satiety,
-        "energy": maxf(0.0, energy - game_minutes * energy_cost)
+        "energy": clampf(energy - game_minutes * energy_cost, 0.0, 100.0)
     }
