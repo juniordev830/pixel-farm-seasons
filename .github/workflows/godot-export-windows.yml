@@ -86,11 +86,16 @@ jobs:
           cd dist
           zip -9 PixelFarmSeasons-Windows64.zip PixelFarmSeasons.exe PixelFarmSeasons.pck LEIA-ME-WINDOWS.txt
           unzip -l PixelFarmSeasons-Windows64.zip
+          unzip -t PixelFarmSeasons-Windows64.zip
+          sha256sum PixelFarmSeasons-Windows64.zip > PixelFarmSeasons-Windows64.zip.sha256
+          sha256sum -c PixelFarmSeasons-Windows64.zip.sha256
 
       - name: Publicar pacote Windows nos artefatos
         uses: actions/upload-artifact@v4
         with:
           name: PixelFarmSeasons-Windows64
-          path: dist/PixelFarmSeasons-Windows64.zip
+          path: |
+            dist/PixelFarmSeasons-Windows64.zip
+            dist/PixelFarmSeasons-Windows64.zip.sha256
           retention-days: 30
           if-no-files-found: error
