@@ -65,3 +65,7 @@ O desenvolvimento integrado acontece em uma branch de lançamento separada, com 
 ## Limites atuais
 
 Este beta **não é o jogo comercial final** nem um mundo aberto 3D realista. Animações e modelos definitivos, bicicleta pilotável, missões avançadas, combate, otimização completa e versão Android ainda são etapas futuras. A prévia 2D `index.html` continua disponível separadamente.
+
+## Próximos incrementos e validação
+
+Consulte o [guia técnico do projeto](docs/GUIA_DE_VALIDACAO.md) para critérios de aceitação, verificações e limites do protótipo.
