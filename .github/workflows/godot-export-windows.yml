@@ -7,6 +7,12 @@ on:
       - "feature/real-3d-nature-assets-*"
       - "feature/character-visual-rebuild-*"
       - "release/**"
+      - "feature/game-finish-flow-*"
+      - main
+    paths:
+      - "godot/**"
+      - ".github/workflows/godot-export-windows.yml"
+  pull_request:
     paths:
       - "godot/**"
       - ".github/workflows/godot-export-windows.yml"
@@ -78,7 +84,7 @@ jobs:
           2. Abra PixelFarmSeasons.exe. Mantenha PixelFarmSeasons.pck ao lado do EXE.
           3. Controles: WASD andar, mouse camera, E interagir, F ferramenta,
              G semente, Shift correr, Espaco pular, P pausar, Esc liberar mouse.
-          4. Comece pela placa de missoes proxima ao personagem.
+          4. No menu, escolha Continuar Partida ou Nova Partida. Depois, veja a placa de missoes.
           5. Salvamento automatico a cada 30 segundos ou pelo menu P.
           OBS.: Modelos e efeitos sao provisórios. Esta e uma versao beta,
           nao a edicao comercial final.

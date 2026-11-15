@@ -4,7 +4,7 @@ config_version=5
 
 [application]
 config/name="Pixel Farm Seasons — Fazenda 3D"
-run/main_scene="res://scenes/farm_world.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 
 [display]

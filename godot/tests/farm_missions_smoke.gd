@@ -18,6 +18,13 @@ func _run() -> void:
     var complete: Array[String] = []
     _expect(Missions.describe(stats, complete).contains("Colha"), "Primeira missao visivel")
     _expect(not Missions.completed(stats, complete), "Campanha nao inicia terminada")
+    var invalid_claims: Array[String] = ["harvest", "animals", "produce", "eggs", "market", "unknown"]
+    _expect(not Missions.completed(stats, invalid_claims), "Chave desconhecida nao conclui campanha")
+    _expect(String(Missions.next_goal(stats, invalid_claims).get("key", "")) == "days", "Objetivo pendente continua visivel")
+    var duplicate_claims: Array[String] = ["harvest", "harvest", "harvest", "harvest", "harvest", "harvest"]
+    _expect(not Missions.completed(stats, duplicate_claims), "Chaves repetidas nao concluem campanha")
+    var all_claims: Array[String] = ["harvest", "animals", "produce", "eggs", "market", "days"]
+    _expect(Missions.completed(stats, all_claims), "Todas as chaves validas concluem campanha")
     var packed := load("res://scenes/farm_world.tscn") as PackedScene
     _expect(packed != null, "Cena 3D disponivel")
     if packed == null:
@@ -45,6 +52,14 @@ func _run() -> void:
         life._review_missions()
         _expect(bool(life.campaign_finished), "Campanha com final alcancavel")
         _expect(Missions.completed(life.mission_stats, life.mission_completed), "Todas missoes completas")
+        var ending := world.get_node_or_null("CampaignEnding")
+        _expect(ending != null, "Tela final instalada no mundo")
+        if ending != null:
+            _expect(bool(ending.visible), "Tela final aparece quando ganha")
+            _expect(paused, "Campanha pausada ao exibir final")
+            ending.continue_after_victory()
+            _expect(not paused, "Modo livre retoma simulacao")
+            _expect(not bool(ending.visible), "Tela final fecha sem resetar progresso")
     world.queue_free()
     await process_frame
     if failures.is_empty():
