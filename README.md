@@ -72,3 +72,7 @@ Este beta **não é o jogo comercial final** nem um mundo aberto 3D realista. An
 ## Continuidade do céu no protótipo de iluminação Python
 
 O módulo independente `gameplay/day_night.py` interpola o céu entre noite, amanhecer, dia e pôr do sol por uma fase dourada intermediária, sem saltos bruscos de cor nos limites das fases. Os testes de `test_daily_cycle.py` verificam as transições e a repetição do relógio a cada 24 horas. **Isto melhora o modelo de iluminação Python; a aplicação desses parâmetros ao renderizador Godot ainda requer integração visual.**
+
+## Próximos incrementos e validação
+
+Consulte o [guia técnico do projeto](docs/GUIA_DE_VALIDACAO.md) para critérios de aceitação, verificações e limites do protótipo.

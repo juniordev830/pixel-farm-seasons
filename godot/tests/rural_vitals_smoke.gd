@@ -29,6 +29,14 @@ func _run() -> void:
     _expect(float(night["energy"]) < float(normal["energy"]), "Noite cansa mais")
     _expect(is_equal_approx(float(Vitals.advance(0.0, 0.0, 1000.0, true, true)["energy"]), 0.0), "Sem energia negativa")
 
+    # Valores de save ou chamadas externas nao podem extrapolar 0..100.
+    var overfilled: Dictionary = Vitals.advance(150.0, 180.0, 10.0, false, false)
+    _expect(float(overfilled["satiety"]) <= 100.0, "Saciedade limitada ao maximo apos avancar")
+    _expect(float(overfilled["energy"]) <= 100.0, "Energia limitada ao maximo apos avancar")
+    var depleted: Dictionary = Vitals.advance(-5.0, -10.0, 10.0, true, true)
+    _expect(is_equal_approx(float(depleted["satiety"]), 0.0), "Saciedade nunca negativa")
+    _expect(is_equal_approx(float(depleted["energy"]), 0.0), "Energia nunca negativa")
+
     var packed := load("res://scenes/farm_world.tscn") as PackedScene
     _expect(packed != null, "Cena principal carregada")
     if packed == null:

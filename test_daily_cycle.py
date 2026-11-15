@@ -51,6 +51,23 @@ class DailyNeedsTests(unittest.TestCase):
         self.assertGreater(farmer.energy, 20)
         self.assertLess(farmer.fatigue, 70)
 
+    def test_invalid_needs_input_never_changes_state(self):
+        farmer = Farmer()
+        original = (farmer.minute, farmer.hunger, farmer.energy, farmer.last_meal)
+        for minutes in (-1, 0.5, True):
+            with self.subTest(minutes=minutes), self.assertRaises(ValueError):
+                farmer.advance(minutes)
+        for hours in (0, 25, 1.5, True):
+            with self.subTest(hours=hours), self.assertRaises(ValueError):
+                farmer.sleep(hours)
+        for nutrition in (float("nan"), float("inf"), -1, True, "55"):
+            with self.subTest(nutrition=nutrition), self.assertRaises(ValueError):
+                farmer.eat(nutrition)
+        self.assertEqual(
+            (farmer.minute, farmer.hunger, farmer.energy, farmer.last_meal),
+            original,
+        )
+
     def test_sky_phases(self):
         self.assertEqual(lighting_at(6*60).phase, "sunrise")
         self.assertEqual(lighting_at(12*60).phase, "day")

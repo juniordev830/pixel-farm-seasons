@@ -1,8 +1,6 @@
-name: Python gameplay unit tests
-
+name: Python gameplay regressions
 on:
   push:
-    branches: [main, "feature/game-finish-flow-*"]
     paths:
       - "gameplay/**"
       - "test_*.py"
@@ -12,16 +10,15 @@ on:
       - "gameplay/**"
       - "test_*.py"
       - ".github/workflows/python-gameplay.yml"
-
 permissions:
   contents: read
-
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - run: python -m unittest discover -p 'test_*.py' -v

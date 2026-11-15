@@ -1,5 +1,6 @@
 """Engine-independent daily needs and sleep rules."""
 from dataclasses import dataclass
+from math import isfinite
 
 @dataclass
 class Farmer:
@@ -15,8 +16,8 @@ class Farmer:
         return f"{(self.minute // 60) % 24:02d}:{self.minute % 60:02d}"
 
     def advance(self, minutes: int, activity: str = "idle") -> list[str]:
-        if minutes < 0:
-            raise ValueError("minutes must be non-negative")
+        if type(minutes) is not int or minutes < 0:
+            raise ValueError("minutes must be a non-negative integer")
         drains = {"idle": 0.005, "walking": 0.025, "farming": 0.06}
         if activity not in drains:
             raise ValueError(f"unknown activity: {activity}")
@@ -64,13 +65,15 @@ class Farmer:
         return energy_factor * hunger_factor
 
     def eat(self, nutrition: float = 55.0) -> None:
+        if isinstance(nutrition, bool) or not isinstance(nutrition, (int, float)) or not isfinite(nutrition) or nutrition < 0:
+            raise ValueError("nutrition must be a finite non-negative number")
         self.hunger = max(0.0, self.hunger - max(0.0, nutrition))
         self.energy = min(100.0, self.energy + 8.0)
         self.last_meal = self.minute
 
     def sleep(self, hours: int = 8) -> list[str]:
-        if hours <= 0 or hours > 24:
-            raise ValueError("sleep duration must be between 1 and 24 hours")
+        if type(hours) is not int or hours <= 0 or hours > 24:
+            raise ValueError("sleep duration must be an integer between 1 and 24 hours")
         # Sleep advances the world clock without applying awake activity costs.
         self.minute += hours * 60
         self.hunger = min(100.0, self.hunger + hours * 1.5)
