@@ -12,11 +12,18 @@ on:
     paths:
       - "godot/**"
       - ".github/workflows/godot-export-windows.yml"
+      - ".github/scripts/test-windows-beta.ps1"
   pull_request:
     paths:
       - "godot/**"
       - ".github/workflows/godot-export-windows.yml"
+      - ".github/scripts/test-windows-beta.ps1"
   workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
 
 jobs:
   windows-export:
@@ -105,3 +112,38 @@ jobs:
             dist/PixelFarmSeasons-Windows64.zip.sha256
           retention-days: 30
           if-no-files-found: error
+
+  windows-smoke:
+    name: Validar executável e salvamento no Windows
+    needs: windows-export
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: PixelFarmSeasons-Windows64
+          path: dist
+      - name: Validar pacote e executar regressões
+        shell: pwsh
+        run: ./.github/scripts/test-windows-beta.ps1
+
+  attach-beta:
+    name: Anexar beta validada ao GitHub Releases
+    if: github.event_name == 'release' && github.event.release.prerelease && startsWith(github.ref, 'refs/tags/beta-')
+    needs: windows-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: PixelFarmSeasons-Windows64
+          path: dist
+      - name: Publicar pacote e checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release upload "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY"
+          dist/PixelFarmSeasons-Windows64.zip dist/PixelFarmSeasons-Windows64.zip.sha256
