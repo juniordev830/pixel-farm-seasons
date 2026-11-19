@@ -6,6 +6,9 @@ Simulador de fazenda em terceira pessoa, desenvolvido em **Godot 4.3**, com faze
 
 ## 🎮 Baixar e jogar no Windows 64 bits
 
+Em [GitHub Releases](https://github.com/juniordev830/pixel-farm-seasons/releases), procure a beta mais recente com o arquivo `PixelFarmSeasons-Windows64.zip`. As betas com tag `beta-*` recebem o pacote e o checksum após a validação no Windows. Se ainda não houver uma beta publicada, use o artefato abaixo.
+
+
 1. Entre em [Actions — compilação Windows](https://github.com/juniordev830/pixel-farm-seasons/actions/workflows/godot-export-windows.yml) e abra uma execução concluída com sucesso da revisão desejada (`main` após integração ou o PR desta melhoria).
 2. Em **Artifacts**, baixe `PixelFarmSeasons-Windows64` (pode ser necessário entrar na sua conta GitHub).
 3. Extraia o ZIP externo e o ZIP interno, mantendo `PixelFarmSeasons.exe` e `PixelFarmSeasons.pck` **na mesma pasta**.
