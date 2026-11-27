@@ -42,6 +42,7 @@ jobs:
           curl -fL --retry 3 --retry-delay 3 \
             "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" \
             -o /tmp/godot.zip
+          echo "fd52bb4ba8acc30ca5accd1c566d470ad7282f891ccc0995dfafabcf92bcf76280ce182bf9d80ebd885f3ed2165d01e1fc3f2928436b15498dfbd98656c2a45a  /tmp/godot.zip" | sha512sum --check --strict
           unzip -oq /tmp/godot.zip -d /tmp
           sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
@@ -54,6 +55,7 @@ jobs:
             "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz" \
             -o /tmp/templates.tpz
           mkdir -p "$HOME/.local/share/godot/export_templates/4.3.stable"
+          echo "476366caf0fd45a8f24136cf9cf1dc0bc2b96f7c82d53e5f82200b55aefd07b286d283fd6f1ce29e0de70648c5a51d3b12f96c6d4fafd4e8c4878ecda6406d6a  /tmp/templates.tpz" | sha512sum --check --strict
           unzip -j /tmp/templates.tpz "templates/windows_release_x86_64.exe" \
             -d "$HOME/.local/share/godot/export_templates/4.3.stable"
           ls -lh "$HOME/.local/share/godot/export_templates/4.3.stable"
