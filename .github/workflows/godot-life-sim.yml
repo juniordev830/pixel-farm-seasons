@@ -22,6 +22,9 @@ on:
       - ".github/workflows/godot-life-sim.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   smoke-test:
     name: Smoke test headless do projeto Godot
@@ -29,6 +32,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Instalar Godot 4.3 oficial para Linux
         shell: bash
@@ -37,6 +42,7 @@ jobs:
           curl -fL --retry 3 \
             "https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip" \
             -o /tmp/godot.zip
+          echo "fd52bb4ba8acc30ca5accd1c566d470ad7282f891ccc0995dfafabcf92bcf76280ce182bf9d80ebd885f3ed2165d01e1fc3f2928436b15498dfbd98656c2a45a  /tmp/godot.zip" | sha512sum --check --strict
           unzip -oq /tmp/godot.zip -d /tmp
           sudo install -m 755 /tmp/Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
           godot --version
