@@ -22,6 +22,9 @@ on:
       - ".github/workflows/godot-life-sim.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   smoke-test:
     name: Smoke test headless do projeto Godot
@@ -29,6 +32,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Instalar Godot 4.3 oficial para Linux
         shell: bash

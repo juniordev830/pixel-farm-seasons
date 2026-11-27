@@ -24,6 +24,9 @@ on:
       - ".github/workflows/godot-screenshots.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   screenshots:
     name: Renderizar cenas em Godot e salvar PNG
@@ -31,6 +34,8 @@ jobs:
     timeout-minutes: 14
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Instalar suporte a renderizacao OpenGL com display virtual
         shell: bash
