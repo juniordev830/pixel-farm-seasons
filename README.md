@@ -1,5 +1,7 @@
 # 🌾 Pixel Farm Seasons — campanha 3D para PC (beta jogável)
 
+**Navegação** · [🎮 Baixar e jogar no Windows 64 bits](#-baixar-e-jogar-no-windows-64-bits) · [O que você consegue fazer](#o-que-você-consegue-fazer) · [🕹️ Comandos PC](#-comandos-pc) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 Simulador de fazenda em terceira pessoa, desenvolvido em **Godot 4.3**, com fazendeiro, ambiente rural low-poly, rotina diária, agricultura, animais, economia, veículo e uma campanha curta. A versão web 2D permanece separada.
 
 > **Estado de 07/11/2026:** a versão 3D já foi integrada à `main`. Esta atualização acrescenta menu inicial, recuperação/backup de save e tela de conclusão da campanha. **Ainda é uma versão beta:** faltam validação manual em Windows, artes/animações finais, funcionalidades de mundo aberto avançado e adaptação para Android.
@@ -79,3 +81,9 @@ O módulo independente `gameplay/day_night.py` interpola o céu entre noite, ama
 ## Próximos incrementos e validação
 
 Consulte o [guia técnico do projeto](docs/GUIA_DE_VALIDACAO.md) para critérios de aceitação, verificações e limites do protótipo.
+
+## Código e roteiro de estudo
+
+Como definir um contrato para que o horário exibido acompanhe a rotina sem duplicar o relógio? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
